@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboard - LearnIQ</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="../assets/styles/style.css" />
+  <link rel="stylesheet" href="../assets/styles/studentStyles/studentSidebar.css" />
+  <style>
+    .main {
+      margin-left: 215px;
+      transition: margin-left 0.3s ease;
+      flex: 1;
+    }
+
+    .main.collapsed {
+      margin-left: 60px;
+    }
+
+    .content {
+      padding: 2rem;
+      max-width: 1400px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #e9ecf2;
+    }
+
+    .page-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 0.75rem 1.5rem;
+      border: 2px solid #e9ecf2;
+      background: white;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .filter-btn.active {
+      background: #312e81;
+      color: white;
+      border-color: #312e81;
+    }
+
+    .filter-btn:hover {
+      border-color: #312e81;
+    }
+
+    .leaderboard-container {
+      background: white;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .leaderboard-header {
+      background: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
+      color: white;
+      padding: 1.5rem;
+    }
+
+    .leaderboard-header-row {
+      display: grid;
+      grid-template-columns: 60px 1fr 150px 150px 100px;
+      gap: 1rem;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .leaderboard-row {
+      display: grid;
+      grid-template-columns: 60px 1fr 150px 150px 100px;
+      gap: 1rem;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e9ecf2;
+      transition: background 0.3s;
+    }
+
+    .leaderboard-row:hover {
+      background: #f5f7fa;
+    }
+
+    .leaderboard-row.top-1 {
+      background: #fffbeb;
+    }
+
+    .leaderboard-row.top-2 {
+      background: #f3f4fc;
+    }
+
+    .leaderboard-row.top-3 {
+      background: #fef3c7;
+    }
+
+    .rank-badge {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .rank-1 .rank-badge {
+      background: #fbbf24;
+      color: white;
+    }
+
+    .rank-2 .rank-badge {
+      background: #d1d5db;
+      color: white;
+    }
+
+    .rank-3 .rank-badge {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .rank-badge.other {
+      background: #e9ecf2;
+      color: #6b7280;
+    }
+
+    .student-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .student-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #818cf8;
+      color: white;
+      font-weight: 700;
+    }
+
+    .student-name {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .score-stat {
+      text-align: right;
+    }
+
+    .score-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #312e81;
+    }
+
+    .score-label {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-text {
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+
+    .time-period {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .main {
+        margin-left: 60px;
+      }
+
+      .leaderboard-header-row,
+      .leaderboard-row {
+        grid-template-columns: 50px 1fr 100px;
+      }
+
+      .score-stat {
+        display: none;
+      }
+
+      .content {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar-container"></div>
+  <div id="topbar-container"></div>
+
+  <div class="main">
+    <div class="content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">🏆 Leaderboard</h1>
+          <p style="color: #6b7280; margin-top: 0.5rem">See how you rank against other students</p>
+        </div>
+      </div>
+
+      <div class="time-period">
+        <button class="filter-btn active" onclick="switchPeriod('all')">All Time</button>
+        <button class="filter-btn" onclick="switchPeriod('month')">This Month</button>
+        <button class="filter-btn" onclick="switchPeriod('week')">This Week</button>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="filter-btn active" onclick="switchCategory('all')">All Categories</button>
+        <button class="filter-btn" onclick="switchCategory('General Education')">General Education</button>
+        <button class="filter-btn" onclick="switchCategory('Professional Education')">Professional Education</button>
+        <button class="filter-btn" onclick="switchCategory('Major')">Major/Specialization</button>
+      </div>
+
+      <div class="leaderboard-container">
+        <div class="leaderboard-header">
+          <div class="leaderboard-header-row">
+            <div>Rank</div>
+            <div>Student</div>
+            <div>Attempts</div>
+            <div>Avg Score</div>
+            <div>Pass Rate</div>
+          </div>
+        </div>
+
+        <div id="leaderboardContent">
+          <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div class="empty-text">Loading leaderboard data...</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; padding: 1.5rem; background: #f0f9ff; border-radius: 1rem; border-left: 4px solid #22d3ee;">
+        <h3 style="color: #0c4a6e; margin-bottom: 0.5rem;">💡 How the Leaderboard Works</h3>
+        <p style="color: #0c4a6e; margin: 0; font-size: 0.95rem;">
+          Students are ranked based on their average quiz scores and pass rates. The more quizzes you attempt and the higher your scores, the higher you'll rank!
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../assets/scripts/student-auth-guard.js"></script>
+  <script src="../assets/scripts/student-layout.js"></script>
+  <script src="../assets/scripts/api-config.js"></script>
+  <script src="../assets/scripts/ApiService.js"></script>
+  <script src="../assets/scripts/db-manager.js"></script>
+  <script src="../assets/scripts/progress-tracker.js"></script>
+  <script src="../assets/scripts/engagement.js"></script>
+  <script src="../assets/scripts/NotificationManager.js"></script>
+  <script src="../assets/scripts/offline-sync.js"></script>
+  <script src="../assets/scripts/leaderboard-integration.js"></script>
+
+  <!-- Student Profile Modal -->
+  <div id="studentProfileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 20px; padding: 32px; max-width: 450px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto;">
+      <button onclick="closeStudentProfile()" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">✕</button>
+      
+      <div style="text-align: center; margin-bottom: 24px;">
+        <img id="profileStudentPic" src="https://i.pravatar.cc/150?img=12" alt="Student" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 16px; border: 3px solid #eef2ff;">
+        <h2 id="profileStudentName" style="font-size: 1.5rem; font-weight: 700; color: #1f2937; margin: 0 0 4px 0;">Student Name</h2>
+        <p id="profileStudentCourse" style="color: #6b7280; margin: 0; font-size: 0.9rem;">Student</p>
+      </div>
+
+      <div style="background: #f9fafb; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; text-align: center;">
+          <div>
+            <p style="font-size: 0.75rem; color: #6b7280; margin: 0 0 4px 0;">Attempts</p>
+            <p id="profileAttempts" style="font-size: 1.25rem; font-weight: 700; color: #1f2937; margin: 0;">0</p>
+          </div>
+          <div>
+            <p style="font-size: 0.75rem; color: #6b7280; margin: 0 0 4px 0;">Avg Score</p>
+            <p id="profileAvgScore" style="font-size: 1.25rem; font-weight: 700; color: #2f49e0; margin: 0;">0%</p>
+          </div>
+          <div>
+            <p style="font-size: 0.75rem; color: #6b7280; margin: 0 0 4px 0;">Pass Rate</p>
+            <p id="profilePassRate" style="font-size: 1.25rem; font-weight: 700; color: #10b981; margin: 0;">0%</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="space: 16px; margin-bottom: 24px;">
+        <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #eef2ff;">
+          <p style="font-size: 0.75rem; color: #6b7280; margin: 0 0 4px 0;"><i class="fa-regular fa-envelope"></i> Email</p>
+          <p id="profileStudentEmail" style="color: #1f2937; margin: 0; font-weight: 500; font-size: 0.9rem;">student@learniq.edu</p>
+        </div>
+        <div>
+          <p style="font-size: 0.75rem; color: #6b7280; margin: 0 0 4px 0;"><i class="fa-regular fa-comment"></i> Bio</p>
+          <p id="profileStudentBio" style="color: #1f2937; margin: 0; font-weight: 500; font-size: 0.9rem;">Passionate learner on LearnIQ</p>
+        </div>
+      </div>
+
+      <button onclick="closeStudentProfile()" style="width: 100%; padding: 12px; background: #2f49e0; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif;">Close</button>
+    </div>
+  </div>
+
+  <style>
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</body>
+</html>

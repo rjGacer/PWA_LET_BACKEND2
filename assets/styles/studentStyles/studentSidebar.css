@@ -1,0 +1,901 @@
+/* ============================================
+       SIDEBAR & TOPBAR STYLES ONLY
+    ============================================ */
+/* This file contains sidebar, topbar, hamburger, overlay,
+   and collapse functionality styles from studentDashboard.css */
+
+/* ============================================
+       RESET
+    ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: #f3f4fc;
+  color: #333;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============================================
+       SIDEBAR
+    ============================================ */
+.sidebar {
+  width: 215px;
+  height: 100vh;
+  background: #ffffff;
+  padding: 28px 15px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 1000;
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 40px;
+  padding-left: 8px;
+  flex-shrink: 0;
+}
+
+.logo-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #cfcfcf;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  color: #2f49e0;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.logo h1 {
+  font-size: 17px;
+  color: #2f49e0;
+  font-weight: 700;
+  white-space: nowrap;
+  transition:
+    opacity 0.2s ease,
+    width 0.2s ease;
+  overflow: hidden;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.menu-item {
+  width: 100%;
+  height: 46px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+  color: #6b6b6b;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.3s ease;
+  white-space: nowrap;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.menu-item i {
+  font-size: 16px;
+  color: #2f49e0;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.menu-item span {
+  transition: opacity 0.2s ease;
+}
+
+.menu-item.active {
+  background: #2f49e0;
+  color: white;
+  box-shadow: 0 8px 18px rgba(47, 73, 224, 0.25);
+}
+
+.menu-item.active i {
+  color: white;
+}
+
+.menu-item:hover:not(.active) {
+  background: #e9edff;
+}
+
+/* Support Card */
+.support-card {
+  position: relative;
+  background: #2f49e0;
+  border-radius: 12px;
+  padding: 22px;
+  overflow: hidden;
+  min-height: 188px;
+  margin-top: auto;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+  transition:
+    min-height 0.3s ease,
+    padding 0.3s ease;
+}
+
+.support-card h3 {
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  transition: opacity 0.2s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.support-card p {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  margin-bottom: 18px;
+  transition: opacity 0.2s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.support-btn {
+  width: 52px;
+  height: 30px;
+  border: none;
+  border-radius: 4px;
+  background: white;
+  color: #2f49e0;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  transition: opacity 0.2s ease;
+}
+
+.circle1,
+.circle2,
+.circle3 {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: opacity 0.2s ease;
+}
+.circle1 {
+  width: 64px;
+  height: 64px;
+  bottom: -8px;
+  right: -2px;
+}
+.circle2 {
+  width: 28px;
+  height: 28px;
+  bottom: 60px;
+  right: 12px;
+}
+.circle3 {
+  width: 18px;
+  height: 18px;
+  bottom: 64px;
+  right: 40px;
+}
+
+/* Logout */
+.logout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 38px;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding-bottom: 5px;
+  overflow: hidden;
+  transition: padding-left 0.3s ease;
+}
+
+.logout i {
+  color: #2f49e0;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.logout span {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f1f1f;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+/* ============================================
+       TOPBAR / HEADER
+    ============================================ */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  background: #fff;
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 20px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #eef2ff;
+}
+
+.search-box i {
+  color: #8ba0c0;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  margin-left: 10px;
+  background: transparent;
+  font-family: "Poppins", sans-serif;
+}
+
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ============================================
+       NOTIFICATION DROPDOWN
+    ============================================ */
+.notification-container {
+  position: relative;
+}
+
+.notification-bell {
+  position: relative;
+  font-size: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: #2d4cff;
+  transition: all 0.3s ease;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-bell:hover {
+  color: #1f2ff0;
+  transform: scale(1.1);
+}
+
+.notification-bell i {
+  font-size: 22px;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 2px 12px rgba(239, 68, 68, 0.6); }
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  width: 380px;
+  max-height: 500px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-dropdown.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #eef2ff;
+  background: linear-gradient(135deg, #f8faff, #f0f7ff);
+}
+
+.notification-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #1f2937;
+}
+
+.clear-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8ba0c0;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+}
+
+.clear-btn:hover {
+  color: #2d4cff;
+  transform: scale(1.1);
+}
+
+.notification-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 380px;
+  padding: 8px 0;
+}
+
+.notification-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.notification-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.notification-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.notification-item:hover {
+  background: #f8faff;
+  padding-left: 18px;
+}
+
+.notification-item.unread {
+  background: #f0f7ff;
+  border-left: 4px solid #2d4cff;
+  padding-left: 12px;
+}
+
+.notification-item.unread:hover {
+  background: #e6f2ff;
+  padding-left: 14px;
+}
+
+.notification-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-content h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notification-content p {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.notification-content small {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.notification-delete {
+  background: none;
+  border: none;
+  color: #d1d5db;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-delete:hover {
+  color: #ef4444;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #9ca3af;
+}
+
+.empty-state i {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+.empty-state p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.notification-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #eef2ff;
+  background: linear-gradient(135deg, #f8faff, #f0f7ff);
+}
+
+.view-all-link {
+  font-size: 13px;
+  color: #2d4cff;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.view-all-link:hover {
+  color: #1f2ff0;
+  text-decoration: underline;
+}
+
+.bell {
+  position: relative;
+  font-size: 22px;
+  color: #2d4cff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.bell::after {
+  content: "3";
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  width: 18px;
+  height: 18px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  background: white;
+  padding: 5px 15px 5px 8px;
+  border-radius: 40px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ============================================
+       HAMBURGER & OVERLAY
+    ============================================ */
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
+  background: #2f49e0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(47, 73, 224, 0.3);
+  transition: all 0.3s ease;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-btn i {
+  font-size: 20px;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.sidebar-overlay.active {
+  display: block;
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ============================================
+       COLLAPSE BUTTON (desktop)
+    ============================================ */
+.collapse-toggle-btn {
+  display: none;
+  position: absolute;
+  top: 22px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #cfcfcf;
+  background: white;
+  color: #2f49e0;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  z-index: 10;
+  transition: all 0.3s ease;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.collapse-toggle-btn:hover {
+  opacity: 1;
+}
+
+@media (min-width: 1025px) {
+  .collapse-toggle-btn {
+    display: flex;
+  }
+}
+
+/* ============================================
+       COLLAPSED SIDEBAR (desktop only)
+    ============================================ */
+@media (min-width: 1025px) {
+  .sidebar.collapsed {
+    width: 70px;
+    padding: 28px 10px;
+  }
+
+  .sidebar.collapsed .logo {
+    justify-content: center;
+    padding-left: 0;
+  }
+
+  .sidebar.collapsed .logo h1,
+  .sidebar.collapsed .menu-item span,
+  .sidebar.collapsed .support-card h3,
+  .sidebar.collapsed .support-card p,
+  .sidebar.collapsed .support-btn,
+  .sidebar.collapsed .circle1,
+  .sidebar.collapsed .circle2,
+  .sidebar.collapsed .circle3,
+  .sidebar.collapsed .logout span {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    overflow: hidden;
+  }
+
+  .sidebar.collapsed .menu-item {
+    justify-content: center;
+    padding: 0;
+    gap: 0;
+  }
+
+  .sidebar.collapsed .support-card {
+    padding: 12px 8px;
+    min-height: 56px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .sidebar.collapsed .logout {
+    justify-content: center;
+    padding-left: 0;
+  }
+
+  .sidebar.collapsed .collapse-toggle-btn {
+    right: 5px;
+  }
+
+  /* Dashboard shift when sidebar collapsed - requires body class */
+  body.sidebar-collapsed .dashboard {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+  }
+}
+
+/* ============================================
+       DASHBOARD LAYOUT (minimal for context)
+    ============================================ */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  width: calc(100% - 215px);
+  min-height: 100vh;
+  padding: 24px 28px;
+  margin-left: 215px;
+  transition:
+    margin-left 0.3s ease,
+    width 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #e4e7f0;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================
+       RESPONSIVE (sidebar & topbar)
+    ============================================ */
+
+/* Large tablets */
+@media (max-width: 1200px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tablets — sidebar becomes off-canvas */
+@media (max-width: 1024px) {
+  .hamburger-btn {
+    display: flex !important;
+    top: max(15px, env(safe-area-inset-top, 15px));
+    left: max(15px, env(safe-area-inset-left, 15px));
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  .collapse-toggle-btn {
+    display: none !important;
+  }
+
+  /* Undo any desktop collapse on mobile */
+  .sidebar.collapsed {
+    width: 280px !important;
+    padding: 28px 15px !important;
+  }
+
+  .sidebar.collapsed .logo h1,
+  .sidebar.collapsed .menu-item span,
+  .sidebar.collapsed .support-card h3,
+  .sidebar.collapsed .support-card p,
+  .sidebar.collapsed .support-btn,
+  .sidebar.collapsed .circle1,
+  .sidebar.collapsed .circle2,
+  .sidebar.collapsed .circle3,
+  .sidebar.collapsed .logout span {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: auto !important;
+    overflow: visible !important;
+  }
+
+  .sidebar.collapsed .menu-item {
+    justify-content: flex-start !important;
+    padding: 0 20px !important;
+    gap: 16px !important;
+  }
+  
+  .sidebar.collapsed .logout {
+    justify-content: flex-start !important;
+    padding-left: 38px !important;
+  }
+  
+  .sidebar.collapsed .support-card {
+    min-height: 188px !important;
+    padding: 22px !important;
+  }
+
+  .dashboard {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: calc(70px + env(safe-area-inset-top, 0px)) 20px 30px !important;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* body.sidebar-collapsed irrelevant on mobile */
+  body.sidebar-collapsed .dashboard {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: calc(65px + env(safe-area-inset-top, 0px)) 14px 20px !important;
+    gap: 16px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .top-right {
+    justify-content: flex-end;
+  }
+  
+  .profile span {
+    display: none;
+  }
+  
+  .search-box {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .dashboard {
+    padding: calc(60px + env(safe-area-inset-top, 0px)) 12px 16px !important;
+    gap: 14px;
+  }
+  
+  .profile {
+    padding: 5px 10px 5px 8px;
+  }
+  
+  .bell {
+    font-size: 18px;
+  }
+  
+  .bell::after {
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+    top: -6px;
+    right: -8px;
+  }
+}
+
+/* PWA mode */
+@media (display-mode: standalone) {
+  .sidebar {
+    padding-top: max(28px, env(safe-area-inset-top));
+  }
+  .hamburger-btn {
+    top: max(15px, calc(env(safe-area-inset-top) + 15px));
+  }
+
+  @media (max-width: 1024px) {
+    .dashboard {
+      padding-top: max(70px, calc(env(safe-area-inset-top) + 20px)) !important;
+    }
+  }
+}

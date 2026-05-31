@@ -1,0 +1,340 @@
+/* ============================================
+   HISTORY PAGE STYLES 
+   (clean cards, rounded corners, subtle shadows)
+============================================ */
+
+/* Override dashboard grid — ensure main content uses full width */
+.dashboard {
+  display: flex !important;
+  width: calc(100% - 215px) !important;
+  margin-left: 215px !important;
+  min-height: 100vh;
+  padding: 28px 32px !important;
+  gap: 0 !important;
+  background: #f3f4fc;
+}
+
+.dashboard .main-content {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 !important;
+  padding: 0 !important;
+}
+
+/* Hide right sidebar (if any) */
+.sidebar-right {
+  display: none !important;
+}
+
+/* Sidebar collapsed state adjustment */
+body.sidebar-collapsed .dashboard {
+  margin-left: 70px !important;
+  width: calc(100% - 70px) !important;
+}
+
+/* ========== HISTORY SPECIFIC COMPONENTS ========== */
+.history-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(47, 73, 224, 0.12);
+}
+
+.header-title h1 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  font-family: 'Poppins', sans-serif;
+  background: #1f2937;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.header-title p {
+  font-size: 0.85rem;
+  color: #475569;
+  font-weight: 450;
+}
+
+.export-history-btn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 60px;
+  padding: 9px 24px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: #1e293b;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(2px);
+}
+
+.export-history-btn:hover {
+  border-color: #2f49e0;
+  background: #f8faff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+/* Stats Summary Cards */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 24px 0 32px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #eef2ff;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+  border-color: #cbd5e1;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  background: #2f49e010;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2f49e0;
+  font-size: 1.3rem;
+}
+
+.stat-info h4 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.stat-info p {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+
+/* Section headings */
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 28px 0 16px 0;
+}
+
+.section-head i {
+  color: #2f49e0;
+  font-size: 1.3rem;
+}
+
+/* Table styles – clean, modern card table */
+.history-table-wrapper {
+  background: white;
+  border-radius: 28px;
+  border: 1px solid #eef2ff;
+  overflow: hidden;
+  margin: 16px 0 24px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+}
+
+.history-table th {
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  background: #fbfdff;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eef2ff;
+  letter-spacing: 0.5px;
+}
+
+.history-table td {
+  padding: 14px 20px;
+  font-size: 0.82rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.history-table tr:hover td {
+  background: #fafbff;
+}
+
+.subject-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.subject-icon-sm {
+  width: 36px;
+  height: 36px;
+  background: #eef0fd;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2f49e0;
+  font-size: 0.9rem;
+}
+
+.accuracy-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-mini {
+  width: 70px;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+}
+
+.badge-mode {
+  background: #eef2ff;
+  border-radius: 30px;
+  padding: 4px 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: inline-block;
+  color: #2f49e0;
+}
+
+.badge-practice {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-exam {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-random {
+  background: #e9d5ff;
+  color: #6b21a8;
+}
+
+.review-link {
+  color: #2f49e0;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.75rem;
+  background: #eef0fd;
+  padding: 6px 14px;
+  border-radius: 30px;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.review-link:hover {
+  background: #e0e7ff;
+  transform: translateY(-1px);
+}
+
+.load-more-history {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 30px;
+}
+
+.load-more-btn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 60px;
+  padding: 10px 32px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.load-more-btn:hover {
+  border-color: #2f49e0;
+  background: #f7f9ff;
+}
+
+.fade-transition {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dashboard {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding: calc(70px + env(safe-area-inset-top, 0px)) 20px 30px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-row {
+    grid-template-columns: repeat(2,1fr);
+    gap: 12px;
+  }
+  .history-table th:nth-child(4), .history-table td:nth-child(4),
+  .history-table th:nth-child(5), .history-table td:nth-child(5) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+  .header-title h1 {
+    font-size: 1.5rem;
+  }
+}

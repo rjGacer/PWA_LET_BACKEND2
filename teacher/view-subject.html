@@ -1,0 +1,1270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>LearnIQ • Subject Details</title>
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <!-- Font Awesome for fa-solid icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+  <!-- Remix Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
+  <!-- Reuse sidebar & dashboard styles -->
+  <link rel="stylesheet" href="../assets/styles/teacherStyles/sidebar.css" />
+  <link rel="stylesheet" href="../assets/styles/teacherStyles/dashboard.css" />
+  <link rel="stylesheet" href="../assets/styles/teacherStyles/view-subject.css">
+  
+</head>
+<body>
+  <!-- Sidebar placeholder -->
+  <div id="sidebar"></div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <!-- HEADER placeholder -->
+    <div id="header"></div>
+
+    <div class="content">
+      <!-- Back button -->
+      <a href="subject.html?categoryId=4" class="back-link" id="backLink">
+        <i class="ri-arrow-left-line"></i> Back to Subjects
+      </a>
+
+      <!-- Subject Header -->
+      <div class="subject-header">
+        <h1 id="subjectTitle">Mathematics</h1>
+        <div class="subject-meta">
+          <span class="category-badge"><i class="fa-solid fa-book-open"></i> General Education</span>
+          <span class="dot-separator"></span>
+          <div class="subject-stats-inline">
+            <span><i class="fa-solid fa-circle-question"></i> <span id="quizCount">6</span> Quizzes</span>
+            <span class="dot-separator"></span>
+            <span><i class="fa-solid fa-book"></i> <span id="moduleCount">3</span> Modules</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('overview')">Overview</button>
+        <button class="tab" onclick="switchTab('modules')">Modules</button>
+        <button class="tab" onclick="switchTab('quizzes')">Quizzes</button>
+      </div>
+
+      <!-- Overview Tab -->
+      <div class="tab-content active" id="overviewTab">
+        <div class="section-header-row">
+          <h3 class="section-header"><i class="fa-solid fa-folder"></i> Learning Modules (<span id="overviewModuleCount">3</span>)</h3>
+          <button class="add-btn" onclick="openModuleModal()">
+            <i class="fa-solid fa-plus"></i> Add Module
+          </button>
+        </div>
+        <p class="section-subtitle">Study materials and resources for this subject.</p>
+        <div class="module-list" id="moduleList"></div>
+
+        <hr class="divider">
+
+        <div class="section-header-row">
+          <h3 class="section-header"><i class="fa-solid fa-pen-to-square"></i> Quizzes (<span id="overviewQuizCount">6</span>)</h3>
+          <button class="add-btn" onclick="openQuizModal()">
+            <i class="fa-solid fa-plus"></i> Create Quiz
+          </button>
+        </div>
+        <p class="section-subtitle">Assessments and quizzes for this subject.</p>
+        <table class="quiz-table">
+          <thead>
+            <tr>
+              <th>Quiz Title</th>
+              <th>Questions</th>
+              <th>Time Limit</th>
+              <th>Total Points</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="quizTableBody"></tbody>
+        </table>
+        <a href="#" class="view-all-link" onclick="switchTab('quizzes'); return false;">
+          View all quizzes <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- Modules Tab -->
+      <div class="tab-content" id="modulesTab">
+        <div class="section-header-row">
+          <h3 class="section-header"><i class="fa-solid fa-folder"></i> Learning Modules (<span id="modulesTabCount">3</span>)</h3>
+          <button class="add-btn" onclick="openModuleModal()">
+            <i class="fa-solid fa-plus"></i> Add Module
+          </button>
+        </div>
+        <p class="section-subtitle">Study materials and resources for this subject.</p>
+        <div class="module-list" id="modulesTabList"></div>
+      </div>
+
+      <!-- Quizzes Tab -->
+      <div class="tab-content" id="quizzesTab">
+        <div class="section-header-row">
+          <h3 class="section-header"><i class="fa-solid fa-pen-to-square"></i> Quizzes (<span id="quizzesTabCount">6</span>)</h3>
+          <button class="add-btn" onclick="openQuizModal()">
+            <i class="fa-solid fa-plus"></i> Create Quiz
+          </button>
+        </div>
+        <p class="section-subtitle">Assessments and quizzes for this subject.</p>
+        <table class="quiz-table">
+          <thead>
+            <tr>
+              <th>Quiz Title</th>
+              <th>Questions</th>
+              <th>Time Limit</th>
+              <th>Total Points</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="quizzesTabBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Module Modal -->
+  <div class="modal-overlay" id="moduleModal">
+    <div class="modal">
+      <h3 id="moduleModalTitle"><i class="fa-solid fa-file-circle-plus"></i> Add Module</h3>
+      <div class="form-group">
+        <label>Module Title</label>
+        <input type="text" id="moduleTitleInput" placeholder="Enter module title..." />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="moduleDescInput" placeholder="Enter module description..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>File Type</label>
+        <select id="moduleTypeSelect">
+          <option value="PDF">PDF</option>
+          <option value="Video">Video</option>
+          <option value="Text Lesson">Text Lesson</option>
+          <option value="Image">Image</option>
+          <option value="Audio">Audio</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Upload Module Files (Multiple)</label>
+        <div class="file-upload-area" onclick="document.getElementById('moduleFileInput').click()" id="moduleFileUploadArea">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <p>Click to upload or drag and drop</p>
+          <p style="font-size: 0.75rem; color: #94a3b8;">PDF, DOC, PPT, MP4, Images, Audio, etc.</p>
+        </div>
+        <input type="file" id="moduleFileInput" multiple style="display: none;" />
+        
+        <!-- Files List -->
+        <div id="moduleFilesList" style="margin-top: 1rem; display: none;">
+          <h4 style="font-size: 0.85rem; font-weight: 600; color: #475569; margin: 0 0 0.5rem 0;">Uploaded Files:</h4>
+          <div id="filesListContainer" style="border: 1px solid #e2e8f0; border-radius: 8px; max-height: 200px; overflow-y: auto;"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModuleModal()">Cancel</button>
+        <button class="btn-save" onclick="saveModule()">Save Module</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Quiz Modal (Google Forms style) -->
+  <div class="modal-overlay" id="quizModal">
+    <div class="modal">
+      <h3><i class="fa-solid fa-pencil"></i> Create Quiz</h3>
+
+      <div class="form-group">
+        <label>Quiz Title</label>
+        <input type="text" id="quizTitleInput" placeholder="Enter quiz title..." />
+      </div>
+
+      <div class="form-group">
+        <label>Time Limit</label>
+        <input type="text" id="quizTimeInput" placeholder="e.g., 30 Minutes" />
+      </div>
+
+      <hr class="separator">
+
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h4 style="margin: 0; font-size: 1rem; color: #1e293b;"><i class="fa-solid fa-list-check"></i> Questions (<span id="questionCountSpan">0</span>)</h4>
+        <button class="btn-add-question" onclick="openAddQuestionForm()">
+          <i class="fa-solid fa-plus"></i> Add Question
+        </button>
+      </div>
+
+      <div class="questions-list" id="questionsList">
+        <p style="color: #94a3b8; font-size: 0.85rem; text-align: center; padding: 1rem;">No questions added yet. Click "Add Question" to start.</p>
+      </div>
+
+      <div id="questionFormContainer" style="display: none; background: #fafbfc; border-radius: 12px; padding: 1.2rem; border: 1px solid #e2e8f0;">
+        <h4 id="questionFormTitle" style="margin: 0 0 1rem 0; font-size: 0.95rem; color: #7c6ff7;">Add New Question</h4>
+        
+        <div class="form-group">
+          <label>Question</label>
+          <textarea id="questionTextInput" placeholder="Enter your question here..." maxlength="500" rows="2"></textarea>
+          <div class="char-count"><span id="questionCharCount">0</span>/500</div>
+        </div>
+
+        <div class="form-group">
+          <label>Answer Choices</label>
+          <div class="answer-choices">
+            <div class="answer-choice-row">
+              <span class="answer-letter">A</span>
+              <input type="text" id="choiceA" placeholder="Enter option A" />
+            </div>
+            <div class="answer-choice-row">
+              <span class="answer-letter">B</span>
+              <input type="text" id="choiceB" placeholder="Enter option B" />
+            </div>
+            <div class="answer-choice-row">
+              <span class="answer-letter">C</span>
+              <input type="text" id="choiceC" placeholder="Enter option C" />
+            </div>
+            <div class="answer-choice-row">
+              <span class="answer-letter">D</span>
+              <input type="text" id="choiceD" placeholder="Enter option D" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Correct Answer</label>
+          <select id="correctAnswerSelect">
+            <option value="">Select correct answer...</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Explanation (Optional)</label>
+          <textarea id="explanationInput" placeholder="Enter explanation for the correct answer..." rows="2"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem;">
+          <button class="btn-cancel" onclick="cancelQuestionForm()">Cancel</button>
+          <button class="btn-save" onclick="saveQuestion()" id="saveQuestionBtn">Add Question</button>
+        </div>
+      </div>
+
+      <div class="bulk-upload-section">
+        <div class="form-group">
+          <label>Bulk Upload Questions</label>
+          <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 0.5rem 0;">Upload your CSV or Excel file to add multiple questions at once.</p>
+          <div class="file-upload-area" onclick="document.getElementById('bulkFileInput').click()">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <p>Drag and drop your file here</p>
+            <p style="font-size: 0.85rem; color: #7c6ff7; font-weight: 600;">or</p>
+            <p style="font-size: 0.85rem; color: #7c6ff7; font-weight: 600;">Choose File</p>
+          </div>
+          <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;" />
+          <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">Supported formats: CSV, XLSX</p>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem;" id="bulkFileName">No file chosen</p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeQuizModal()">Cancel</button>
+        <button class="btn-draft" onclick="saveQuizDraft()">Save as Draft</button>
+        <button class="btn-save" onclick="saveQuiz()">Save Quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/scripts/layout.js"></script>
+  <script src="../assets/scripts/auth-guard.js"></script>
+  <script src="../assets/scripts/api-config.js"></script>
+  <script src="../assets/scripts/ApiService.js"></script>
+  <script>
+    // Initialize API Service
+    const apiService = new ApiService();
+
+    // Get subject and category from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const subjectId = urlParams.get('subjectId') || null;
+    const subjectName = urlParams.get('subjectName') || 'Subject';
+    const categoryId = urlParams.get('categoryId') || '4';
+    
+    // Update back link with categoryId
+    const backLink = document.getElementById('backLink');
+    if (backLink) {
+      backLink.href = `subject.html?categoryId=${categoryId}`;
+    }
+    
+    // Variables for managing state
+    let quizQuestions = [];
+    let editingQuestionIndex = null;
+    let editingQuizId = null;
+    let modalIsInitializing = false;
+    let originalQuestionIds = []; // Track original question IDs for detecting deletions
+
+    function getFileIcon(type) {
+      const t = type.toLowerCase();
+      if (t.includes('pdf')) return '<i class="fa-solid fa-file-pdf file-icon pdf"></i>';
+      if (t.includes('video')) return '<i class="fa-solid fa-video file-icon video"></i>';
+      if (t.includes('text')||t.includes('lesson')) return '<i class="fa-solid fa-file-lines file-icon text"></i>';
+      if (t.includes('image')) return '<i class="fa-solid fa-image file-icon image"></i>';
+      if (t.includes('audio')) return '<i class="fa-solid fa-music file-icon audio"></i>';
+      return '<i class="fa-solid fa-file file-icon"></i>';
+    }
+
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+      document.getElementById(name+'Tab').classList.add('active');
+    }
+
+    let editingModuleIndex = null;
+    let editingModuleId = null;
+    let selectedModuleFiles = [];  // Changed to array for multiple files
+
+    function openModuleModal(moduleId=null){
+      editingModuleId = moduleId;
+      selectedModuleFiles = [];  // Reset files array
+      const m=document.getElementById('moduleModal');
+      
+      if (moduleId) {
+        // Editing mode
+        document.getElementById('moduleModalTitle').innerHTML='<i class="fa-solid fa-pen-to-square"></i> Edit Module';
+        loadModuleForEdit(moduleId);
+      } else {
+        // Create mode
+        document.getElementById('moduleModalTitle').innerHTML='<i class="fa-solid fa-file-circle-plus"></i> Add Module';
+        document.getElementById('moduleTitleInput').value='';
+        document.getElementById('moduleDescInput').value='';
+        document.getElementById('moduleTypeSelect').value='PDF';
+        document.getElementById('moduleFileInput').value = '';
+        document.getElementById('moduleFilesList').style.display = 'none';
+        document.getElementById('filesListContainer').innerHTML = '';
+      }
+      
+      m.classList.add('active');
+    }
+
+    async function loadModuleForEdit(moduleId) {
+      try {
+        // Fetch module details from API
+        const module = await apiService.getModuleById(moduleId);
+        
+        if (module) {
+          document.getElementById('moduleTitleInput').value = module.title || '';
+          document.getElementById('moduleDescInput').value = module.content || '';
+          document.getElementById('moduleTypeSelect').value = module.file_type || 'PDF';
+          document.getElementById('moduleFileInput').value = '';
+          
+          // Display existing files
+          if (module.files && module.files.length > 0) {
+            selectedModuleFiles = module.files;
+            displayModuleFiles();
+          }
+        }
+      } catch (error) {
+        console.error('Error loading module for edit:', error);
+        alert('Error loading module: ' + error.message);
+      }
+    }
+
+    function displayModuleFiles() {
+      const container = document.getElementById('filesListContainer');
+      const filesList = document.getElementById('moduleFilesList');
+      
+      if (!selectedModuleFiles || selectedModuleFiles.length === 0) {
+        filesList.style.display = 'none';
+        container.innerHTML = '';
+        return;
+      }
+      
+      filesList.style.display = 'block';
+      container.innerHTML = selectedModuleFiles.map((file, index) => {
+        // Handle both File objects (from input) and database file objects
+        const fileName = file.original_name || file.file_name || file.name;
+        const fileExt = fileName.split('.').pop().toLowerCase();
+        let icon = 'fa-file';
+        
+        if (['pdf'].includes(fileExt)) icon = 'fa-file-pdf';
+        else if (['mp4', 'webm', 'avi', 'mov'].includes(fileExt)) icon = 'fa-video';
+        else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) icon = 'fa-image';
+        else if (['mp3', 'wav', 'ogg'].includes(fileExt)) icon = 'fa-music';
+        else if (['doc', 'docx', 'txt'].includes(fileExt)) icon = 'fa-file-lines';
+        else if (['ppt', 'pptx'].includes(fileExt)) icon = 'fa-file-powerpoint';
+        
+        const isExisting = file.id !== undefined;  // Check if it's an existing file
+        const displayName = fileName.length > 40 ? fileName.substring(0, 37) + '...' : fileName;
+        
+        return `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-bottom: 1px solid #f1f5f9; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0;">
+              <i class="fa-solid ${icon}" style="color: #7c6ff7; flex-shrink: 0;"></i>
+              <span style="font-size: 0.85rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${fileName}">${displayName}</span>
+            </div>
+            <button type="button" onclick="removeModuleFile(${index})" style="background: #ef4444; color: white; border: none; padding: 0.4rem 0.6rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: 600; flex-shrink: 0;">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    function closeModuleModal(){ 
+      document.getElementById('moduleModal').classList.remove('active');
+      editingModuleId = null;
+      editingModuleIndex = null;
+      selectedModuleFiles = [];
+    }
+    
+    async function saveModule(){
+      const title=document.getElementById('moduleTitleInput').value.trim();
+      if(!title){alert('Enter module title');return;}
+      const desc=document.getElementById('moduleDescInput').value.trim();
+      const type=document.getElementById('moduleTypeSelect').value;
+      
+      try {
+        const payload = new FormData();
+        payload.append('subject_id', parseInt(subjectId));
+        payload.append('title', title);
+        payload.append('content', desc);
+        payload.append('file_type', type);
+        
+        // Add new file if selected (from file input)
+        const fileInput = document.getElementById('moduleFileInput');
+        if (fileInput.files && fileInput.files.length > 0) {
+          for (let i = 0; i < fileInput.files.length; i++) {
+            payload.append('file', fileInput.files[i]);
+            console.log('File added to payload:', fileInput.files[i].name);
+          }
+        }
+        
+        if (editingModuleId) {
+          // Update existing module
+          console.log('Updating module:', editingModuleId);
+          await apiService.updateModule(editingModuleId, payload);
+          alert('Module updated successfully!');
+        } else {
+          // Create new module
+          console.log('Creating module');
+          await apiService.createModule(payload);
+          alert('Module created successfully!');
+        }
+        
+        selectedModuleFiles = [];
+        closeModuleModal();
+        await loadModulesFromAPI();
+      } catch (error) {
+        console.error('Error saving module:', error);
+        alert('Error saving module: ' + error.message);
+      }
+    }
+
+    function removeModuleFile(index) {
+      const file = selectedModuleFiles[index];
+      
+      if (file.id !== undefined && editingModuleId) {
+        // Remove from database if it's an existing file
+        if (confirm('Delete this file from the module?')) {
+          apiService.deleteModuleFile(file.id)
+            .then(() => {
+              selectedModuleFiles.splice(index, 1);
+              displayModuleFiles();
+              console.log('File deleted successfully');
+            })
+            .catch(error => {
+              console.error('Error deleting file:', error);
+              alert('Error deleting file: ' + error.message);
+            });
+        }
+      } else {
+        // Just remove from the array for new files
+        selectedModuleFiles.splice(index, 1);
+        displayModuleFiles();
+      }
+    }
+    
+    function previewModule(moduleId) {
+      const module = Array.from(document.querySelectorAll('[data-module-id]')).find(el => {
+        // Find module in the loaded modules
+        const allModules = document.querySelectorAll('.module-card');
+        for (let card of allModules) {
+          const editBtn = card.querySelector('.edit-btn');
+          if (editBtn && editBtn.onclick && editBtn.onclick.toString().includes(moduleId)) {
+            return true;
+          }
+        }
+        return false;
+      });
+      
+      // For now, just show a simple alert - teachers can use the View button in studentViewModules to see full preview
+      const title = event.currentTarget.querySelector('h4')?.textContent || 'Module';
+      const content = event.currentTarget.querySelector('p:not(.module-meta)')?.textContent || '';
+      const meta = event.currentTarget.querySelector('.module-meta')?.textContent || '';
+      
+      alert(`📚 ${title}\n\n${content}\n\n${meta}`);
+    }
+
+    async function deleteModule(moduleId){ 
+      if(confirm('Delete this module?')){
+        try {
+          await apiService.deleteModule(moduleId);
+          alert('Module deleted successfully!');
+          await loadModulesFromAPI();
+        } catch (error) {
+          console.error('Error deleting module:', error);
+          alert('Error deleting module: ' + error.message);
+        }
+      } 
+    }
+
+    async function loadModulesFromAPI() {
+      try {
+        if (!subjectId) return;
+        const modules = await apiService.getModules(subjectId);
+        const moduleList = document.getElementById('moduleList');
+        const modulesTabList = document.getElementById('modulesTabList');
+        
+        const modHTML = modules.map((m, i) => `
+          <div class="module-card" onclick="event.target.closest('.module-actions') || previewModule(${m.id})" style="cursor: pointer;">
+            <h4><i class="fa-solid fa-file file-icon"></i> ${m.title}</h4>
+            <p>${m.content}</p>
+            <div class="module-meta">
+              <span><i class="fa-solid fa-file file-icon"></i> ${m.file_type}</span>
+              <span class="dot-separator"></span>
+              <span>Added ${new Date(m.created_at).toLocaleDateString('en-US', {year:'numeric', month:'short', day:'numeric'})}</span>
+            </div>
+            <div class="module-actions">
+              <button class="edit-btn" title="Edit" onclick="event.stopPropagation();openModuleModal(${m.id})"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button class="delete-btn" title="Delete" onclick="event.stopPropagation();deleteModule(${m.id})"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>`).join('');
+        
+        moduleList.innerHTML = modHTML || '<p style="color:#94a3b8;text-align:center;">No modules yet</p>';
+        modulesTabList.innerHTML = modHTML || '<p style="color:#94a3b8;text-align:center;">No modules yet</p>';
+        
+        document.getElementById('moduleCount').textContent = modules.length;
+        document.getElementById('overviewModuleCount').textContent = modules.length;
+        document.getElementById('modulesTabCount').textContent = modules.length;
+      } catch (error) {
+        console.error('Error loading modules:', error);
+      }
+    }
+
+    function openQuizModal(){
+      quizQuestions = [];
+      editingQuestionIndex = null;
+      document.getElementById('quizTitleInput').value = '';
+      document.getElementById('quizTimeInput').value = '30';
+      document.getElementById('questionsList').innerHTML = '<p style="color:#94a3b8;font-size:0.85rem;text-align:center;padding:1rem;">No questions added yet. Click "Add Question" to start.</p>';
+      document.getElementById('questionCountSpan').textContent = '0';
+      document.getElementById('questionFormContainer').style.display = 'none';
+      document.getElementById('bulkFileName').textContent = 'No file chosen';
+      document.getElementById('quizModal').classList.add('active');
+    }
+
+    function closeQuizModal(){ document.getElementById('quizModal').classList.remove('active'); }
+
+    async function saveQuiz(){
+      const title = document.getElementById('quizTitleInput').value.trim();
+      if(!title){ alert('Enter quiz title.'); return; }
+      if(quizQuestions.length===0){ alert('Add at least one question.'); return; }
+      
+      if (!subjectId) {
+        alert('Subject ID not found. Please refresh the page.');
+        return;
+      }
+      
+      try {
+        console.log('💾 Saving quiz. editingQuizId:', editingQuizId, 'Type:', typeof editingQuizId);
+        const timeInput = document.getElementById('quizTimeInput').value.trim();
+        const timeLimit = parseInt(timeInput) || 30;
+        const totalPoints = quizQuestions.length * 1;
+        
+        let quizId;
+        
+        // Strict check for editing mode
+        const isEditing = Boolean(editingQuizId && parseInt(editingQuizId) > 0);
+        console.log('🔍 isEditing check:', isEditing, '(editingQuizId=' + editingQuizId + ')');
+        
+        if (isEditing) {
+          // Update existing quiz
+          console.log('🔄 UPDATING existing quiz ID:', editingQuizId);
+          const updatePayload = {
+            title: title,
+            time_limit: timeLimit,
+            total_points: totalPoints,
+            is_randomized: true,
+            show_answers: true,
+            passing_score: 70
+          };
+          
+          console.log('Updating quiz:', editingQuizId, updatePayload);
+          await apiService.updateQuiz(editingQuizId, updatePayload);
+          quizId = editingQuizId;
+          
+          // Handle deleted questions
+          const currentApiIds = quizQuestions
+            .filter(q => q.apiId)
+            .map(q => q.apiId);
+          const deletedIds = originalQuestionIds.filter(id => !currentApiIds.includes(id));
+          
+          for (const deletedId of deletedIds) {
+            console.log('🗑️ Deleting question ID:', deletedId);
+            try {
+              await apiService.deleteQuestion(deletedId);
+            } catch (error) {
+              console.error('Error deleting question:', deletedId, error);
+            }
+          }
+          
+          // Create or update questions
+          for (const q of quizQuestions) {
+            if (!q.apiId) {
+              // This is a new question, create it
+              const questionPayload = {
+                subject_id: parseInt(subjectId),
+                question_text: q.text,
+                question_type: 'multiple_choice',
+                difficulty: 'medium',
+                points: 1,
+                explanation: q.explanation || null,
+                options: [
+                  { option_text: q.choices.A, is_correct: (q.correct === 'A') ? 1 : 0 },
+                  { option_text: q.choices.B, is_correct: (q.correct === 'B') ? 1 : 0 },
+                  { option_text: q.choices.C, is_correct: (q.correct === 'C') ? 1 : 0 },
+                  { option_text: q.choices.D, is_correct: (q.correct === 'D') ? 1 : 0 }
+                ]
+              };
+              
+              const questionResponse = await apiService.createQuestion(questionPayload);
+              const questionId = questionResponse.id;
+              await apiService.addQuestionToQuiz(quizId, { question_id: questionId });
+            } else {
+              // Update existing question
+              const questionPayload = {
+                question_text: q.text,
+                difficulty: 'medium',
+                points: 1,
+                explanation: q.explanation || null,
+                options: [
+                  { option_text: q.choices.A, is_correct: (q.correct === 'A') ? 1 : 0 },
+                  { option_text: q.choices.B, is_correct: (q.correct === 'B') ? 1 : 0 },
+                  { option_text: q.choices.C, is_correct: (q.correct === 'C') ? 1 : 0 },
+                  { option_text: q.choices.D, is_correct: (q.correct === 'D') ? 1 : 0 }
+                ]
+              };
+              
+              await apiService.updateQuestion(q.apiId, questionPayload);
+            }
+          }
+          
+          alert('Quiz updated successfully!');
+          console.log('✅ Quiz update complete for ID:', editingQuizId);
+        } else {
+          // Create new quiz
+          console.log('➕ CREATING new quiz (editingQuizId was:', editingQuizId, ')');
+          const payload = {
+            subject_id: parseInt(subjectId),
+            title: title,
+            time_limit: timeLimit,
+            total_points: totalPoints,
+            is_randomized: true,
+            show_answers: true,
+            passing_score: 70
+          };
+          
+          console.log('Creating quiz with payload:', payload);
+          const quizResponse = await apiService.createQuiz(payload);
+          console.log('Quiz created:', quizResponse);
+          quizId = quizResponse.id;
+          
+          // Add each question to the quiz
+          for (const q of quizQuestions) {
+            const questionPayload = {
+              subject_id: parseInt(subjectId),
+              question_text: q.text,
+              question_type: 'multiple_choice',
+              difficulty: 'medium',
+              points: 1,
+              explanation: q.explanation || null,
+              options: [
+                { option_text: q.choices.A, is_correct: (q.correct === 'A') ? 1 : 0 },
+                { option_text: q.choices.B, is_correct: (q.correct === 'B') ? 1 : 0 },
+                { option_text: q.choices.C, is_correct: (q.correct === 'C') ? 1 : 0 },
+                { option_text: q.choices.D, is_correct: (q.correct === 'D') ? 1 : 0 }
+              ]
+            };
+            
+            console.log('Creating question:', questionPayload);
+            const questionResponse = await apiService.createQuestion(questionPayload);
+            console.log('Question created:', questionResponse);
+            const questionId = questionResponse.id;
+            
+            // Add question to quiz
+            console.log('Adding question to quiz:', quizId, questionId);
+            await apiService.addQuestionToQuiz(quizId, { question_id: questionId });
+          }
+          
+          alert('Quiz created successfully with ' + quizQuestions.length + ' questions!');
+        }
+        
+        closeQuizModal();
+        await loadQuizzesFromAPI();
+      } catch (error) {
+        console.error('Error saving quiz:', error);
+        alert('Error saving quiz: ' + error.message);
+      }
+    }
+
+    function saveQuizDraft(){ alert('Draft saved!'); closeQuizModal(); }
+
+    async function deleteQuiz(quizId){ 
+      if(confirm('Delete this quiz?')){
+        try {
+          await apiService.deleteQuiz(quizId);
+          alert('Quiz deleted successfully!');
+          await loadQuizzesFromAPI();
+        } catch (error) {
+          console.error('Error deleting quiz:', error);
+          alert('Error deleting quiz: ' + error.message);
+        }
+      }
+    }
+
+    async function loadQuizzesFromAPI() {
+      try {
+        if (!subjectId) return;
+        const quizzes = await apiService.getQuizzes(subjectId);
+        const quizTableBody = document.getElementById('quizTableBody');
+        const quizzesTabBody = document.getElementById('quizzesTabBody');
+        
+        const quizHTML = quizzes.map((q) => `
+          <tr>
+            <td><i class="fa-solid fa-pencil quiz-icon"></i> ${q.title}</td>
+            <td>${q.question_count || 0}</td>
+            <td>${q.time_limit} Minutes</td>
+            <td>${q.total_points}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-open"><i class="fa-solid fa-folder-open"></i> Open</button>
+                <button class="btn btn-edit quiz-edit-btn" data-quiz-id="${q.id}" title="Edit quiz"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                <button class="btn btn-delete quiz-delete-btn" data-quiz-id="${q.id}" title="Delete quiz"><i class="fa-solid fa-trash"></i> Delete</button>
+              </div>
+            </td>
+          </tr>`).join('');
+        
+        quizTableBody.innerHTML = quizHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">No quizzes yet</td></tr>';
+        quizzesTabBody.innerHTML = quizHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">No quizzes yet</td></tr>';
+        
+        // Attach event listeners to edit and delete buttons
+        document.querySelectorAll('.quiz-edit-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const quizId = parseInt(btn.getAttribute('data-quiz-id'));
+            console.log('🖱️ Edit button clicked for quiz ID:', quizId);
+            openQuizModal(quizId);
+          });
+        });
+        
+        document.querySelectorAll('.quiz-delete-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const quizId = parseInt(btn.getAttribute('data-quiz-id'));
+            console.log('🖱️ Delete button clicked for quiz ID:', quizId);
+            deleteQuiz(quizId);
+          });
+        });
+        
+        document.getElementById('quizCount').textContent = quizzes.length;
+        document.getElementById('overviewQuizCount').textContent = quizzes.length;
+        document.getElementById('quizzesTabCount').textContent = quizzes.length;
+      } catch (error) {
+        console.error('Error loading quizzes:', error);
+      }
+    }
+
+    document.getElementById('questionTextInput').addEventListener('input', function(){ document.getElementById('questionCharCount').textContent = this.value.length; });
+    document.getElementById('moduleFileInput').addEventListener('change', function(e){
+      if(e.target.files && e.target.files.length > 0) {
+        // Add newly selected files to the selectedModuleFiles array
+        for (let i = 0; i < e.target.files.length; i++) {
+          selectedModuleFiles.push(e.target.files[i]);
+        }
+        displayModuleFiles();
+        console.log('Files selected:', e.target.files.length, 'Total files:', selectedModuleFiles.length);
+      }
+    });
+    document.getElementById('bulkFileInput').addEventListener('change', function(e){ document.getElementById('bulkFileName').textContent = e.target.files[0]?.name || 'No file chosen'; });
+
+    document.querySelectorAll('.modal-overlay').forEach(o=>{ o.addEventListener('click',function(e){ if(e.target===o){ o.classList.remove('active'); } }); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ document.querySelectorAll('.modal-overlay.active').forEach(o=>o.classList.remove('active')); } });
+
+    // Quiz and Question functions
+    async function openQuizModal(quizId = null){
+      console.log('🎯 openQuizModal called with quizId:', quizId, 'type:', typeof quizId);
+      
+      // Only reset if creating new quiz
+      if (!quizId) {
+        quizQuestions = [];
+        editingQuestionIndex = null;
+        editingQuizId = null;
+        originalQuestionIds = [];
+      }
+      
+      // Set editingQuizId FIRST, before any async operations
+      if (quizId) {
+        editingQuizId = parseInt(quizId);
+        console.log('✅ Set editingQuizId to:', editingQuizId);
+      }
+      
+      const modal = document.getElementById('quizModal');
+      const title = modal.querySelector('h3');
+      
+      document.getElementById('questionFormContainer').style.display = 'none';
+      document.getElementById('bulkFileName').textContent = 'No file chosen';
+      document.getElementById('bulkFileInput').value = '';
+      
+      if (quizId) {
+        title.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Edit Quiz';
+        console.log('📝 Loading quiz data for ID:', quizId);
+        await loadQuizData(quizId);
+        console.log('📝 After loadQuizData, editingQuizId is:', editingQuizId);
+      } else {
+        title.innerHTML = '<i class="fa-solid fa-pencil"></i> Create Quiz';
+        document.getElementById('quizTitleInput').value = '';
+        document.getElementById('quizTimeInput').value = '30';
+        document.getElementById('questionsList').innerHTML = '<p style="color:#94a3b8;font-size:0.85rem;text-align:center;padding:1rem;">No questions added yet. Click "Add Question" to start.</p>';
+        document.getElementById('questionCountSpan').textContent = '0';
+      }
+      
+      modal.classList.add('active');
+    }
+
+    async function loadQuizData(quizId) {
+      try {
+        // Fetch quiz details
+        const quiz = await apiService.getQuizById(quizId);
+        document.getElementById('quizTitleInput').value = quiz.title;
+        document.getElementById('quizTimeInput').value = quiz.time_limit || 30;
+        
+        // Fetch questions for this quiz from the backend
+        // The quiz object should contain questions array or we need to fetch them separately
+        let questionsData = [];
+        
+        if (quiz.questions && Array.isArray(quiz.questions)) {
+          questionsData = quiz.questions;
+        } else {
+          // Fetch all questions and filter by quiz
+          const allQuestions = await apiService.getQuestions();
+          questionsData = allQuestions.filter(q => q.quiz_id === quizId);
+        }
+        
+        quizQuestions = questionsData.map(q => {
+          // Handle both formats: direct options array or nested structure
+          const options = q.options || q.choices || [];
+          const optionsArray = Array.isArray(options) ? options : Object.values(options);
+          
+          return {
+            text: q.question_text || q.text,
+            choices: {
+              A: optionsArray[0]?.option_text || optionsArray[0]?.text || '',
+              B: optionsArray[1]?.option_text || optionsArray[1]?.text || '',
+              C: optionsArray[2]?.option_text || optionsArray[2]?.text || '',
+              D: optionsArray[3]?.option_text || optionsArray[3]?.text || ''
+            },
+            correct: ['A', 'B', 'C', 'D'][optionsArray.findIndex(opt => opt.is_correct)],
+            explanation: q.explanation || '',
+            apiId: q.id
+          };
+        });
+        
+        // Track original question IDs for detecting deletions
+        originalQuestionIds = quizQuestions.filter(q => q.apiId).map(q => q.apiId);
+        console.log('✅ Loaded', quizQuestions.length, 'questions. Original IDs:', originalQuestionIds);
+        
+        renderQuestions();
+      } catch (error) {
+        console.error('Error loading quiz data:', error);
+        alert('Error loading quiz: ' + error.message);
+      }
+    }
+
+    function closeQuizModal(){ 
+      document.getElementById('quizModal').classList.remove('active');
+    }
+
+    function openAddQuestionForm(){
+      editingQuestionIndex = null;
+      document.getElementById('questionFormTitle').textContent = 'Add New Question';
+      document.getElementById('questionTextInput').value = '';
+      document.getElementById('choiceA').value = '';
+      document.getElementById('choiceB').value = '';
+      document.getElementById('choiceC').value = '';
+      document.getElementById('choiceD').value = '';
+      document.getElementById('correctAnswerSelect').value = '';
+      document.getElementById('explanationInput').value = '';
+      document.getElementById('questionCharCount').textContent = '0';
+      document.getElementById('saveQuestionBtn').textContent = 'Add Question';
+      document.getElementById('questionFormContainer').style.display = 'block';
+    }
+
+    function cancelQuestionForm(){
+      document.getElementById('questionFormContainer').style.display = 'none';
+      editingQuestionIndex = null;
+    }
+
+    function saveQuestion(){
+      const questionText = document.getElementById('questionTextInput').value.trim();
+      const choiceA = document.getElementById('choiceA').value.trim();
+      const choiceB = document.getElementById('choiceB').value.trim();
+      const choiceC = document.getElementById('choiceC').value.trim();
+      const choiceD = document.getElementById('choiceD').value.trim();
+      const correctAnswer = document.getElementById('correctAnswerSelect').value;
+      const explanation = document.getElementById('explanationInput').value.trim();
+
+      if (!questionText || !choiceA || !choiceB || !choiceC || !choiceD || !correctAnswer) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      const question = {
+        text: questionText,
+        choices: { A: choiceA, B: choiceB, C: choiceC, D: choiceD },
+        correct: correctAnswer,
+        explanation: explanation
+      };
+
+      if (editingQuestionIndex !== null) {
+        // Preserve apiId when editing (for questions loaded from API)
+        if (quizQuestions[editingQuestionIndex].apiId) {
+          question.apiId = quizQuestions[editingQuestionIndex].apiId;
+        }
+        quizQuestions[editingQuestionIndex] = question;
+      } else {
+        quizQuestions.push(question);
+      }
+
+      renderQuestions();
+      cancelQuestionForm();
+    }
+
+    function renderQuestions(){
+      const questionsList = document.getElementById('questionsList');
+      document.getElementById('questionCountSpan').textContent = quizQuestions.length;
+
+      if (quizQuestions.length === 0) {
+        questionsList.innerHTML = '<p style="color:#94a3b8;font-size:0.85rem;text-align:center;padding:1rem;">No questions added yet. Click "Add Question" to start.</p>';
+        return;
+      }
+
+      const html = quizQuestions.map((q, i) => `
+        <div style="background: white; border-radius: 8px; padding: 1rem; margin-bottom: 0.5rem; border-left: 4px solid #7c6ff7;">
+          <div style="display:flex;justify-content:space-between;align-items:start;">
+            <div style="flex:1;">
+              <p style="margin:0 0 0.5rem 0;font-weight:600;color:#1e293b;">Q${i+1}. ${q.text}</p>
+              <div style="font-size:0.9rem;color:#475569;margin-bottom:0.5rem;">
+                <p style="margin:0.25rem 0;">A) ${q.choices.A}</p>
+                <p style="margin:0.25rem 0;">B) ${q.choices.B}</p>
+                <p style="margin:0.25rem 0;">C) ${q.choices.C}</p>
+                <p style="margin:0.25rem 0;">D) ${q.choices.D}</p>
+              </div>
+              <p style="margin:0.25rem 0;font-size:0.85rem;color:#7c6ff7;"><strong>Correct: </strong>${q.correct}</p>
+            </div>
+            <div style="display:flex;gap:0.5rem;margin-left:1rem;">
+              <button class="btn btn-edit" onclick="editQuestion(${i})" style="padding:0.4rem 0.8rem;font-size:0.8rem;">Edit</button>
+              <button class="btn btn-delete" onclick="deleteQuestion(${i})" style="padding:0.4rem 0.8rem;font-size:0.8rem;">Delete</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      questionsList.innerHTML = html;
+    }
+
+    function editQuestion(index){
+      const q = quizQuestions[index];
+      editingQuestionIndex = index;
+      document.getElementById('questionFormTitle').textContent = 'Edit Question';
+      document.getElementById('questionTextInput').value = q.text;
+      document.getElementById('choiceA').value = q.choices.A;
+      document.getElementById('choiceB').value = q.choices.B;
+      document.getElementById('choiceC').value = q.choices.C;
+      document.getElementById('choiceD').value = q.choices.D;
+      document.getElementById('correctAnswerSelect').value = q.correct;
+      document.getElementById('explanationInput').value = q.explanation || '';
+      document.getElementById('questionCharCount').textContent = q.text.length;
+      document.getElementById('saveQuestionBtn').textContent = 'Update Question';
+      document.getElementById('questionFormContainer').style.display = 'block';
+    }
+
+    function deleteQuestion(index){
+      if (confirm('Delete this question?')) {
+        quizQuestions.splice(index, 1);
+        renderQuestions();
+      }
+    }
+
+    // Bulk file upload handlers
+    function setupBulkFileHandler() {
+      const fileInput = document.getElementById('bulkFileInput');
+      const uploadArea = document.querySelector('.bulk-upload-section .file-upload-area');
+      
+      if (!fileInput) return;
+      
+      fileInput.addEventListener('change', handleBulkFileSelect);
+      
+      // Drag and drop
+      if (uploadArea) {
+        uploadArea.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          uploadArea.style.backgroundColor = '#f0f4ff';
+          uploadArea.style.borderColor = '#7c6ff7';
+        });
+        uploadArea.addEventListener('dragleave', (e) => {
+          e.preventDefault();
+          uploadArea.style.backgroundColor = '';
+          uploadArea.style.borderColor = '';
+        });
+        uploadArea.addEventListener('drop', (e) => {
+          e.preventDefault();
+          uploadArea.style.backgroundColor = '';
+          uploadArea.style.borderColor = '';
+          if (e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+            handleBulkFileSelect({ target: fileInput });
+          }
+        });
+      }
+    }
+
+    function handleBulkFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const fileName = file.name;
+      document.getElementById('bulkFileName').textContent = `Selected: ${fileName}`;
+      
+      if (fileName.endsWith('.csv')) {
+        parseCSV(file);
+      } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+        parseExcel(file);
+      } else {
+        alert('Please upload a CSV or Excel file');
+      }
+    }
+
+    function parseCSV(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const csv = e.target.result;
+          const lines = csv.split('\n');
+          const questions = [];
+          
+          // Skip header row
+          for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            
+            const parts = lines[i].split(',').map(p => p.trim().replace(/^"|"$/g, ''));
+            if (parts.length < 6) continue;
+            
+            questions.push({
+              text: parts[0],
+              choices: {
+                A: parts[1],
+                B: parts[2],
+                C: parts[3],
+                D: parts[4]
+              },
+              correct: parts[5].toUpperCase(),
+              explanation: parts[6] || ''
+            });
+          }
+          
+          addQuestionsFromBulk(questions);
+        } catch (error) {
+          console.error('CSV parsing error:', error);
+          alert('Error parsing CSV file: ' + error.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    async function parseExcel(file) {
+      try {
+        // Check if SheetJS library is available
+        if (typeof XLSX === 'undefined') {
+          // Load SheetJS dynamically
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js';
+          script.onload = () => {
+            parseExcelWithLibrary(file);
+          };
+          script.onerror = () => {
+            alert('Excel import requires internet connection to load SheetJS library. Please use CSV format or check your connection.');
+          };
+          document.head.appendChild(script);
+        } else {
+          parseExcelWithLibrary(file);
+        }
+      } catch (error) {
+        console.error('Excel parsing error:', error);
+        alert('Error parsing Excel file: ' + error.message);
+      }
+    }
+
+    async function parseExcelWithLibrary(file) {
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const data = new Uint8Array(arrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        
+        const questions = [];
+        
+        // Skip header row (row 0)
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          if (!row || row.length < 6) continue;
+          
+          questions.push({
+            text: (row[0] || '').toString().trim(),
+            choices: {
+              A: (row[1] || '').toString().trim(),
+              B: (row[2] || '').toString().trim(),
+              C: (row[3] || '').toString().trim(),
+              D: (row[4] || '').toString().trim()
+            },
+            correct: (row[5] || '').toString().toUpperCase().trim(),
+            explanation: (row[6] || '').toString().trim()
+          });
+        }
+        
+        addQuestionsFromBulk(questions);
+      } catch (error) {
+        console.error('Excel parsing error:', error);
+        alert('Error parsing Excel file: ' + error.message);
+      }
+    }
+
+    function addQuestionsFromBulk(questions) {
+      if (questions.length === 0) {
+        alert('No valid questions found in file');
+        return;
+      }
+      
+      const confirmed = confirm(
+        `Found ${questions.length} questions. Add them to the quiz?\n\nThis will append to existing questions.`
+      );
+      
+      if (confirmed) {
+        quizQuestions.push(...questions);
+        renderQuestions();
+        alert(`Added ${questions.length} questions successfully!`);
+        document.getElementById('bulkFileInput').value = '';
+        document.getElementById('bulkFileName').textContent = 'No file chosen';
+      }
+    }
+
+
+    function saveQuizDraft(){ 
+      alert('Draft saved!'); 
+      closeQuizModal(); 
+    }
+
+    async function deleteQuiz(quizId){ 
+      if(confirm('Delete this quiz?')){
+        try {
+          await apiService.deleteQuiz(quizId);
+          alert('Quiz deleted successfully!');
+          await loadQuizzesFromAPI();
+        } catch (error) {
+          console.error('Error deleting quiz:', error);
+          alert('Error deleting quiz: ' + error.message);
+        }
+      }
+    }
+
+    async function loadQuizzesFromAPI() {
+      try {
+        if (!subjectId) return;
+        const quizzes = await apiService.getQuizzes(subjectId);
+        const quizTableBody = document.getElementById('quizTableBody');
+        const quizzesTabBody = document.getElementById('quizzesTabBody');
+        
+        const quizHTML = quizzes.map((q) => `
+          <tr>
+            <td><i class="fa-solid fa-pencil quiz-icon"></i> ${q.title}</td>
+            <td>${q.question_count || 0}</td>
+            <td>${q.time_limit} Minutes</td>
+            <td>${q.total_points}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-open"><i class="fa-solid fa-folder-open"></i> Open</button>
+                <button class="btn btn-edit quiz-edit-btn" data-quiz-id="${q.id}" title="Edit quiz"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                <button class="btn btn-delete quiz-delete-btn" data-quiz-id="${q.id}" title="Delete quiz"><i class="fa-solid fa-trash"></i> Delete</button>
+              </div>
+            </td>
+          </tr>`).join('');
+        
+        quizTableBody.innerHTML = quizHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">No quizzes yet</td></tr>';
+        quizzesTabBody.innerHTML = quizHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">No quizzes yet</td></tr>';
+        
+        // Attach event listeners to edit and delete buttons
+        document.querySelectorAll('.quiz-edit-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const quizId = parseInt(btn.getAttribute('data-quiz-id'));
+            console.log('🖱️ Edit button clicked for quiz ID:', quizId);
+            openQuizModal(quizId);
+          });
+        });
+        
+        document.querySelectorAll('.quiz-delete-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const quizId = parseInt(btn.getAttribute('data-quiz-id'));
+            console.log('🖱️ Delete button clicked for quiz ID:', quizId);
+            deleteQuiz(quizId);
+          });
+        });
+        
+        document.getElementById('quizCount').textContent = quizzes.length;
+        document.getElementById('overviewQuizCount').textContent = quizzes.length;
+        document.getElementById('quizzesTabCount').textContent = quizzes.length;
+      } catch (error) {
+        console.error('Error loading quizzes:', error);
+      }
+    }
+
+    // Initialize subject title from URL
+    if (subjectName) {
+      document.getElementById('subjectTitle').textContent = subjectName;
+    }
+
+    // Load modules and quizzes from API on page load
+    if (subjectId) {
+      loadModulesFromAPI();
+      loadQuizzesFromAPI();
+    }
+    
+    // Initialize bulk file handler
+    setupBulkFileHandler();
+  </script>
+</body>
+</html>

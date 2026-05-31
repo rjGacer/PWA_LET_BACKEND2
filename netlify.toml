@@ -1,0 +1,95 @@
+# Netlify Configuration for PWA LET Frontend
+# This file configures how Netlify deploys and serves the frontend
+
+[build]
+# Command to build the application (if needed)
+# For a static PWA, we don't need a build step
+# Uncomment if you have a build process
+# command = "npm run build"
+
+# Directory to deploy (root contains all frontend files)
+publish = "."
+
+# Environment settings
+[build.environment]
+# Set to production for optimizations
+NODE_ENV = "production"
+
+# Context-specific settings
+[context.production]
+# Environment variables for production environment
+[context.production.environment]
+# Set your backend API URL here for production Netlify deployment
+BACKEND_URL = "https://your-backend-api.com/api/v1"
+
+[context.branch-deploy]
+# Environment variables for branch deployments
+[context.branch-deploy.environment]
+BACKEND_URL = "https://staging-backend-api.com/api/v1"
+
+[context.deploy-preview]
+# Environment variables for deploy previews
+[context.deploy-preview.environment]
+BACKEND_URL = "https://dev-backend-api.com/api/v1"
+
+# Redirects for SPA routing
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
+# Redirect API calls to backend (if using same-domain setup)
+# Uncomment if backend and frontend are on same Netlify account
+# [[redirects]]
+# from = "/api/*"
+# to = "https://your-backend-service.netlify.app/api/:splat"
+# status = 200
+# force = false
+
+# Headers
+[[headers]]
+for = "/*"
+[headers.values]
+# Cache control for HTML files (don't cache, check for updates)
+Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+for = "/assets/*"
+[headers.values]
+# Cache assets for 1 year (content-hashed filenames)
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/manifest.json"
+[headers.values]
+Content-Type = "application/manifest+json"
+Cache-Control = "public, max-age=3600"
+
+[[headers]]
+for = "/*.js"
+[headers.values]
+Content-Type = "application/javascript"
+Cache-Control = "public, max-age=3600"
+
+[[headers]]
+for = "/*.css"
+[headers.values]
+Content-Type = "text/css"
+Cache-Control = "public, max-age=3600"
+
+# Security headers
+[[headers]]
+for = "/*"
+[headers.values]
+X-Content-Type-Options = "nosniff"
+X-Frame-Options = "SAMEORIGIN"
+X-XSS-Protection = "1; mode=block"
+Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Allow CORS for API calls (if backend is separate domain)
+[[headers]]
+for = "/api/*"
+[headers.values]
+Access-Control-Allow-Origin = "*"
+Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+Access-Control-Allow-Headers = "Content-Type, Authorization"

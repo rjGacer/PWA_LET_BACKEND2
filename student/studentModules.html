@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <title>Modules - LearnIQ</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- CSS - Sidebar and Modules styles -->
+  <link rel="stylesheet" href="../assets/styles/studentStyles/studentSidebar.css" />
+  <link rel="stylesheet" href="../assets/styles/studentStyles/studentModules.css" />
+
+  <!-- Additional styles for modules page -->
+  <style>
+    /* ===== FADE-IN ANIMATION ===== */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    /* ===== OVERRIDE: Remove right sidebar column from dashboard ===== */
+    .dashboard {
+      display: flex !important;
+      width: calc(100% - 215px) !important;
+      margin-left: 215px !important;
+      min-height: 100vh;
+      padding: 24px 28px !important;
+      transition: margin-left 0.3s ease, width 0.3s ease;
+      gap: 0 !important;
+    }
+    
+    body.sidebar-collapsed .dashboard {
+      margin-left: 70px !important;
+      width: calc(100% - 70px) !important;
+    }
+    
+    .dashboard .main-content {
+      max-width: 100% !important;
+      width: 100% !important;
+      padding: 0 !important;
+      flex: 1;
+      overflow-x: hidden;
+    }
+    
+    .dashboard .sidebar-right {
+      display: none !important;
+    }
+    
+    /* Page title area */
+    .page-title-area {
+      margin-bottom: 1.5rem;
+    }
+    
+    .page-title-area h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+    }
+    
+    .page-sub {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+    
+    .categories-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .category-filters {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #eef2f6;
+      padding-bottom: 1rem;
+    }
+    
+    .category-pill {
+      background: transparent;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 40px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #6b7280;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .category-pill:hover {
+      background: #f1f5f9;
+      color: #1f2937;
+    }
+    
+    .category-pill.active {
+      background: #2f49e0;
+      color: white;
+      box-shadow: 0 2px 6px rgba(47, 73, 224, 0.25);
+    }
+    
+    /* Modules Grid - RESPONSIVE */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+    
+    .subject-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem;
+      transition: all 0.25s;
+      cursor: pointer;
+      border: 1px solid #eef2f6;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .subject-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+      border-color: #e0e7ff;
+    }
+    
+    .subject-icon {
+      width: 52px;
+      height: 52px;
+      background: #eef2ff;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      color: #2f49e0;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    
+    .subject-card h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #1f2937;
+    }
+    
+    .subject-card p {
+      font-size: 0.8125rem;
+      color: #6b7280;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+      flex: 1;
+    }
+    
+    .module-count {
+      font-size: 0.7rem;
+      background: #f1f5f9;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 30px;
+      color: #475569;
+      font-weight: 500;
+      align-self: flex-start;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: white;
+      border-radius: 24px;
+      color: #6b7280;
+      border: 1px solid #eef2f6;
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      color: #cbd5e1;
+      margin-bottom: 1rem;
+    }
+    
+    /* ===== RESPONSIVE BREAKPOINTS ===== */
+    @media (max-width: 1024px) {
+      .dashboard {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: calc(70px + env(safe-area-inset-top, 0px)) 20px 30px !important;
+      }
+      body.sidebar-collapsed .dashboard {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard {
+        padding: calc(65px + env(safe-area-inset-top, 0px)) 16px 20px !important;
+      }
+      
+      .modules-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .subject-card {
+        padding: 1.25rem;
+      }
+      
+      .page-title-area h1 {
+        font-size: 1.5rem;
+      }
+      
+      .category-pill {
+        padding: 0.4rem 1rem;
+        font-size: 0.8125rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .dashboard {
+        padding: calc(60px + env(safe-area-inset-top, 0px)) 12px 16px !important;
+      }
+      
+      .modules-grid {
+        gap: 0.875rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HAMBURGER -->
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open sidebar">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <!-- OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- REUSABLE SIDEBAR (loaded by student-layout.js) -->
+  <div id="sidebar-container"></div>
+
+  <!-- DASHBOARD LAYOUT (without right sidebar) -->
+  <div class="dashboard">
+    <!-- MAIN CONTENT - Full width -->
+    <div class="main-content">
+      <!-- REUSABLE TOPBAR (loaded by student-layout.js) -->
+      <div id="topbar-container"></div>
+
+      <!-- MODULES PAGE CONTENT with fade-in -->
+      <div class="fade-in">
+        <div class="page-title-area">
+          <h1>Modules</h1>
+          <div class="page-sub">Browse and access learning materials by category</div>
+        </div>
+
+        <!-- Category filter pills -->
+        <div class="categories-section">
+          <div class="category-filters" id="categoryFilters">
+            <button class="category-pill active" data-cat="general">General Education</button>
+            <button class="category-pill" data-cat="professional">Professional Education</button>
+            <button class="category-pill" data-cat="major">Major/Specialization</button>
+          </div>
+        </div>
+
+        <!-- DYNAMIC CONTENT CONTAINER -->
+        <div id="dynamicContentContainer">
+          <div class="modules-grid" id="subjectsGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../assets/scripts/student-auth-guard.js"></script>
+  <script src="../assets/scripts/api-config.js"></script>
+  <script src="../assets/scripts/student-layout.js"></script>
+  <script src="../assets/scripts/ApiService.js"></script>
+  <script src="../assets/scripts/db-manager.js"></script>
+  <script src="../assets/scripts/progress-tracker.js"></script>
+  <script src="../assets/scripts/engagement.js"></script>
+  <script src="../assets/scripts/NotificationManager.js"></script>
+  <script src="../assets/scripts/offline-sync.js"></script>
+  <script src="../assets/scripts/categories-integration.js"></script>
+
+  <!-- Page-specific dynamic data and interactions -->
+  <script>
+    let currentCategory = 'general';
+    // Use the api from categories-integration.js or create a new one
+    // ApiService automatically detects the correct base URL from window.location
+    const modulesApi = window.api || new ApiService();
+    
+    // Category mapping
+    const categoryMap = {
+      'general': 4,
+      'professional': 5,
+      'major': 6
+    };
+
+    // Get DOM elements
+    const dynamicContainer = document.getElementById('dynamicContentContainer');
+    let subjectsGridEl = document.getElementById('subjectsGrid');
+
+    // Helper: Escape HTML
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Render subject cards based on selected category
+    function renderSubjects(subjects) {
+      console.log('[StudentModules] renderSubjects called with data:', subjects);
+      subjectsGridEl = document.getElementById('subjectsGrid');
+      if (!subjectsGridEl) return;
+
+      if (!subjects || subjects.length === 0) {
+        console.log('[StudentModules] No subjects to display');
+        subjectsGridEl.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-regular fa-folder-open"></i>
+            <p>No subjects available in this category.</p>
+          </div>`;
+        return;
+      }
+
+      console.log('[StudentModules] Rendering ' + subjects.length + ' subjects');
+      subjectsGridEl.innerHTML = subjects.map(sub => {
+        const icon = sub.icon || 'fa-book'; // Use icon from DB or default
+        // Backend returns 'modules' and 'quizzes' (not module_count and quiz_count)
+        const moduleCount = sub.modules || sub.module_count || sub.modules_count || 0;
+        const quizCount = sub.quizzes || sub.quiz_count || sub.quizzes_count || 0;
+        return `
+          <div class="subject-card" data-subject-id="${sub.id}" data-subject-name="${escapeHtml(sub.name)}">
+            <div class="subject-icon"><i class="fa-solid ${icon}"></i></div>
+            <h3>${escapeHtml(sub.name)}</h3>
+            <p>${escapeHtml(sub.description || '')}</p>
+            <div style="display: flex; gap: 12px;">
+              <span class="module-count"><i class="fa-regular fa-file"></i> ${moduleCount} module${moduleCount !== 1 ? 's' : ''}</span>
+              <span class="module-count"><i class="fa-regular fa-clipboard"></i> ${quizCount} quiz${quizCount !== 1 ? 'zes' : ''}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add click event listeners to subject cards
+      document.querySelectorAll('.subject-card').forEach(card => {
+        card.addEventListener('click', async () => {
+          const subjectId = card.getAttribute('data-subject-id');
+          const subjectName = card.getAttribute('data-subject-name');
+          
+          // Redirect to studentViewModules.html with subject ID
+          window.location.href = `studentViewModules.html?subjectId=${subjectId}&name=${encodeURIComponent(subjectName)}`;
+        });
+      });
+    }
+
+    // Load subjects for a category
+    async function loadSubjects(categoryId) {
+      try {
+        console.log('[StudentModules] loadSubjects called with categoryId:', categoryId);
+        subjectsGridEl = document.getElementById('subjectsGrid');
+        subjectsGridEl.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>';
+        
+        console.log('[StudentModules] Calling modulesApi.getSubjectsByCategory(' + categoryId + ')');
+        const subjects = await modulesApi.getSubjectsByCategory(categoryId);
+        console.log('[StudentModules] Subjects received from API:', subjects);
+        renderSubjects(subjects);
+      } catch (error) {
+        console.error('[StudentModules] Error loading subjects:', error);
+        subjectsGridEl = document.getElementById('subjectsGrid');
+        subjectsGridEl.innerHTML = '<div class="empty-state"><i class="fa-solid fa-exclamation-triangle"></i><p>Error loading subjects</p></div>';
+      }
+    }
+
+    // Switch category and load subjects
+    async function switchCategory(category) {
+      currentCategory = category;
+      const categoryId = categoryMap[category];
+      console.log('[StudentModules] switchCategory called:', category, 'categoryId:', categoryId);
+      await loadSubjects(categoryId);
+
+      // Update active pill UI
+      document.querySelectorAll('.category-pill').forEach(pill => {
+        const pillCat = pill.getAttribute('data-cat');
+        if (pillCat === category) {
+          pill.classList.add('active');
+        } else {
+          pill.classList.remove('active');
+        }
+      });
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('[StudentModules] DOMContentLoaded fired, loading General Education (categoryId=1)');
+      loadSubjects(categoryMap['general']);
+
+      // Category filter listeners
+      document.querySelectorAll('.category-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const cat = btn.getAttribute('data-cat');
+          console.log('[StudentModules] Category clicked:', cat);
+          if (cat) switchCategory(cat);
+        });
+      });
+
+      // Highlight "Modules" in sidebar after it loads
+      setTimeout(() => {
+        const sidebar = document.querySelector('#sidebar-container .sidebar, #sidebar-container');
+        if (sidebar) {
+          const modulesLink = Array.from(sidebar.querySelectorAll('.menu-item')).find(item => 
+            item.textContent.toLowerCase().includes('modules')
+          );
+          if (modulesLink) {
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            modulesLink.classList.add('active');
+          }
+        }
+      }, 150);
+    });
+  </script>
+</body>
+</html>

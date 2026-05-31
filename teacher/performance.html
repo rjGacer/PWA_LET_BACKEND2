@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>LearnIQ Performance</title>
+
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- Sidebar CSS -->
+    <link rel="stylesheet" href="../assets/styles/teacherStyles/sidebar.css" />
+    <link rel="stylesheet" href="../assets/styles/teacherStyles/performance.css" />
+    
+  </head>
+
+  <body>
+    <!-- Sidebar -->
+    <div id="sidebar"></div>
+
+    <div class="main">
+      <!-- Header -->
+      <div id="header"></div>
+
+      <div class="content">
+        <!-- STUDENT PERFORMANCE LIST (ONLY TABLE) -->
+        <div class="table-card">
+          <div class="table-header">
+            <div class="card-title">Student Performance List</div>
+            <div class="search-box">
+              <i class="ri-search-line"></i>
+              <input type="text" id="searchInput" placeholder="Search student..." autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Student Name</th>
+                  <th>Email</th>
+                  <th>Quizzes Taken</th>
+                  <th>Average Score</th>
+                  <th>Pass Rate</th>
+                  <th>Last Activity</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <!-- Dynamic rows injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination" id="paginationContainer">
+            <!-- Pagination buttons will be generated -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDENT DETAIL MODAL -->
+    <div class="modal-overlay" id="studentModal">
+      <div class="modal-card">
+        <button class="modal-close" id="closeModalBtn"><i class="ri-close-line"></i></button>
+        <div id="modalContent">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="../assets/scripts/layout.js"></script>
+    <script src="../assets/scripts/auth-guard.js"></script>
+
+    <script>
+      // --------------------------------------------------------------
+      // STUDENT DATA (Full details for modal)
+      // --------------------------------------------------------------
+      const students = [
+        {
+          id: 1,
+          firstName: "John",
+          lastName: "Dela Cruz",
+          email: "john.delacruz@email.com",
+          quizzesTaken: 32,
+          averageScore: 94.2,
+          passRate: 100,
+          lastActivity: "May 29, 2026",
+          status: "Active",
+          phone: "+63 912 345 6789",
+          enrolledCourse: "Professional Education",
+          address: "Quezon City, Philippines"
+        },
+        {
+          id: 2,
+          firstName: "Maria",
+          lastName: "Santos",
+          email: "maria.santos@email.com",
+          quizzesTaken: 28,
+          averageScore: 88.5,
+          passRate: 96.4,
+          lastActivity: "May 30, 2026",
+          status: "Active",
+          phone: "+63 917 123 4567",
+          enrolledCourse: "General Education",
+          address: "Manila, Philippines"
+        },
+        {
+          id: 3,
+          firstName: "Luis",
+          lastName: "Reyes",
+          email: "luis.reyes@email.com",
+          quizzesTaken: 15,
+          averageScore: 72.3,
+          passRate: 73.3,
+          lastActivity: "May 28, 2026",
+          status: "Inactive",
+          phone: "+63 928 555 1212",
+          enrolledCourse: "Major Specialization",
+          address: "Cebu City, Philippines"
+        },
+        {
+          id: 4,
+          firstName: "Elena",
+          lastName: "Mercado",
+          email: "elena.m@email.com",
+          quizzesTaken: 41,
+          averageScore: 91.7,
+          passRate: 97.6,
+          lastActivity: "May 31, 2026",
+          status: "Active",
+          phone: "+63 939 222 3344",
+          enrolledCourse: "Professional Education",
+          address: "Davao City, Philippines"
+        },
+        {
+          id: 5,
+          firstName: "Carlos",
+          lastName: "Tan",
+          email: "carlos.tan@email.com",
+          quizzesTaken: 20,
+          averageScore: 65.8,
+          passRate: 60.0,
+          lastActivity: "May 20, 2026",
+          status: "Inactive",
+          phone: "+63 908 111 5555",
+          enrolledCourse: "General Education",
+          address: "Makati, Philippines"
+        },
+        {
+          id: 6,
+          firstName: "Sofia",
+          lastName: "Cruz",
+          email: "sofia.cruz@email.com",
+          quizzesTaken: 37,
+          averageScore: 96.1,
+          passRate: 100,
+          lastActivity: "June 1, 2026",
+          status: "Active",
+          phone: "+63 956 789 0123",
+          enrolledCourse: "Major Specialization",
+          address: "Pasig, Philippines"
+        }
+      ];
+
+      // DOM elements
+      const tableBody = document.getElementById('tableBody');
+      const searchInput = document.getElementById('searchInput');
+      const paginationContainer = document.getElementById('paginationContainer');
+      const modalOverlay = document.getElementById('studentModal');
+      const modalContent = document.getElementById('modalContent');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+
+      // State
+      const rowsPerPage = 4;
+      let currentPage = 1;
+      let filteredStudents = [...students];
+
+      // --------------------------------------------------------------
+      // RENDER TABLE
+      // --------------------------------------------------------------
+      function renderTable() {
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const pageStudents = filteredStudents.slice(start, end);
+
+        if (pageStudents.length === 0 && currentPage > 1) {
+          currentPage = 1;
+          renderTable();
+          return;
+        }
+
+        tableBody.innerHTML = '';
+
+        pageStudents.forEach((s) => {
+          const globalIndex = students.indexOf(s) + 1;
+          const row = document.createElement('tr');
+          row.setAttribute('data-id', s.id);
+
+          const scoreClass = s.averageScore >= 85 ? 'green-text' : (s.averageScore >= 70 ? '' : 'red-text');
+
+          row.innerHTML = `
+            <td>${globalIndex}</td>
+            <td>
+              <div class="student">
+                <div class="avatar">${s.firstName.charAt(0)}</div>
+                ${s.firstName} ${s.lastName}
+              </div>
+            </td>
+            <td>${s.email}</td>
+            <td>${s.quizzesTaken}</td>
+            <td class="${scoreClass}">${s.averageScore.toFixed(1)}%</td>
+            <td class="${s.passRate >= 85 ? 'green-text' : ''}">${s.passRate.toFixed(1)}%</td>
+            <td>${s.lastActivity}</td>
+            <td>
+              <span class="badge ${s.status === 'Active' ? 'active' : 'inactive'}">${s.status}</span>
+            </td>
+            <td>
+              <div class="action-btns">
+                <button class="icon-btn view-btn" data-id="${s.id}" title="View details">
+                  <i class="ri-eye-line"></i>
+                </button>
+                <button class="icon-btn" title="More">
+                  <i class="ri-more-2-fill"></i>
+                </button>
+              </div>
+            </td>
+          `;
+
+          // Row click opens modal (but not when clicking action buttons)
+          row.addEventListener('click', (e) => {
+            if (e.target.closest('button')) return;
+            openStudentDetail(s.id);
+          });
+
+          tableBody.appendChild(row);
+        });
+
+        // Attach view button listeners
+        document.querySelectorAll('.view-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const studentId = parseInt(btn.getAttribute('data-id'), 10);
+            openStudentDetail(studentId);
+          });
+        });
+
+        renderPagination();
+      }
+
+      // --------------------------------------------------------------
+      // PAGINATION
+      // --------------------------------------------------------------
+      function renderPagination() {
+        const totalPages = Math.ceil(filteredStudents.length / rowsPerPage) || 1;
+        paginationContainer.innerHTML = '';
+
+        // Previous button
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'page-btn';
+        prevBtn.innerHTML = '<i class="ri-arrow-left-s-line"></i>';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+          }
+        });
+        paginationContainer.appendChild(prevBtn);
+
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+          const pageBtn = document.createElement('button');
+          pageBtn.className = `page-btn ${i === currentPage ? 'active-page' : ''}`;
+          pageBtn.textContent = i;
+          pageBtn.addEventListener('click', () => {
+            if (currentPage !== i) {
+              currentPage = i;
+              renderTable();
+            }
+          });
+          paginationContainer.appendChild(pageBtn);
+        }
+
+        // Next button
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'page-btn';
+        nextBtn.innerHTML = '<i class="ri-arrow-right-s-line"></i>';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.addEventListener('click', () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+          }
+        });
+        paginationContainer.appendChild(nextBtn);
+      }
+
+      // --------------------------------------------------------------
+      // SEARCH FILTER
+      // --------------------------------------------------------------
+      function filterStudents(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        if (term === '') {
+          filteredStudents = [...students];
+        } else {
+          filteredStudents = students.filter(s =>
+            `${s.firstName} ${s.lastName}`.toLowerCase().includes(term) ||
+            s.email.toLowerCase().includes(term)
+          );
+        }
+        currentPage = 1;
+        renderTable();
+      }
+
+      searchInput.addEventListener('input', (e) => {
+        filterStudents(e.target.value);
+      });
+
+      // --------------------------------------------------------------
+      // MODAL: OPEN STUDENT DETAIL
+      // --------------------------------------------------------------
+      function openStudentDetail(studentId) {
+        const student = students.find(s => s.id === studentId);
+        if (!student) return;
+
+        const statusClass = student.status === 'Active' ? 'active' : 'inactive';
+        const scoreColor = student.averageScore >= 85 ? '#16a34a' : (student.averageScore >= 70 ? '#b45309' : '#b91c1c');
+
+        modalContent.innerHTML = `
+          <div class="detail-header">
+            <div class="detail-avatar">${student.firstName.charAt(0)}</div>
+            <div>
+              <div class="detail-name">${student.firstName} ${student.lastName}</div>
+              <div class="detail-email"><i class="ri-mail-line"></i> ${student.email}</div>
+            </div>
+          </div>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Quizzes Taken</label>
+              <div class="value">${student.quizzesTaken}</div>
+            </div>
+            <div class="detail-item">
+              <label>Average Score</label>
+              <div class="value" style="color:${scoreColor}">${student.averageScore.toFixed(1)}%</div>
+            </div>
+            <div class="detail-item">
+              <label>Pass Rate</label>
+              <div class="value">${student.passRate.toFixed(1)}%</div>
+            </div>
+            <div class="detail-item">
+              <label>Status</label>
+              <div class="value"><span class="badge ${statusClass}" style="font-size:0.9rem;">${student.status}</span></div>
+            </div>
+            <div class="detail-item full-width">
+              <label>Last Activity</label>
+              <div class="value" style="font-size:1.1rem;">${student.lastActivity}</div>
+            </div>
+            <div class="detail-item">
+              <label>Phone</label>
+              <div class="value" style="font-size:1rem;">${student.phone || '—'}</div>
+            </div>
+            <div class="detail-item">
+              <label>Enrolled Course</label>
+              <div class="value" style="font-size:1rem;">${student.enrolledCourse || '—'}</div>
+            </div>
+            <div class="detail-item full-width">
+              <label>Address</label>
+              <div class="value" style="font-size:1rem;">${student.address || '—'}</div>
+            </div>
+          </div>
+          <hr />
+          <div style="display:flex; justify-content:flex-end; gap:12px;">
+            <button class="icon-btn" style="width:auto; padding:0 16px;" id="modalEditBtn"><i class="ri-pencil-line"></i> Edit</button>
+            <button class="icon-btn" style="width:auto; padding:0 16px; background:#f1f5f9;"><i class="ri-download-line"></i> Report</button>
+          </div>
+        `;
+
+        modalOverlay.classList.add('active');
+
+        document.getElementById('modalEditBtn')?.addEventListener('click', () => {
+          alert(`Edit details for ${student.firstName} ${student.lastName} (demo).`);
+        });
+      }
+
+      function closeModal() {
+        modalOverlay.classList.remove('active');
+      }
+
+      // Close modal events
+      closeModalBtn.addEventListener('click', closeModal);
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+          closeModal();
+        }
+      });
+
+      // --------------------------------------------------------------
+      // INITIAL RENDER
+      // --------------------------------------------------------------
+      filteredStudents = [...students];
+      renderTable();
+    </script>
+    <script src="../assets/scripts/api-config.js"></script>
+    <script src="../assets/scripts/ApiService.js"></script>
+    <script src="../assets/scripts/api.js"></script>
+  </body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate PWA Icons</title>
+</head>
+<body>
+  <h1>PWA Icon Generator</h1>
+  <p>This tool generates base64 encoded PNG icons for the PWA. Copy and convert these to actual PNG files.</p>
+  
+  <canvas id="canvas-192" width="192" height="192"></canvas>
+  <button onclick="downloadIcon(192)">Download 192x192</button>
+  
+  <canvas id="canvas-512" width="512" height="512"></canvas>
+  <button onclick="downloadIcon(512)">Download 512x512</button>
+
+  <script>
+    function drawIcon(size) {
+      const canvas = document.getElementById(`canvas-${size}`);
+      const ctx = canvas.getContext('2d');
+      
+      // Background
+      ctx.fillStyle = '#312e81';
+      ctx.fillRect(0, 0, size, size);
+      
+      // Draw book icon
+      const padding = size * 0.2;
+      const x = padding;
+      const y = padding;
+      const w = size - padding * 2;
+      const h = size - padding * 2;
+      
+      // Book spine
+      ctx.fillStyle = '#4f46e5';
+      ctx.fillRect(x + w * 0.35, y + h * 0.1, w * 0.3, h * 0.8);
+      
+      // Pages
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x + w * 0.15, y + h * 0.15, w * 0.35, h * 0.7);
+      ctx.fillRect(x + w * 0.5, y + h * 0.15, w * 0.35, h * 0.7);
+      
+      // Lines on pages
+      ctx.strokeStyle = '#e0e7ff';
+      ctx.lineWidth = 3;
+      for (let i = 1; i < 4; i++) {
+        const lineY = y + h * 0.25 + (h * 0.5 * i / 4);
+        ctx.beginPath();
+        ctx.moveTo(x + w * 0.2, lineY);
+        ctx.lineTo(x + w * 0.4, lineY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x + w * 0.55, lineY);
+        ctx.lineTo(x + w * 0.75, lineY);
+        ctx.stroke();
+      }
+      
+      return canvas;
+    }
+    
+    function downloadIcon(size) {
+      const canvas = drawIcon(size);
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = `icon-${size}.png`;
+      link.click();
+    }
+    
+    // Draw both on load
+    window.addEventListener('load', () => {
+      drawIcon(192);
+      drawIcon(512);
+    });
+  </script>
+</body>
+</html>

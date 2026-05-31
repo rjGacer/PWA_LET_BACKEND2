@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <title>Student Dashboard - LearnIQ</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../assets/styles/studentStyles/studentDashboard.css" />
+
+  <style>
+    .menu-item.active {
+      background: #2f49e0;
+      color: white;
+    }
+    .menu-item.active i {
+      color: white;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    body {
+      opacity: 1;
+      transition: opacity 0.15s ease-in-out;
+    }
+
+    body.page-loading {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open sidebar">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div id="sidebar-container"></div>
+
+  <div class="fade-in">
+    <div class="dashboard">
+      <div class="main-content">
+        <div id="topbar-container"></div>
+
+        <div class="welcome-card">
+          <img src="https://i.pravatar.cc/150?img=12" alt="Student" />
+          <div class="welcome-info">
+            <p class="welcome-greeting">WELCOME BACK!</p>
+            <h1 class="welcome-name">Alexander Montefalco</h1>
+            <h2>BSIT</h2>
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+            <div class="stats">
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fa-solid fa-flag"></i></div>
+                <div class="stat-card-text"><strong>0</strong> Quiz Taken</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fa-solid fa-clock"></i></div>
+                <div class="stat-card-text"><strong>0m</strong> Fastest Time</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="stat-card-text"><strong>0</strong>Score</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">Quick Access</h2>
+          <div class="quick-access">
+            <div class="quick-card purple" onclick="window.navigateWithTransition('../student/studentModules.html')">
+              <i class="fa-solid fa-book-open"></i>
+              <h3>Review Modules</h3>
+              <p>Study flashcards and learning materials.</p>
+              <div class="arrow-btn"><i class="fa-solid fa-chevron-right"></i></div>
+            </div>
+            <div class="quick-card blue" onclick="window.navigateWithTransition('../student/studentQuiz.html')">
+              <i class="fa-solid fa-clipboard-question"></i>
+              <h3>Take Quiz</h3>
+              <p>Test your knowledge with quiz questions.</p>
+              <div class="arrow-btn"><i class="fa-solid fa-chevron-right"></i></div>
+            </div>
+            <div class="quick-card green" onclick="window.navigateWithTransition('../student/studentPractice.html')">
+              <i class="fa-solid fa-brain"></i>
+              <h3>Practice Mode</h3>
+              <p>Practice exam simulation or random quiz.</p>
+              <div class="arrow-btn"><i class="fa-solid fa-chevron-right"></i></div>
+            </div>
+            <div class="quick-card orange" onclick="window.navigateWithTransition('../student/studentHistory.html')">
+              <i class="fa-solid fa-chart-column"></i>
+              <h3>Check Progress</h3>
+              <p>Analyze your performance and statistics.</p>
+              <div class="arrow-btn"><i class="fa-solid fa-chevron-right"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="recent-header">
+            <h2 class="section-title">Recent Activity</h2>
+            <a href="javascript:void(0)" onclick="window.navigateWithTransition('../student/studentHistory.html')" class="view-all">View All</a>
+          </div>
+          <div class="activity-grid">
+            <div class="activity-card">
+              <span class="tag green-tag">Practice Mode</span>
+              <h3>Mathematics</h3>
+              <p>15 Questions</p>
+              <div class="stats-row">
+                <div><small>Score</small><div class="big">12/15</div></div>
+                <div><small>Accuracy</small><div class="big accuracy">80%</div></div>
+              </div>
+              <span class="completed-badge">Completed</span>
+            </div>
+            <div class="activity-card">
+              <span class="tag blue-tag">Exam Simulation</span>
+              <h3>Science</h3>
+              <p>50 Questions</p>
+              <div class="stats-row">
+                <div><small>Score</small><div class="big">36/50</div></div>
+                <div><small>Accuracy</small><div class="big accuracy">72%</div></div>
+              </div>
+              <span class="completed-badge">Completed</span>
+            </div>
+            <div class="activity-card">
+              <span class="tag purple-tag">Random Quiz</span>
+              <h3>Mixed Category</h3>
+              <p>20 Questions</p>
+              <div class="stats-row">
+                <div><small>Score</small><div class="big">14/20</div></div>
+                <div><small>Accuracy</small><div class="big accuracy">70%</div></div>
+              </div>
+              <span class="completed-badge">Completed</span>
+            </div>
+            <div class="activity-card explore" onclick="window.navigateWithTransition('../student/studentQuiz.html')">
+              <div class="plus">+</div>
+              <h3>Explore More Quizzes</h3>
+              <p>Find new topics to learn</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-right">
+        <div class="side-card">
+          <div style="display: flex; justify-content: space-between;">
+            <h3>Progress</h3>
+            <small style="color: #6b7280;">This week</small>
+          </div>
+          <div class="progress-circle-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle class="track" cx="50" cy="50" r="42" />
+              <circle class="fill" cx="50" cy="50" r="42" stroke-dasharray="263.9" stroke-dashoffset="263.9" />
+            </svg>
+            <div class="progress-circle-text">
+              <span class="pct">0%</span>
+              <span class="lbl">Completed</span>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-row" data-stat="correct-answers">
+              <span class="legend-left"><span class="dot dot-green"></span>Correct Answers</span>
+              <span class="stat-value">0</span>
+            </div>
+            <div class="legend-row" data-stat="quizzes-taken">
+              <span class="legend-left"><span class="dot dot-orange"></span>Quizzes Taken</span>
+              <span class="stat-value">0</span>
+            </div>
+            <div class="legend-row" data-stat="study-time">
+              <span class="legend-left"><span class="dot dot-red"></span>Study Time</span>
+              <span class="stat-value">0m</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <div style="display: flex; justify-content: space-between;">
+            <h3>Leaderboard</h3>
+            <a href="javascript:void(0)" onclick="window.navigateWithTransition('../student/studentLeaderboard.html')" class="view-all">View All</a>
+          </div>
+          <div class="leader-item">
+            <div class="leader-left">
+              <span class="rank-num">1</span>
+              <img src="https://i.pravatar.cc/50?img=12" alt="You" />
+              <span class="leader-name">You</span>
+            </div>
+            <span class="leader-score">2,450</span>
+          </div>
+          <div class="leader-item">
+            <div class="leader-left">
+              <span class="rank-num">2</span>
+              <img src="https://i.pravatar.cc/50?img=13" alt="James" />
+              <span class="leader-name">James Carter</span>
+            </div>
+            <span class="leader-score">2,150</span>
+          </div>
+          <div class="leader-item">
+            <div class="leader-left">
+              <span class="rank-num">3</span>
+              <img src="https://i.pravatar.cc/50?img=14" alt="Claire" />
+              <span class="leader-name"></span>
+            </div>
+            <span class="leader-score"></span>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <h3>Reminders</h3>
+          <div id="remindersContainer">
+            <div class="reminder-item">
+              <div class="reminder-icon"><i class="fa-solid fa-bell"></i></div>
+              <div class="reminder-info">
+                <strong>Loading reminders...</strong>
+                <span class="due">Please wait</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 20px; padding: 32px; max-width: 400px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s ease;">
+      <button onclick="closeProfileModal()" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">✕</button>
+      
+      <div style="text-align: center; margin-bottom: 24px;">
+        <img id="modalStudentPicture" src="https://i.pravatar.cc/150?img=12" alt="Student" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 16px; border: 3px solid #eef2ff;">
+        <h2 id="modalStudentName" style="font-size: 1.5rem; font-weight: 700; color: #1f2937; margin: 0 0 4px 0;">Student Name</h2>
+        <p id="modalStudentCourse" style="color: #6b7280; margin: 0; font-size: 0.9rem;">Course</p>
+      </div>
+
+      <div style="space: 16px; margin-bottom: 24px;">
+        <div style="margin-bottom: 16px;">
+          <p style="font-size: 0.8rem; color: #6b7280; margin: 0 0 4px 0;"><i class="fa-regular fa-envelope"></i> Email</p>
+          <p id="modalStudentEmail" style="color: #1f2937; margin: 0; font-weight: 500;">student@learniq.edu</p>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <p style="font-size: 0.8rem; color: #6b7280; margin: 0 0 4px 0;"><i class="fa-regular fa-comment"></i> Bio</p>
+          <p id="modalStudentBio" style="color: #1f2937; margin: 0; font-weight: 500;">Passionate learner</p>
+        </div>
+      </div>
+
+      <button onclick="closeProfileModal()" style="width: 100%; padding: 12px; background: #2f49e0; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif;">Close</button>
+    </div>
+  </div>
+
+  <style>
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+  <script src="../assets/scripts/student-auth-guard.js"></script>
+  <script src="../assets/scripts/student-layout.js"></script>
+  <script src="../assets/scripts/api-config.js"></script>
+  <script src="../assets/scripts/ApiService.js?v=3"></script>
+  <script src="../assets/scripts/QuizResultsManager.js?v=3"></script>
+  <script src="../assets/scripts/db-manager.js"></script>
+  <script src="../assets/scripts/progress-tracker.js"></script>
+  <script src="../assets/scripts/engagement.js"></script>
+  <script src="../assets/scripts/NotificationManager.js"></script>
+  <script src="../assets/scripts/offline-sync.js"></script>
+  <script src="../assets/scripts/dashboard-integration.js?v=3"></script>
+
+</body>
+</html>

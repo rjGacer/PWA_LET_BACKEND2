@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+    />
+    <title>LearnIQ • Settings</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <!-- remix icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <!-- Reusable Styles -->
+    <link rel="stylesheet" href="../assets/styles/teacherStyles/sidebar.css" />
+    <link
+      rel="stylesheet"
+      href="../assets/styles/teacherStyles/dashboard.css"
+    />
+    <link rel="stylesheet" href="../assets/styles/teacherStyles/settings.css">
+
+    
+  </head>
+
+  <body>
+    <!-- Sidebar -->
+    <div id="sidebar"></div>
+
+    <!-- Main -->
+    <div class="main">
+      <!-- Header -->
+      <div id="header"></div>
+
+      <div class="content">
+        <div class="page-header">
+          <h1>Settings</h1>
+          <p class="page-subtitle">
+            Manage your account settings and preferences.
+          </p>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Edit Profile Information -->
+          <div class="settings-card">
+            <h3>Edit Profile Information</h3>
+            <p class="card-subtitle">Update your personal information.</p>
+
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" value="Teacher Admin" />
+            </div>
+
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" value="teacher.admin@learniq.com" />
+            </div>
+
+            <div class="form-group">
+              <label>Role</label>
+              <input type="text" value="Administrator" disabled />
+            </div>
+
+            <button class="btn-save">Save Changes</button>
+          </div>
+
+          <!-- Sync Settings -->
+          <div class="settings-card">
+            <h3>Sync Settings</h3>
+            <p class="card-subtitle">
+              Manage data synchronization preferences.
+            </p>
+
+            <div class="sync-item">
+              <div class="sync-info">
+                <span class="sync-label">Auto-sync</span>
+                <span class="sync-desc"
+                  >Automatically sync data when online</span
+                >
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="autoSyncToggle" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="sync-item">
+              <div class="sync-info">
+                <span class="sync-label">Pending Items</span>
+              </div>
+              <span class="sync-value" id="pendingItemsCount">0 items waiting to sync</span>
+            </div>
+
+            <div class="sync-item">
+              <div class="sync-info">
+                <span class="sync-label">Last Sync</span>
+              </div>
+              <span class="sync-value" id="lastSyncTime">Never</span>
+            </div>
+
+            <div class="sync-item">
+              <div class="sync-info">
+                <span class="sync-label">Sync Status</span>
+              </div>
+              <span class="sync-status up-to-date" id="syncStatus">
+                <i class="fa-solid fa-circle"></i> Up to date
+              </span>
+            </div>
+
+            <button class="btn-save" id="syncNowBtn" style="margin-top: 1rem;">
+              <i class="fa-solid fa-arrows-rotate"></i> Sync Now
+            </button>
+          </div>
+
+          <!-- Edit Password -->
+          <div class="settings-card">
+            <h3>Edit Password</h3>
+            <p class="card-subtitle">Update your account password.</p>
+
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" placeholder="Enter current password" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>New Password</label>
+                <input type="password" placeholder="Enter new password" />
+              </div>
+              <div class="form-group">
+                <label>Confirm New Password</label>
+                <input type="password" placeholder="Confirm new password" />
+              </div>
+            </div>
+
+            <button class="btn-save">Update Password</button>
+          </div>
+
+          <!-- Account Deletion -->
+          <div class="settings-card">
+            <h3>Account Deletion</h3>
+            <p class="card-subtitle">
+              Permanently delete your account and all data.
+            </p>
+
+            <p class="warning-text">Warning: This action cannot be undone.</p>
+            <p class="warning-desc">
+              All your data including questions, categories, students, and
+              reports will be permanently deleted.
+            </p>
+
+            <button class="btn-delete">Delete Account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout JS -->
+    <script src="../assets/scripts/layout.js"></script>
+    <script src="../assets/scripts/auth-guard.js"></script>
+    <script src="../assets/scripts/api-config.js"></script>
+    <script src="../assets/scripts/ApiService.js"></script>
+    <script src="../assets/scripts/api.js"></script>
+
+    <script>
+      /**
+       * Teacher Settings - Sync Management
+       */
+
+      // Use the api from api.js (already loaded globally)
+      // ApiService automatically detects the correct base URL from window.location
+      const settingsApi = window.api || new ApiService();
+
+      // Initialize sync settings on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        loadSyncSettings();
+        
+        // Setup event listeners
+        document.getElementById('autoSyncToggle').addEventListener('change', handleAutoSyncToggle);
+        document.getElementById('syncNowBtn').addEventListener('click', handleSyncNow);
+      });
+
+      /**
+       * Load sync settings from backend
+       */
+      async function loadSyncSettings() {
+        try {
+          console.log('Loading sync settings...');
+          const settings = await settingsApi.getSyncSettings();
+          
+          if (settings) {
+            // Update auto-sync toggle (convert to boolean: 1 -> true, 0 -> false)
+            const autoSyncToggle = document.getElementById('autoSyncToggle');
+            autoSyncToggle.checked = Boolean(settings.auto_sync_enabled);
+            console.log('✓ Auto-sync toggle set to:', Boolean(settings.auto_sync_enabled), '(raw value:', settings.auto_sync_enabled, ')');
+            
+            // Update pending items
+            const pendingItemsEl = document.getElementById('pendingItemsCount');
+            if (settings.pending_items > 0) {
+              pendingItemsEl.textContent = `${settings.pending_items} item${settings.pending_items !== 1 ? 's' : ''} waiting to sync`;
+            } else {
+              pendingItemsEl.textContent = '0 items - All synced';
+            }
+            
+            // Update last sync time
+            const lastSyncEl = document.getElementById('lastSyncTime');
+            if (settings.last_sync_time) {
+              const lastSyncDate = new Date(settings.last_sync_time);
+              lastSyncEl.textContent = lastSyncDate.toLocaleString();
+            } else {
+              lastSyncEl.textContent = 'Never';
+            }
+            
+            // Update sync status
+            updateSyncStatusDisplay(settings.pending_items);
+            
+            console.log('✓ Sync settings loaded:', settings);
+          }
+        } catch (error) {
+          console.error('❌ Failed to load sync settings:', error);
+        }
+      }
+
+      /**
+       * Handle auto-sync toggle
+       */
+      async function handleAutoSyncToggle(event) {
+        try {
+          const isEnabled = event.target.checked;
+          console.log(`Toggling auto-sync to: ${isEnabled}`);
+          
+          const response = await settingsApi.updateAutoSync(isEnabled);
+          console.log('✓ Auto-sync setting updated:', response);
+          
+          // If enabling auto-sync, check for pending items and sync them
+          if (isEnabled) {
+            const settings = await settingsApi.getSyncSettings();
+            if (settings.pending_items > 0) {
+              console.log(`Found ${settings.pending_items} pending items. Starting auto-sync...`);
+              showNotification(
+                `Auto-sync enabled. Syncing ${settings.pending_items} pending item${settings.pending_items !== 1 ? 's' : ''}...`,
+                'info'
+              );
+              // Automatically sync pending items
+              await handleSyncNow();
+            } else {
+              showNotification(
+                'Auto-sync enabled. No pending items to sync.',
+                'success'
+              );
+            }
+          } else {
+            showNotification(
+              'Auto-sync disabled',
+              'success'
+            );
+          }
+        } catch (error) {
+          console.error('❌ Error updating auto-sync:', error);
+          event.target.checked = !event.target.checked; // Revert toggle
+          showNotification('Failed to update auto-sync setting', 'error');
+        }
+      }
+
+      /**
+       * Handle manual sync button click
+       */
+      async function handleSyncNow() {
+        try {
+          const syncBtn = document.getElementById('syncNowBtn');
+          syncBtn.disabled = true;
+          syncBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+          
+          console.log('Starting manual sync...');
+          const response = await settingsApi.syncNow();
+          
+          console.log('✓ Sync completed:', response);
+          
+          // Reload sync settings to show updated status
+          await loadSyncSettings();
+          
+          // Show success notification
+          showNotification('Content synced successfully!', 'success');
+        } catch (error) {
+          console.error('❌ Sync failed:', error);
+          showNotification('Sync failed: ' + error.message, 'error');
+        } finally {
+          const syncBtn = document.getElementById('syncNowBtn');
+          syncBtn.disabled = false;
+          syncBtn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Sync Now';
+        }
+      }
+
+      /**
+       * Update sync status display
+       */
+      function updateSyncStatusDisplay(pendingItems) {
+        const statusEl = document.getElementById('syncStatus');
+        
+        if (pendingItems > 0) {
+          statusEl.className = 'sync-status pending';
+          statusEl.innerHTML = `<i class="fa-solid fa-circle"></i> ${pendingItems} pending`;
+        } else {
+          statusEl.className = 'sync-status up-to-date';
+          statusEl.innerHTML = '<i class="fa-solid fa-circle"></i> Up to date';
+        }
+      }
+
+      /**
+       * Show notification
+       */
+      function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 15px 20px;
+          background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+          color: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          z-index: 9999;
+          animation: slideIn 0.3s ease-out;
+        `;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+          notification.style.animation = 'slideOut 0.3s ease-out';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+
+      // Add CSS animations
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideOut {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+        }
+
+        .sync-status.pending {
+          color: #f59e0b;
+        }
+
+        .sync-status.up-to-date {
+          color: #10b981;
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Refresh sync settings every 30 seconds if online
+      setInterval(() => {
+        if (navigator.onLine) {
+          loadSyncSettings();
+        }
+      }, 30000);
+    </script>
+  </body>
+</html>

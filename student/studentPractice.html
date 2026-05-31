@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Practice Mode - LearnIQ</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <link rel="stylesheet" href="../assets/styles/studentStyles/studentSidebar.css" />
+
+  <style>
+    /* ===== FADE-IN ANIMATION ===== */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    /* ===== OVERRIDE: Remove right sidebar column from dashboard ===== */
+    .dashboard {
+      display: flex !important;
+      width: calc(100% - 215px) !important;
+      margin-left: 215px !important;
+      min-height: 100vh;
+      padding: 24px 28px !important;
+      transition: margin-left 0.3s ease, width 0.3s ease;
+      gap: 0 !important;
+    }
+    
+    body.sidebar-collapsed .dashboard {
+      margin-left: 70px !important;
+      width: calc(100% - 70px) !important;
+    }
+    
+    .dashboard .main-content {
+      max-width: 100% !important;
+      width: 100% !important;
+      padding: 0 !important;
+      flex: 1;
+    }
+    
+    .dashboard .sidebar-right {
+      display: none !important;
+    }
+    
+    /* Page title area */
+    .page-title-area {
+      margin-bottom: 1.5rem;
+    }
+    
+    .page-title-area h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+    }
+    
+    .page-sub {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #2f49e0;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      background: none;
+      border: none;
+      padding: 0;
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      gap: 0.75rem;
+      color: #1e3a8a;
+    }
+
+    /* Filter section */
+    .filter-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+      background: white;
+      padding: 1.25rem;
+      border-radius: 16px;
+      border: 1px solid #eef2f6;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .filter-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-select {
+      padding: 0.6rem 1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      background: white;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .filter-select:hover {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: #2f49e0;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(47, 73, 224, 0.1);
+    }
+
+    /* Quiz grid */
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+      width: 100%;
+    }
+    
+    /* Quiz cards */
+    .quiz-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem;
+      transition: all 0.25s;
+      cursor: pointer;
+      border: 1px solid #eef2f6;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 360px;
+    }
+
+    .quiz-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+      border-color: #e0e7ff;
+    }
+    
+    .quiz-card.green-card {
+      border-top: 4px solid #10b981;
+    }
+
+    .quiz-card.blue-card {
+      border-top: 4px solid #6366f1;
+    }
+    
+    .icon-box {
+      width: 52px;
+      height: 52px;
+      background: #eef2ff;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      color: #2f49e0;
+      font-size: 1.5rem;
+    }
+
+    .green-card .icon-box {
+      background: #e6f7ec;
+      color: #10b981;
+    }
+
+    .blue-card .icon-box {
+      background: #eef2ff;
+      color: #6366f1;
+    }
+    
+    .quiz-card h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+      color: #1f2937;
+    }
+
+    .green-card h2 {
+      color: #0a5c3e;
+    }
+
+    .blue-card h2 {
+      color: #4f46e5;
+    }
+    
+    .tag {
+      font-size: 0.7rem;
+      background: #f1f5f9;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 30px;
+      color: #475569;
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+    }
+
+    .green-card .tag {
+      background: #dff5e7;
+      color: #0a5c3e;
+    }
+
+    .blue-card .tag {
+      background: #e0e7ff;
+      color: #4f46e5;
+    }
+    
+    .desc {
+      font-size: 0.8125rem;
+      color: #6b7280;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+    
+    .question-count {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .question-count i {
+      font-size: 0.7rem;
+    }
+
+    .attempts-info {
+      font-size: 0.75rem;
+      color: #10b981;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .attempts-info i {
+      font-size: 0.7rem;
+    }
+    
+    .card-btn {
+      background: #eef2ff;
+      color: #4f46e5;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 30px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .green-btn {
+      background: #e6f7ec;
+      color: #10b981;
+    }
+
+    .green-btn:hover {
+      background: #10b981;
+      color: white;
+    }
+
+    .blue-btn {
+      background: #eef2ff;
+      color: #4f46e5;
+    }
+
+    .blue-btn:hover {
+      background: #6366f1;
+      color: white;
+    }
+
+    /* Disabled button state */
+    .card-btn:disabled,
+    .card-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #d1d5db !important;
+      color: #6b7280 !important;
+    }
+
+    .card-btn:disabled:hover,
+    .card-btn.disabled:hover {
+      background: #d1d5db !important;
+      color: #6b7280 !important;
+    }
+
+    /* Unlock message */
+    .unlock-message {
+      font-size: 0.75rem;
+      color: #ef4444;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #fee2e2;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: #9ca3af;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: #d1d5db;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+      color: #6b7280;
+    }
+
+    /* Loading state */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #eef2ff;
+      border-top-color: #2f49e0;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .dashboard {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: calc(70px + env(safe-area-inset-top, 0px)) 20px 30px !important;
+      }
+      body.sidebar-collapsed .dashboard {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard {
+        padding: calc(65px + env(safe-area-inset-top, 0px)) 16px 20px !important;
+      }
+      .quiz-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .quiz-card {
+        padding: 1.25rem;
+        min-height: auto;
+      }
+      .page-title-area h1 {
+        font-size: 1.5rem;
+      }
+      .filter-section {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .filter-select {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="page-loading">
+
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open sidebar">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div id="sidebar-container"></div>
+
+  <div class="dashboard">
+    <div class="main-content">
+      <div id="topbar-container"></div>
+
+      <div class="fade-in">
+        <button class="back-link" onclick="goBack()">
+          <i class="fa-solid fa-chevron-left"></i>
+          Dashboard
+        </button>
+
+        <div class="page-title-area">
+          <h1>Practice Mode</h1>
+          <p class="page-sub">Unlimited attempts on subject quizzes. Master your skills with targeted practice.</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+          <label class="filter-label">
+            <i class="fa-solid fa-filter"></i>
+            Filter by Category:
+          </label>
+          <select id="categoryFilter" class="filter-select" onchange="handleCategoryFilterChange()">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+
+        <!-- Quiz Grid -->
+        <div id="quizContainer">
+          <div class="empty-state">
+            <div class="loading-spinner"></div>
+            <p>Loading quizzes...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/scripts/student-layout.js"></script>
+  <script src="../assets/scripts/api-config.js"></script>
+  <script src="../assets/scripts/ApiService.js?v=3"></script>
+  <script src="../assets/scripts/QuizResultsManager.js?v=3"></script>
+
+  <script>
+    const api = new ApiService();
+    // quizResultsManager is already instantiated globally by QuizResultsManager.js
+    let allCategories = [];
+    let allQuizzes = [];
+    let selectedCategory = '';
+    let studentId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.body.classList.remove('page-loading');
+
+      // Get student ID
+      studentId = parseInt(localStorage.getItem('userId')) || 0;
+      if (!studentId) {
+        try {
+          const token = localStorage.getItem('authToken');
+          if (token) {
+            const decoded = JSON.parse(atob(token.split('.')[1]));
+            studentId = decoded.id;
+          }
+        } catch (e) {
+          console.warn('Could not decode token');
+        }
+      }
+
+      await loadCategories();
+      await loadAllQuizzes();
+      highlightActiveSidebarItem();
+    });
+
+    /**
+     * Load all categories for filter dropdown with debugging
+     */
+    async function loadCategories() {
+      try {
+        console.log('📂 [CATEGORIES] Loading categories for filter...');
+        const categoriesUrl = `${api.baseURL}/categories`;
+        console.log('  → Request URL:', categoriesUrl);
+        
+        const response = await fetch(categoriesUrl, {
+          headers: api.getHeaders(!!api.token)
+        });
+        
+        console.log('  ← Response Status:', response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`${response.status} ${response.statusText} - ${errorText}`);
+        }
+
+        allCategories = await response.json();
+        console.log(`  ✅ Loaded ${allCategories?.length || 0} categories:`, 
+          allCategories?.map(c => ({ id: c.id, name: c.name })) || []);
+
+        // Populate category filter
+        const filterSelect = document.getElementById('categoryFilter');
+        if (filterSelect && allCategories) {
+          // Clear existing options except first one
+          filterSelect.innerHTML = '<option value="">All Categories</option>';
+          
+          allCategories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            filterSelect.appendChild(option);
+          });
+          console.log(`  ✅ Populated filter dropdown with ${allCategories.length} categories`);
+        }
+      } catch (error) {
+        console.error('❌ [CATEGORIES] Failed to load:', error.message);
+        console.error('   Stack:', error.stack);
+      }
+    }
+
+    /**
+     * Load all quizzes from all subjects with enhanced debugging
+     */
+    async function loadAllQuizzes() {
+      try {
+        console.log('📚 [PRACTICE] Starting quiz load sequence...');
+        console.log('🔌 API Base URL:', api.baseURL);
+        console.log('🔐 Authentication Token:', api.token ? 'Present' : 'Not provided');
+        allQuizzes = [];
+        
+        const startTime = Date.now();
+
+        // ===== STEP 1: Load Categories =====
+        console.log('📂 [STEP 1] Fetching categories...');
+        const categUrl = `${api.baseURL}/categories`;
+        console.log('  → Request URL:', categUrl);
+        const categoriesResponse = await fetch(categUrl, {
+          headers: api.getHeaders(!!api.token)
+        });
+        console.log('  ← Response Status:', categoriesResponse.status);
+        
+        if (!categoriesResponse.ok) {
+          throw new Error(`Categories API failed: ${categoriesResponse.status} ${categoriesResponse.statusText}`);
+        }
+        
+        const categories = await categoriesResponse.json();
+        console.log(`  ✅ Loaded ${categories?.length || 0} categories:`, categories?.map(c => ({ id: c.id, name: c.name })) || []);
+
+        // ===== STEP 2: Load Subjects =====
+        console.log('📖 [STEP 2] Fetching subjects...');
+        const subjectsUrl = `${api.baseURL}/subjects`;
+        console.log('  → Request URL:', subjectsUrl);
+        const subjectsResponse = await fetch(subjectsUrl, {
+          headers: api.getHeaders(!!api.token)
+        });
+        console.log('  ← Response Status:', subjectsResponse.status);
+
+        if (!subjectsResponse.ok) {
+          const errorText = await subjectsResponse.text();
+          throw new Error(`Subjects API failed: ${subjectsResponse.status} ${subjectsResponse.statusText} - ${errorText}`);
+        }
+
+        const subjects = await subjectsResponse.json();
+        console.log(`  ✅ Loaded ${subjects?.length || 0} subjects`);
+        
+        if (!subjects || subjects.length === 0) {
+          console.warn('  ⚠️  No subjects returned from API');
+          document.getElementById('quizContainer').innerHTML = `
+            <div class="empty-state">
+              <i class="fa-solid fa-inbox"></i>
+              <p>No subjects available. Please contact your instructor.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        subjects.forEach(s => {
+          console.log(`    - ${s.name} (ID: ${s.id}, Category: ${s.categoryId})`);
+        });
+
+        // ===== STEP 3: Load Quizzes Per Subject =====
+        console.log('🎯 [STEP 3] Fetching quizzes for each subject...');
+        let successCount = 0;
+        let failureCount = 0;
+
+        for (const subject of subjects) {
+          try {
+            const quizzesUrl = `${api.baseURL}/quizzes?subjectId=${subject.id}`;
+            console.log(`  → Subject "${subject.name}" (${subject.id}): ${quizzesUrl}`);
+            
+            const quizzesResponse = await fetch(quizzesUrl, {
+              headers: api.getHeaders(!!api.token)
+            });
+            console.log(`    ← Status: ${quizzesResponse.status}`);
+
+            if (!quizzesResponse.ok) {
+              const errorText = await quizzesResponse.text();
+              throw new Error(`${quizzesResponse.status} ${quizzesResponse.statusText} - ${errorText}`);
+            }
+
+            const quizzes = await quizzesResponse.json();
+            console.log(`    ✅ Found ${quizzes?.length || 0} quizzes`);
+            
+            if (quizzes && quizzes.length > 0) {
+              // Add subject and category info to each quiz
+              const enrichedQuizzes = quizzes.map(q => ({
+                ...q,
+                subjectId: subject.id,
+                subjectName: subject.name,
+                categoryId: subject.categoryId
+              }));
+              
+              quizzes.forEach(q => {
+                console.log(`       • ${q.title} (Quiz ID: ${q.id}, Questions: ${q.questions?.length || 0})`);
+              });
+              
+              allQuizzes = allQuizzes.concat(enrichedQuizzes);
+              successCount++;
+            }
+          } catch (e) {
+            failureCount++;
+            console.error(`  ❌ Subject "${subject.name}" (${subject.id}) failed:`, e.message);
+          }
+        }
+
+        const elapsed = Date.now() - startTime;
+        console.log(`\n📊 [SUMMARY]`);
+        console.log(`  ⏱️  Total time: ${elapsed}ms`);
+        console.log(`  ✅ Subjects loaded: ${successCount}/${subjects.length}`);
+        console.log(`  ❌ Subjects failed: ${failureCount}/${subjects.length}`);
+        console.log(`  📚 Total quizzes: ${allQuizzes.length}`);
+        console.log(`  💾 allQuizzes array:`, allQuizzes);
+
+        // ===== STEP 4: Render =====
+        if (allQuizzes.length === 0) {
+          console.warn('⚠️  No quizzes loaded from any subject');
+          document.getElementById('quizContainer').innerHTML = `
+            <div class="empty-state">
+              <i class="fa-solid fa-inbox"></i>
+              <p>No quizzes available in your subjects yet.</p>
+            </div>
+          `;
+          return;
+        }
+
+        console.log('🎨 Rendering quiz grid...');
+        await renderQuizzes();
+        console.log('✅ Render complete');
+        
+      } catch (error) {
+        console.error('❌ [FATAL] Quiz loading failed:', error);
+        console.error('   Stack:', error.stack);
+        document.getElementById('quizContainer').innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p><strong>Error loading quizzes:</strong></p>
+            <p style="font-size: 0.85rem; margin-top: 0.5rem; color: #666;">${escapeHtml(error.message)}</p>
+            <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #2f49e0; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Retry
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    /**
+     * Handle category filter change
+     */
+    async function handleCategoryFilterChange() {
+      const filterSelect = document.getElementById('categoryFilter');
+      selectedCategory = filterSelect.value;
+      const categoryName = selectedCategory 
+        ? allCategories?.find(c => c.id == selectedCategory)?.name || 'Unknown'
+        : 'All';
+      console.log(`🔍 [FILTER] Category changed to: "${categoryName}" (ID: ${selectedCategory || 'all'})`);
+      await renderQuizzes();
+    }
+
+    /**
+     * Render quizzes based on selected category filter with enhanced logging
+     * NOW ASYNC - loads module results and checks if quiz can be unlocked
+     */
+    async function renderQuizzes() {
+      console.log('\n🎨 [RENDER] Starting quiz render...');
+      console.log('  Total quizzes available:', allQuizzes.length);
+      console.log('  Categories available:', allCategories.length);
+      console.log('  Selected category filter:', selectedCategory || 'All');
+      
+      let filteredQuizzes = allQuizzes;
+
+      // Apply category filter
+      if (selectedCategory) {
+        const before = filteredQuizzes.length;
+        filteredQuizzes = allQuizzes.filter(q => q.categoryId == selectedCategory);
+        console.log(`  Filtered: ${before} → ${filteredQuizzes.length} quizzes`);
+      }
+
+      const container = document.getElementById('quizContainer');
+
+      if (filteredQuizzes.length === 0) {
+        console.log('  ℹ️  No quizzes to display');
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <p>No quizzes found${selectedCategory ? ' in this category' : ''}. Try selecting a different filter.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort by subject and quiz title
+      filteredQuizzes.sort((a, b) => {
+        if (a.subjectName !== b.subjectName) {
+          return a.subjectName.localeCompare(b.subjectName);
+        }
+        return a.title.localeCompare(b.title);
+      });
+
+      console.log(`  📊 Rendering ${filteredQuizzes.length} quiz cards...`);
+
+      // ===== NEW: Load module results to check quiz completion status =====
+      const studentId = localStorage.getItem('userId');
+      let moduleResults = [];
+      
+      if (window.quizResultsManager && studentId) {
+        try {
+          console.log(`\n🔍 [PRACTICE_RENDER] Loading module results for student ${studentId}...`);
+          moduleResults = await quizResultsManager.getStudentResultsByMode(studentId, 'module');
+          console.log(`✅ [PRACTICE_RENDER] Loaded ${moduleResults.length} module results`);
+          
+          // Display what we loaded
+          moduleResults.forEach((r, idx) => {
+            console.log(`   [${idx}] Module result - quizId: ${r.quizId}, score: ${r.score}%`);
+          });
+        } catch (e) {
+          console.warn('⚠️  Failed to load module results for practice unlock check:', e);
+          moduleResults = [];
+        }
+      } else {
+        console.warn('⚠️  QuizResultsManager not available or no studentId');
+      }
+
+      // Create quiz cards
+      const grid = document.createElement('div');
+      grid.className = 'quiz-grid';
+
+      filteredQuizzes.forEach((quiz, index) => {
+        const questionCount = quiz.questionCount || quiz.questions?.length || 0;
+        const cardClass = index % 2 === 0 ? 'green-card' : 'blue-card';
+        const iconClass = index % 2 === 0 ? 'fa-leaf' : 'fa-dumbbell';
+        const buttonClass = index % 2 === 0 ? 'green-btn' : 'blue-btn';
+        const categoryName = allCategories?.find(c => c.id == quiz.categoryId)?.name || 'General';
+
+        console.log(`    Card ${index + 1}: "${quiz.title}" (Subject: ${quiz.subjectName}, Category: ${categoryName})`);
+
+        // ===== NEW: Check if this quiz's module version has been submitted =====
+        // Check BOTH: local module results AND backend quiz.student_has_attempted flag
+        let hasSubmittedModule = false;
+        
+        // First check: Backend flag (more reliable for immediate status)
+        if (quiz.student_has_attempted) {
+          hasSubmittedModule = true;
+          console.log(`      ✅ Quiz marked as attempted in backend: ${quiz.title}`);
+        }
+        
+        // Second check: Local module results (for offline/cache scenario)
+        if (!hasSubmittedModule && moduleResults.length > 0) {
+          const foundResult = moduleResults.find(r => {
+            const rQuizId = String(r.quizId);
+            const qId = String(quiz.id);
+            const match = rQuizId === qId;
+            console.log(`      Comparing result quizId="${rQuizId}" with quiz.id="${qId}" → ${match}`);
+            return match;
+          });
+          
+          if (foundResult) {
+            hasSubmittedModule = true;
+            console.log(`      ✅ Quiz found in local module results: ${quiz.title}`);
+          }
+        }
+
+        console.log(`    → Final decision for "${quiz.title}": hasSubmitted=${hasSubmittedModule}`);
+
+        let buttonHtml = '';
+        let unlockMessage = '';
+
+        if (!hasSubmittedModule) {
+          // Practice locked - quiz not submitted yet
+          buttonHtml = `<button class="card-btn ${buttonClass} disabled" disabled>
+            Start Practice
+          </button>`;
+          unlockMessage = `<div class="unlock-message">
+            <i class="fa-solid fa-lock"></i> Complete the quiz first to unlock practice
+          </div>`;
+        } else {
+          // Practice unlocked - quiz has been submitted
+          buttonHtml = `<button class="card-btn ${buttonClass}" onclick="startPracticeQuiz(${quiz.id}, ${quiz.subjectId}, '${escapeHtml(quiz.title)}')">
+            Start Practice
+          </button>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = `quiz-card ${cardClass}`;
+        card.innerHTML = `
+          <div>
+            <div class="icon-box">
+              <i class="fa-solid ${iconClass}"></i>
+            </div>
+            <span class="tag">${categoryName}</span>
+            <h2>${escapeHtml(quiz.title)}</h2>
+            <p class="desc">${escapeHtml(quiz.description || 'Practice quiz')}</p>
+            <div class="question-count">
+              <i class="fa-solid fa-list"></i>
+              ${questionCount} Questions
+            </div>
+            <div class="attempts-info">
+              <i class="fa-solid fa-infinity"></i>
+              Unlimited Attempts
+            </div>
+          </div>
+          ${buttonHtml}
+          ${unlockMessage}
+        `;
+
+        grid.appendChild(card);
+      });
+
+      container.innerHTML = '';
+      container.appendChild(grid);
+      console.log('  ✅ Render complete\n');
+    }
+
+    /**
+     * Start practice quiz with enhanced logging
+     */
+    function startPracticeQuiz(quizId, subjectId, quizTitle) {
+      try {
+        console.log(`\n🎯 [START_QUIZ] Starting practice quiz...`);
+        console.log(`  Quiz ID: ${quizId}`);
+        console.log(`  Subject ID: ${subjectId}`);
+        console.log(`  Quiz Title: ${quizTitle}`);
+
+        // Store quiz info for questions page
+        sessionStorage.setItem('currentQuizId', quizId);
+        sessionStorage.setItem('currentSubjectId', subjectId);
+        sessionStorage.setItem('quizMode', 'practice');
+        localStorage.setItem('currentQuizId', quizId);
+        localStorage.setItem('currentSubjectId', subjectId);
+        localStorage.setItem('quizMode', 'practice');
+        
+        console.log(`  ✅ Session storage set`);
+
+        // Navigate to quiz questions page
+        const url = `studentQuizQuestions.html?quizId=${quizId}&subjectId=${subjectId}&mode=practice`;
+        console.log(`  → Navigating to: ${url}`);
+        window.location.href = url;
+      } catch (error) {
+        console.error(`❌ [START_QUIZ] Error:`, error);
+        alert('Error starting quiz. Please try again.');
+      }
+    }
+
+    /**
+     * Go back to dashboard
+     */
+    function goBack() {
+      window.navigateWithTransition('../student/studentDashboard.html');
+    }
+
+    /**
+     * Escape HTML special characters
+     */
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+  />
+  <title>LearnIQ • General Education Subjects</title>
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Remix Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
+
+
+  <!-- Reusable Styles -->
+  <link rel="stylesheet" href="../assets/styles/teacherStyles/sidebar.css" />
+  <link rel="stylesheet" href="../assets/styles/teacherStyles/dashboard.css" />
+  <link rel="stylesheet" href="../assets/styles/teacherStyles/subject.css">
+  
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div id="sidebar"></div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Header -->
+    <div id="header"></div>
+
+    <div class="content">
+      <!-- Back Button -->
+      <a href="categories.html" class="back-link">
+        <i class="ri-arrow-left-line"></i>
+        Back
+      </a>
+
+      <!-- Header Row with Add Button -->
+      <div class="header-row">
+        <div class="category-header">
+          <div class="category-badge">
+            <i id="categoryIcon" class="ri-book-open-line"></i>
+            <span id="categoryName">General Education</span>
+          </div>
+          <h1 class="category-title" id="categoryTitle">General Education</h1>
+          <p class="category-subtitle">
+            Choose a subject to view and manage quizzes.
+          </p>
+        </div>
+        <button class="add-subject-btn" id="openAddModalBtn">
+          <i class="ri-add-line"></i>
+          Add New Subject
+        </button>
+      </div>
+
+      <!-- Search -->
+      <div class="search-wrapper">
+        <i class="ri-search-line"></i>
+        <input
+          type="search"
+          placeholder="Search subjects..."
+          aria-label="Search subjects"
+        />
+      </div>
+
+      <!-- Subject Grid -->
+      <div class="subjects-grid">
+
+        <!-- English -->
+        <div
+          class="subject-card"
+          onclick="window.location.href='view-subject.html'"
+        >
+          <div class="subject-icon english">
+            <i class="ri-english-input"></i>
+          </div>
+          <h3 class="subject-name">English</h3>
+          <div class="subject-stats">
+            <span>
+              <i class="ri-question-answer-line"></i>
+              6 Quizzes
+            </span>
+            <span>
+              <i class="ri-book-2-line"></i>
+              1 Module
+            </span>
+          </div>
+          <div class="card-bottom">
+            <div class="card-actions" onclick="event.stopPropagation();">
+              <button class="edit-btn" title="Edit English" onclick="openEditModal('english', 'English', 'Language and literature', 'blue', null)">
+                <i class="ri-edit-line"></i>
+              </button>
+              <button class="delete-btn" title="Delete English" onclick="deleteSubject(this, 'English')">
+                <i class="ri-delete-bin-line"></i>
+              </button>
+            </div>
+            <a href="view-subject.html" class="arrow-icon">
+              <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Mathematics -->
+        <div
+          class="subject-card"
+          onclick="window.location.href='view-subject.html'"
+        >
+          <div class="subject-icon math">
+            <i class="ri-calculator-line"></i>
+          </div>
+          <h3 class="subject-name">Mathematics</h3>
+          <div class="subject-stats">
+            <span>
+              <i class="ri-question-answer-line"></i>
+              6 Quizzes
+            </span>
+            <span>
+              <i class="ri-book-2-line"></i>
+              1 Module
+            </span>
+          </div>
+          <div class="card-bottom">
+            <div class="card-actions" onclick="event.stopPropagation();">
+              <button class="edit-btn" title="Edit Mathematics" onclick="openEditModal('math', 'Mathematics', 'Algebra, geometry, calculus', 'blue', null)">
+                <i class="ri-edit-line"></i>
+              </button>
+              <button class="delete-btn" title="Delete Mathematics" onclick="deleteSubject(this, 'Mathematics')">
+                <i class="ri-delete-bin-line"></i>
+              </button>
+            </div>
+            <a href="view-subject.html" class="arrow-icon">
+              <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Science -->
+        <div
+          class="subject-card"
+          onclick="window.location.href='view-subject.html'"
+        >
+          <div class="subject-icon science">
+            <i class="ri-flask-line"></i>
+          </div>
+          <h3 class="subject-name">Science</h3>
+          <div class="subject-stats">
+            <span>
+              <i class="ri-question-answer-line"></i>
+              4 Quizzes
+            </span>
+            <span>
+              <i class="ri-book-2-line"></i>
+              1 Module
+            </span>
+          </div>
+          <div class="card-bottom">
+            <div class="card-actions" onclick="event.stopPropagation();">
+              <button class="edit-btn" title="Edit Science" onclick="openEditModal('science', 'Science', 'Physics, chemistry, biology', 'green', null)">
+                <i class="ri-edit-line"></i>
+              </button>
+              <button class="delete-btn" title="Delete Science" onclick="deleteSubject(this, 'Science')">
+                <i class="ri-delete-bin-line"></i>
+              </button>
+            </div>
+            <a href="view-subject.html" class="arrow-icon">
+              <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal / Popup for Add / Edit Subject -->
+  <div class="modal-overlay" id="subjectModal">
+    <div class="modal">
+      <h3 id="modalTitle">
+        <i class="ri-add-circle-line"></i>
+        Add New Subject
+      </h3>
+
+      <div class="form-group">
+        <label>Subject Icon</label>
+        <div class="icon-upload-group">
+          <div class="icon-preview" id="iconPreview">
+            <i class="ri-image-add-line"></i>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <label class="icon-upload-btn" for="iconFileInput">
+              <i class="ri-upload-line"></i> Upload Image
+            </label>
+            <input type="file" id="iconFileInput" accept="image/*" style="display: none;" />
+            <button class="remove-image-btn" id="removeImageBtn" type="button">
+              <i class="ri-delete-bin-line"></i> Remove
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Subject Name</label>
+        <input type="text" id="subjectNameInput" placeholder="Enter category name..." maxlength="100" />
+        <div class="char-count"><span id="nameCharCount">0</span>/100</div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="subjectDescInput" placeholder="Enter description..." maxlength="250"></textarea>
+        <div class="char-count"><span id="descCharCount">0</span>/250</div>
+      </div>
+
+      <div class="form-group">
+        <label>Choose Color Theme</label>
+        <div class="color-options" id="colorOptions">
+          <span class="color-option color-blue selected" data-color="blue"></span>
+          <span class="color-option color-green" data-color="green"></span>
+          <span class="color-option color-purple" data-color="purple"></span>
+          <span class="color-option color-orange" data-color="orange"></span>
+          <span class="color-option color-red" data-color="red"></span>
+          <span class="color-option color-pink" data-color="pink"></span>
+          <span class="color-option color-grey" data-color="grey"></span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" id="closeModalBtn">Cancel</button>
+        <button class="btn-save" id="saveSubjectBtn">Save Subject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layout JS -->
+  <script src="../assets/scripts/layout.js"></script>
+  <script src="../assets/scripts/auth-guard.js"></script>
+  <script src="../assets/scripts/api-config.js"></script>
+  <script src="../assets/scripts/ApiService.js"></script>
+
+  <script>
+    // Initialize API Service
+    const apiService = new ApiService();
+
+    // Get category from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get('categoryId') || '4'; // Default to General Education (ID 4)
+    
+    // Map category IDs to names and icons
+    const categoryMap = {
+      '4': { name: 'General Education', icon: 'ri-book-open-line' },
+      '5': { name: 'Professional Education', icon: 'ri-briefcase-line' },
+      '6': { name: 'Major / Specialization', icon: 'ri-focus-2-line' }
+    };
+    
+    const categoryInfo = categoryMap[categoryId] || categoryMap['4'];
+    const categoryName = categoryInfo.name;
+    const categoryIcon = categoryInfo.icon;
+    
+    // Update category header with dynamic values
+    const categoryBadge = document.querySelector('.category-badge');
+    const categoryTitle = document.querySelector('.category-title');
+    const categoryIconEl = document.getElementById('categoryIcon');
+    const categoryNameEl = document.getElementById('categoryName');
+    
+    if (categoryBadge) categoryBadge.innerHTML = `<i class="${categoryIcon}"></i> ${categoryName}`;
+    if (categoryTitle) categoryTitle.textContent = categoryName;
+    if (categoryIconEl) categoryIconEl.className = categoryIcon;
+    if (categoryNameEl) categoryNameEl.textContent = categoryName;
+
+    // Modal functionality
+    const modalOverlay = document.getElementById('subjectModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const subjectNameInput = document.getElementById('subjectNameInput');
+    const subjectDescInput = document.getElementById('subjectDescInput');
+    const nameCharCount = document.getElementById('nameCharCount');
+    const descCharCount = document.getElementById('descCharCount');
+    const saveSubjectBtn = document.getElementById('saveSubjectBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const openAddModalBtn = document.getElementById('openAddModalBtn');
+    const colorOptions = document.querySelectorAll('.color-option');
+    const iconFileInput = document.getElementById('iconFileInput');
+    const iconPreview = document.getElementById('iconPreview');
+    const removeImageBtn = document.getElementById('removeImageBtn');
+
+    let selectedColor = 'blue';
+    let isEditing = false;
+    let editingCard = null;
+    let uploadedImageDataUrl = null;
+    let editingSubjectId = null;
+
+    // Update character counts
+    function updateCharCounts() {
+      nameCharCount.textContent = subjectNameInput.value.length;
+      descCharCount.textContent = subjectDescInput.value.length;
+    }
+
+    subjectNameInput.addEventListener('input', updateCharCounts);
+    subjectDescInput.addEventListener('input', updateCharCounts);
+
+    // Color selection
+    colorOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        colorOptions.forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedColor = this.getAttribute('data-color');
+      });
+    });
+
+    // Image upload handling
+    iconFileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          uploadedImageDataUrl = event.target.result;
+          iconPreview.style.backgroundImage = `url(${uploadedImageDataUrl})`;
+          iconPreview.classList.add('has-image');
+          iconPreview.innerHTML = '';
+          removeImageBtn.classList.add('visible');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Remove image
+    removeImageBtn.addEventListener('click', function() {
+      uploadedImageDataUrl = null;
+      iconPreview.style.backgroundImage = '';
+      iconPreview.classList.remove('has-image');
+      iconPreview.innerHTML = '<i class="ri-image-add-line"></i>';
+      iconFileInput.value = '';
+      removeImageBtn.classList.remove('visible');
+    });
+
+    // Reset icon preview
+    function resetIconPreview(imageUrl = null) {
+      if (imageUrl) {
+        uploadedImageDataUrl = imageUrl;
+        iconPreview.style.backgroundImage = `url(${imageUrl})`;
+        iconPreview.classList.add('has-image');
+        iconPreview.innerHTML = '';
+        removeImageBtn.classList.add('visible');
+      } else {
+        uploadedImageDataUrl = null;
+        iconPreview.style.backgroundImage = '';
+        iconPreview.classList.remove('has-image');
+        iconPreview.innerHTML = '<i class="ri-image-add-line"></i>';
+        iconFileInput.value = '';
+        removeImageBtn.classList.remove('visible');
+      }
+    }
+
+    // Get icon class from color
+    function getIconClassFromColor(color) {
+      if (color === 'green') return 'science';
+      if (color === 'purple') return 'math';
+      if (color === 'orange') return 'filipino';
+      if (color === 'red') return 'social';
+      if (color === 'pink') return 'english';
+      if (color === 'grey') return 'math';
+      return 'english';
+    }
+
+    // Get icon HTML based on class
+    function getIconHTML(iconClass) {
+      if (iconClass === 'math') return '<i class="ri-calculator-line"></i>';
+      if (iconClass === 'science') return '<i class="ri-flask-line"></i>';
+      if (iconClass === 'filipino') return '<i class="ri-article-line"></i>';
+      if (iconClass === 'social') return '<i class="ri-global-line"></i>';
+      return '<i class="ri-english-input"></i>';
+    }
+
+    // Open modal for adding
+    function openAddModal() {
+      isEditing = false;
+      editingCard = null;
+      editingSubjectId = null;
+      modalTitle.innerHTML = '<i class="ri-add-circle-line"></i> Add New Subject';
+      subjectNameInput.value = '';
+      subjectDescInput.value = '';
+      selectedColor = 'blue';
+      
+      colorOptions.forEach(opt => opt.classList.remove('selected'));
+      const blueOption = document.querySelector('.color-option[data-color="blue"]');
+      if (blueOption) blueOption.classList.add('selected');
+      
+      resetIconPreview();
+      updateCharCounts();
+      modalOverlay.classList.add('active');
+    }
+
+    // Open modal for editing
+    function openEditModal(subjectId, name, description) {
+      isEditing = true;
+      editingSubjectId = subjectId;
+      editingCard = null;
+      
+      modalTitle.innerHTML = '<i class="ri-edit-line"></i> Edit Subject';
+      subjectNameInput.value = name;
+      subjectDescInput.value = description || '';
+      selectedColor = 'blue';
+      
+      colorOptions.forEach(opt => {
+        opt.classList.remove('selected');
+        if (opt.getAttribute('data-color') === selectedColor) {
+          opt.classList.add('selected');
+        }
+      });
+      
+      resetIconPreview();
+      updateCharCounts();
+      modalOverlay.classList.add('active');
+    }
+
+    // Close modal
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+      isEditing = false;
+      editingCard = null;
+    }
+
+    // Delete subject via API
+    async function deleteSubject(subjectId, subjectName) {
+      if (confirm(`Are you sure you want to delete "${subjectName}"? This action cannot be undone.`)) {
+        try {
+          await apiService.deleteSubject(subjectId);
+          alert('Subject deleted successfully!');
+          await loadSubjectsFromAPI();
+        } catch (error) {
+          console.error('Error deleting subject:', error);
+          alert('Error deleting subject: ' + error.message);
+        }
+      }
+    }
+
+    // Save subject (add or edit) via API
+    async function saveSubject() {
+      const name = subjectNameInput.value.trim();
+      if (!name) {
+        alert('Please enter a subject name.');
+        return;
+      }
+
+      const description = subjectDescInput.value.trim();
+      
+      try {
+        saveSubjectBtn.disabled = true;
+        saveSubjectBtn.textContent = 'Saving...';
+
+        const payload = {
+          category_id: parseInt(categoryId),
+          name: name,
+          description: description,
+          color: selectedColor
+        };
+
+        console.log('Saving subject with payload:', payload, 'Is editing:', isEditing);
+
+        if (isEditing) {
+          // Update existing subject
+          console.log('Updating subject ID:', editingSubjectId);
+          await apiService.updateSubject(editingSubjectId, payload);
+          alert('Subject updated successfully!');
+          closeModal();
+          await loadSubjectsFromAPI();
+        } else {
+          // Create new subject
+          console.log('Creating new subject');
+          const response = await apiService.createSubject(payload);
+          console.log('Subject created response:', response);
+          const newSubjectId = response.id || response.subject_id;
+          alert('Subject created successfully!');
+          closeModal();
+          // Redirect to the newly created subject
+          window.location.href = `view-subject.html?subjectId=${newSubjectId}&subjectName=${encodeURIComponent(name)}&categoryId=${categoryId}`;
+        }
+      } catch (error) {
+        console.error('Error saving subject:', error);
+        alert('Error saving subject: ' + error.message);
+      } finally {
+        saveSubjectBtn.disabled = false;
+        saveSubjectBtn.textContent = 'Save Subject';
+      }
+    }
+
+    // Load subjects from API
+    async function loadSubjectsFromAPI() {
+      try {
+        const subjects = await apiService.getSubjects(categoryId);
+        console.log('✓ API returned subjects:', subjects);
+        console.log('Total subjects count:', subjects ? subjects.length : 0);
+        const subjectsGrid = document.querySelector('.subjects-grid');
+        subjectsGrid.innerHTML = '';
+
+        subjects.forEach(subject => {
+          const newCard = document.createElement('div');
+          newCard.className = 'subject-card';
+          newCard.setAttribute('onclick', `window.location.href='view-subject.html?subjectId=${subject.id}&subjectName=${encodeURIComponent(subject.name)}&categoryId=${categoryId}'`);
+          
+          newCard.innerHTML = `
+            <div class="subject-icon english">
+              <i class="ri-book-open-line"></i>
+            </div>
+            <h3 class="subject-name">${subject.name}</h3>
+            <div class="subject-stats">
+              <span>
+                <i class="ri-question-answer-line"></i>
+                0 Quizzes
+              </span>
+              <span>
+                <i class="ri-book-2-line"></i>
+                0 Module
+              </span>
+            </div>
+            <div class="card-bottom">
+              <div class="card-actions" onclick="event.stopPropagation();">
+                <button class="edit-btn" title="Edit ${subject.name}" onclick="openEditModal(${subject.id}, '${subject.name.replace(/'/g, "\\'")}', '${(subject.description || '').replace(/'/g, "\\'")}')" style="cursor: pointer;">
+                  <i class="ri-edit-line"></i>
+                </button>
+                <button class="delete-btn" title="Delete ${subject.name}" onclick="deleteSubject(${subject.id}, '${subject.name.replace(/'/g, "\\'")}')" style="cursor: pointer;">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              </div>
+              <a href="view-subject.html?subjectId=${subject.id}&subjectName=${encodeURIComponent(subject.name)}&categoryId=${categoryId}" class="arrow-icon">
+                <i class="ri-arrow-right-line"></i>
+              </a>
+            </div>
+          `;
+          
+          subjectsGrid.appendChild(newCard);
+        });
+      } catch (error) {
+        console.error('Error loading subjects:', error);
+      }
+    }
+
+    // Event listeners
+    openAddModalBtn.addEventListener('click', openAddModal);
+    closeModalBtn.addEventListener('click', closeModal);
+    saveSubjectBtn.addEventListener('click', saveSubject);
+
+    // Close modal when clicking overlay
+    modalOverlay.addEventListener('click', function(e) {
+      if (e.target === modalOverlay) {
+        closeModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Make functions globally accessible for onclick handlers
+    window.openEditModal = openEditModal;
+    window.deleteSubject = deleteSubject;
+
+    // Initialize page: load subjects from API
+    loadSubjectsFromAPI();
+    document
+      .querySelector(".search-wrapper input")
+      .addEventListener("input", function (e) {
+
+        const searchTerm = e.target.value.toLowerCase();
+        const subjectCards = document.querySelectorAll(".subject-card");
+
+        subjectCards.forEach((card) => {
+          const subjectName = card
+            .querySelector(".subject-name")
+            .textContent
+            .toLowerCase();
+
+          if (subjectName.includes(searchTerm)) {
+            card.style.display = "flex";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      });
+
+  </script>
+</body>
+</html>

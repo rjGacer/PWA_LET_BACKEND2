@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <title>Quiz Results - LearnIQ</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../assets/styles/studentStyles/studentSidebar.css" />
+  <link rel="stylesheet" href="../assets/styles/studentStyles/studentQuizResults.css" />
+
+  <style>
+    /* Dashboard Override */
+    .dashboard {
+      display: flex !important;
+      width: calc(100% - 215px) !important;
+      margin-left: 215px !important;
+      min-height: 100vh;
+      padding: 24px 28px !important;
+      gap: 0 !important;
+    }
+
+    body.sidebar-collapsed .dashboard {
+      margin-left: 70px !important;
+      width: calc(100% - 70px) !important;
+    }
+
+    .dashboard .main-content {
+      max-width: 100% !important;
+      width: 100% !important;
+      padding: 0 !important;
+      flex: 1;
+    }
+
+    .dashboard .sidebar-right {
+      display: none !important;
+    }
+
+    .page-wrapper {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Question Items */
+    .question-item {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .question-item.correct {
+      border-left: 5px solid #10b981;
+      background: #f0fdf4;
+    }
+
+    .question-item.incorrect {
+      border-left: 5px solid #ef4444;
+      background: #fef2f2;
+    }
+
+    .question-item.skipped {
+      border-left: 5px solid #9c9b97;
+      background: #fffdfd;
+    }
+
+    .question-item.skipped .question-icon {
+      background: #d3d3d3;
+    }
+
+    .question-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .question-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .question-item.correct .question-icon {
+      background: #10b981;
+    }
+
+    .question-item.incorrect .question-icon {
+      background: #ef4444;
+    }
+
+    .question-info {
+      flex: 1;
+    }
+
+    .question-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+
+    .question-number {
+      font-size: 0.85rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .answer-section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .answer-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .answer-text {
+      font-size: 0.95rem;
+      color: #1f2937;
+      padding: 0.75rem 1rem;
+      background: rgba(0, 0, 0, 0.02);
+      border-left: 4px solid #d1d5db;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+    }
+
+    .answer-text.correct {
+      border-left-color: #10b981;
+      background: rgba(16, 185, 129, 0.08);
+      color: #047857;
+    }
+
+    .answer-text.incorrect {
+      border-left-color: #ef4444;
+      background: rgba(239, 68, 68, 0.08);
+      color: #b91c1c;
+    }
+
+    .explanation {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f0f9ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 6px;
+    }
+
+    .explanation-label {
+      font-weight: 700;
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .explanation-text {
+      line-height: 1.6;
+    }
+
+    /* Options Container */
+    .options-container {
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: stretch;
+      padding: 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: white;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .option-item.option-correct {
+      background: #f0fdf4;
+      border: 2px solid #10b981;
+      border-left: 5px solid #10b981;
+    }
+
+    .option-item.option-incorrect {
+      background: #fef2f2;
+      border: 2px solid #ef4444;
+      border-left: 5px solid #ef4444;
+    }
+
+    .option-item.option-default {
+      background: #fafafa;
+      border: 1px solid #e5e7eb;
+    }
+
+    .option-letter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: #f3f4f6;
+      border-radius: 8px;
+      font-weight: 700;
+      color: #374151;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+
+    .option-item.option-correct .option-letter {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+    }
+
+    .option-item.option-incorrect .option-letter {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .option-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .option-text {
+      font-size: 0.95rem;
+      color: #1f2937;
+      font-weight: 500;
+      line-height: 1.5;
+      margin-bottom: 0.25rem;
+    }
+
+    .option-status {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.25rem;
+      display: block;
+    }
+
+    .option-item.option-correct .option-status {
+      color: #10b981;
+    }
+
+    .option-item.option-incorrect .option-status {
+      color: #ef4444;
+    }
+
+    .option-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-left: 1rem;
+    }
+
+    .option-item.option-correct .option-icon {
+      color: #10b981;
+    }
+
+    .option-item.option-incorrect .option-icon {
+      color: #ef4444;
+    }
+
+    /* Buttons */
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 150px;
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2f49e0 0%, #4f46e5 100%);
+      color: white;
+      box-shadow: 0 4px 6px rgba(47, 73, 224, 0.2);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 12px rgba(47, 73, 224, 0.3);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #4f46e5;
+      border: 2px solid #4f46e5;
+    }
+
+    .btn-secondary:hover {
+      background: #f0f4ff;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard {
+        padding: 1rem !important;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        min-width: auto;
+        width: 100%;
+      }
+
+      .question-item {
+        padding: 1.25rem;
+      }
+
+      .question-text {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="page-loading">
+
+<!-- Hamburger -->
+<button class="hamburger-btn" id="hamburgerBtn" aria-label="Open sidebar">
+  <i class="fa-solid fa-bars"></i>
+</button>
+
+<!-- Overlay + sidebar container -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div id="sidebar-container"></div>
+
+<!-- Dashboard shell -->
+<div class="dashboard">
+  <div class="main-content">
+    <!-- Topbar -->
+    <div class="topbar-wrapper">
+      <div id="topbar-container"></div>
+    </div>
+
+    <!-- Page content -->
+    <div class="page-body">
+      <div class="page-wrapper">
+
+        <!-- Back Link -->
+        <button class="back-link" onclick="goBack()" title="Go back">
+          <i class="fa-solid fa-chevron-left"></i>
+          Back
+        </button>
+
+        <!-- Results Header -->
+        <div class="results-header">
+          <h1 id="quizTitle">Quiz Results</h1>
+          
+          <div class="score-display">
+            <div class="score-circle">
+              <div class="score-value" id="scoreValue">0</div>
+              <div class="score-label">Score</div>
+            </div>
+
+            <div class="score-info">
+              <div class="score-stat">
+                <div class="score-stat-icon">
+                  <i class="fa-solid fa-check-circle"></i>
+                </div>
+                <div class="score-stat-text">
+                  <div class="score-stat-label">Correct</div>
+                  <div class="score-stat-value" id="correctCount">0</div>
+                </div>
+              </div>
+
+              <div class="score-stat">
+                <div class="score-stat-icon">
+                  <i class="fa-solid fa-times-circle"></i>
+                </div>
+                <div class="score-stat-text">
+                  <div class="score-stat-label">Incorrect</div>
+                  <div class="score-stat-value" id="incorrectCount">0</div>
+                </div>
+              </div>
+
+              <div class="score-stat">
+                <div class="score-stat-icon">
+                  <i class="fa-solid fa-pause-circle"></i>
+                </div>
+                <div class="score-stat-text">
+                  <div class="score-stat-label">Skipped</div>
+                  <div class="score-stat-value" id="skippedCount">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="results-summary">
+          <div class="summary-card correct">
+            <div class="summary-icon">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="summary-value" id="correctPercentage">0%</div>
+            <div class="summary-label">Correct</div>
+          </div>
+
+          <div class="summary-card incorrect">
+            <div class="summary-icon">
+              <i class="fa-solid fa-times"></i>
+            </div>
+            <div class="summary-value" id="incorrectPercentage">0%</div>
+            <div class="summary-label">Incorrect</div>
+          </div>
+
+          <div class="summary-card skipped">
+            <div class="summary-icon">
+              <i class="fa-solid fa-pause"></i>
+            </div>
+            <div class="summary-value" id="skippedPercentage">0%</div>
+            <div class="summary-label">Skipped</div>
+          </div>
+        </div>
+
+        <!-- Detailed Results -->
+        <div class="results-detailed">
+          <h2 class="results-title">
+            <i class="fa-solid fa-list-check"></i>
+            Detailed Results
+          </h2>
+
+          <div id="questionsContainer"></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group" id="actionButtons">
+          <button class="btn btn-secondary" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left"></i>
+            Go Back
+          </button>
+        </div>
+
+      </div><!-- /page-wrapper -->
+    </div><!-- /page-body -->
+  </div><!-- /main-content -->
+</div><!-- /dashboard -->
+
+<!-- Scripts -->
+<script src="../assets/scripts/student-layout.js"></script>
+<script src="../assets/scripts/api-config.js"></script>
+<script src="../assets/scripts/ApiService.js?v=3"></script>
+  <script src="../assets/scripts/QuizResultsManager.js?v=3"></script>
+<script src="../assets/scripts/NotificationManager.js"></script>
+
+<script>
+  // ===== GLOBAL STATE =====
+  let resultData = null;
+  let quizMode = 'module';
+  let subjectId = null;
+  let resultId = null;
+  const apiService = new ApiService();
+
+  // ===== INITIALIZATION =====
+  document.addEventListener('DOMContentLoaded', async () => {
+    document.body.classList.remove("page-loading");
+
+    // Get parameters from URL
+    const params = new URLSearchParams(window.location.search);
+    resultId = params.get('resultId');
+    quizMode = params.get('mode') || 'module';
+    subjectId = params.get('subjectId');
+
+    // Try to load result from sessionStorage first
+    // BUT VALIDATE it matches the current request (mode, resultId)
+    const storedResult = sessionStorage.getItem('currentResultData');
+    const storedResultId = sessionStorage.getItem('currentResultId');
+    
+    if (storedResult && storedResultId === resultId && resultId) {
+      // sessionStorage matches the requested resultId - use it
+      try {
+        resultData = JSON.parse(storedResult);
+        console.log('✅ Loaded result from sessionStorage (validated):', resultData);
+        // Keep it in sessionStorage for now, don't remove it yet
+        // Store in localStorage too for persistence across refresh
+        if (resultData.attemptId) {
+          localStorage.setItem(`result_${resultData.attemptId}`, JSON.stringify(resultData));
+          console.log('💾 Cached result in localStorage with key: result_' + resultData.attemptId);
+        }
+      } catch (e) {
+        console.error('Error parsing stored result:', e);
+      }
+    } else if (storedResult && !resultId) {
+      // No resultId in URL but sessionStorage exists - use it (direct navigation after submit)
+      try {
+        resultData = JSON.parse(storedResult);
+        console.log('✅ Loaded result from sessionStorage (immediate post-submit):', resultData);
+        if (resultData.attemptId) {
+          localStorage.setItem(`result_${resultData.attemptId}`, JSON.stringify(resultData));
+          console.log('💾 Cached result in localStorage with key: result_' + resultData.attemptId);
+        }
+      } catch (e) {
+        console.error('Error parsing stored result:', e);
+      }
+    } else if (resultId) {
+      // Try to load from localStorage first using resultId
+      try {
+        const localStorageResult = localStorage.getItem(`result_${resultId}`);
+        if (localStorageResult) {
+          resultData = JSON.parse(localStorageResult);
+          console.log('✅ Found result in localStorage with key: result_' + resultId);
+        }
+      } catch (e) {
+        console.error('Error loading from localStorage:', e);
+      }
+      
+      // If still not found, load from IndexedDB
+      if (!resultData) {
+        await loadResultFromDB();
+      }
+      
+      // If still not found, check module_results localStorage as fallback
+      if (!resultData && quizMode === 'module') {
+        try {
+          const moduleResultsRaw = localStorage.getItem('module_results');
+          if (moduleResultsRaw) {
+            const moduleResults = JSON.parse(moduleResultsRaw);
+            const found = moduleResults.find(r => String(r.id) === String(resultId) || String(r.id) === resultId);
+            if (found) {
+              console.log('✅ Found result in module_results');
+              resultData = found;
+            }
+          }
+        } catch (e) {
+          console.error('Error checking module_results:', e);
+        }
+      }
+    }
+
+    if (resultData) {
+      console.log('✅ Result data loaded successfully:', {
+        quizTitle: resultData.quizTitle,
+        attemptId: resultData.attemptId,
+        questionsCount: resultData.questions ? resultData.questions.length : 0
+      });
+      renderResults();
+    } else {
+      console.error('❌ No result data found after checking all sources');
+      alert('No results found. Please go back and try again.');
+      goBack();
+    }
+
+    highlightActiveSidebarItem();
+  });
+
+  // ===== LOAD RESULT FROM DB =====
+  async function loadResultFromDB() {
+    try {
+      let result = null;
+
+      // Load from QuizResultsManager using the correct mode
+      if (quizMode === 'module') {
+        result = await quizResultsManager.getResultById(resultId, 'module');
+      } else if (quizMode === 'practice') {
+        result = await quizResultsManager.getResultById(resultId, 'practice');
+      } else if (quizMode === 'exam') {
+        result = await quizResultsManager.getResultById(resultId, 'exam');
+      } else if (quizMode === 'random') {
+        result = await quizResultsManager.getResultById(resultId, 'random');
+      } else {
+        // Default to quiz mode
+        result = await quizResultsManager.getResultById(resultId, 'quiz');
+      }
+
+      if (result) {
+        resultData = result;
+        console.log('✅ Loaded result from IndexedDB with mode:', quizMode);
+        // Clear sessionStorage since we loaded from persistent storage
+        // This prevents stale sessionStorage from interfering with future loads
+        sessionStorage.removeItem('currentResultData');
+        sessionStorage.removeItem('currentResultId');
+        console.log('🧹 Cleared sessionStorage to prevent interference');
+      } else {
+        console.warn('⚠️ Result not found in IndexedDB for mode:', quizMode);
+      }
+    } catch (error) {
+      console.error('Error loading result from DB:', error);
+    }
+  }
+
+  // ===== RENDER RESULTS =====
+  function renderResults() {
+    if (!resultData) {
+      console.error('❌ No result data available');
+      return;
+    }
+
+    if (!resultData.questions || !Array.isArray(resultData.questions)) {
+      console.error('❌ Result data has no questions array:', resultData);
+      alert('Error: Quiz result data is incomplete. Please try viewing the result again.');
+      goBack();
+      return;
+    }
+
+    const total = resultData.questions.length;
+    const correct = resultData.questions.filter(q => q.isCorrect).length;
+    const incorrect = total - correct - (resultData.questions.filter(q => !q.selectedOptionText || q.selectedOptionText === 'No answer selected').length);
+    const skipped = total - correct - incorrect;
+    const score = Math.round(resultData.score);
+
+    console.log('📊 Rendering results - Total:', total, 'Correct:', correct, 'Incorrect:', incorrect, 'Skipped:', skipped);
+
+    // Update header
+    document.getElementById('quizTitle').textContent = resultData.quizTitle || 'Quiz Results';
+    document.getElementById('scoreValue').textContent = score;
+    document.getElementById('correctCount').textContent = correct;
+    document.getElementById('incorrectCount').textContent = incorrect;
+    document.getElementById('skippedCount').textContent = skipped;
+
+    // Update summary cards
+    document.getElementById('correctPercentage').textContent = `${Math.round((correct / total) * 100)}%`;
+    document.getElementById('incorrectPercentage').textContent = `${Math.round((incorrect / total) * 100)}%`;
+    document.getElementById('skippedPercentage').textContent = `${Math.round((skipped / total) * 100)}%`;
+
+    // Render questions
+    renderQuestions();
+
+    // Add "Try Again" button for practice mode
+    if (quizMode === 'practice') {
+      const actionButtons = document.getElementById('actionButtons');
+      const tryAgainBtn = document.createElement('button');
+      tryAgainBtn.className = 'btn btn-primary';
+      tryAgainBtn.innerHTML = '<i class="fa-solid fa-repeat"></i> Try Again';
+      tryAgainBtn.onclick = retakeQuiz;
+      actionButtons.prepend(tryAgainBtn);
+    }
+  }
+
+  // ===== RENDER QUESTIONS =====
+  function renderQuestions() {
+    const container = document.getElementById('questionsContainer');
+    container.innerHTML = '';
+
+    resultData.questions.forEach((question, index) => {
+      // Handle both old format (selectedOptionText) and new format (options array with indices)
+      // hasNewFormat = has both options array AND selectedOptionIndex property (even if null)
+      const hasNewFormat = question.options && Array.isArray(question.options) && 
+                           question.selectedOptionIndex !== undefined;
+      
+      const isSkipped = hasNewFormat ? 
+        (question.selectedOptionIndex === null) :
+        (!question.selectedOptionText || question.selectedOptionText === 'No answer selected');
+      
+      const status = isSkipped ? 'skipped' : (question.isCorrect ? 'correct' : 'incorrect');
+
+      const questionDiv = document.createElement('div');
+      questionDiv.className = `question-item ${status}`;
+      
+      const iconChar = status === 'correct' ? '✓' : status === 'incorrect' ? '✕' : '—';
+
+      // Build options display HTML - ALWAYS show in modern card format
+      let optionsHTML = '<div class="options-container">';
+      
+      if (hasNewFormat && question.options && Array.isArray(question.options)) {
+        // New format with options array
+        question.options.forEach((option, optIdx) => {
+          const optionLetter = String.fromCharCode(65 + optIdx); // A, B, C, D
+          const isSelected = optIdx === question.selectedOptionIndex;
+          const isCorrect = optIdx === question.correctOptionIndex;
+          
+          let optionClass = 'option-item';
+          let optionIcon = '';
+          let optionLabel = '';
+          
+          if (isCorrect && isSelected && question.isCorrect) {
+            // Correct answer and correct selection
+            optionClass += ' option-correct';
+            optionIcon = '<i class="fa-solid fa-check"></i>';
+            optionLabel = '<span class="option-status">✓ CORRECT ANSWER</span>';
+          } else if (isCorrect && isSkipped) {
+            // Show correct answer for skipped questions
+            optionClass += ' option-correct';
+            optionIcon = '<i class="fa-solid fa-check"></i>';
+            optionLabel = '<span class="option-status">✓ CORRECT ANSWER</span>';
+          } else if (isCorrect && !isSkipped && !question.isCorrect) {
+            // Correct answer (show even if not selected or selected wrong)
+            optionClass += ' option-correct';
+            optionIcon = '<i class="fa-solid fa-check"></i>';
+            optionLabel = '<span class="option-status">✓ CORRECT ANSWER</span>';
+          } else if (isSelected && !question.isCorrect && !isSkipped) {
+            // Your wrong answer
+            optionClass += ' option-incorrect';
+            optionIcon = '<i class="fa-solid fa-times"></i>';
+            optionLabel = '<span class="option-status">✗ YOUR ANSWER</span>';
+          } else {
+            optionClass += ' option-default';
+          }
+          
+          optionsHTML += `
+            <div class="${optionClass}">
+              <div class="option-letter">${optionLetter}</div>
+              <div class="option-content">
+                <div class="option-text">${option}</div>
+                ${optionLabel}
+              </div>
+              <div class="option-icon">${optionIcon}</div>
+            </div>
+          `;
+        });
+      } else if (question.options && Array.isArray(question.options)) {
+        // Old format with options array but no indices - reconstruct format
+        question.options.forEach((option, optIdx) => {
+          const optionLetter = String.fromCharCode(65 + optIdx);
+          const selectedText = question.selectedOptionText || '';
+          const isSelected = option === selectedText;
+          const isCorrect = option === question.correctOptionText;
+          
+          let optionClass = 'option-item';
+          let optionIcon = '';
+          let optionLabel = '';
+          
+          if (isCorrect && isSelected && question.isCorrect) {
+            optionClass += ' option-correct';
+            optionIcon = '<i class="fa-solid fa-check"></i>';
+            optionLabel = '<span class="option-status">✓ CORRECT ANSWER</span>';
+          } else if (isCorrect && !isSelected) {
+            optionClass += ' option-correct';
+            optionIcon = '<i class="fa-solid fa-check"></i>';
+            optionLabel = '<span class="option-status">✓ CORRECT ANSWER</span>';
+          } else if (isSelected && !question.isCorrect) {
+            optionClass += ' option-incorrect';
+            optionIcon = '<i class="fa-solid fa-times"></i>';
+            optionLabel = '<span class="option-status">✗ YOUR ANSWER</span>';
+          } else {
+            optionClass += ' option-default';
+          }
+          
+          optionsHTML += `
+            <div class="${optionClass}">
+              <div class="option-letter">${optionLetter}</div>
+              <div class="option-content">
+                <div class="option-text">${option}</div>
+                ${optionLabel}
+              </div>
+              <div class="option-icon">${optionIcon}</div>
+            </div>
+          `;
+        });
+      } else {
+        // Fallback for minimal format - when no full options array is available
+        // Still try to show answer in card format with all answers if available
+        
+        // If we have allOptions, display them all
+        if (question.allOptions && Array.isArray(question.allOptions)) {
+          question.allOptions.forEach((option, optIdx) => {
+            const optionLetter = String.fromCharCode(65 + optIdx);
+            const selectedText = question.selectedOptionText || '';
+            const isSelected = option === selectedText;
+            const isCorrect = option === question.correctOptionText;
+            
+            let optionClass = 'option-item';
+            let optionIcon = '';
+            let optionLabel = '';
+            
+            if (isCorrect && isSelected && question.isCorrect) {
+              optionClass += ' option-correct';
+              optionIcon = '<i class="fa-solid fa-check"></i>';
+              optionLabel = '<span class="option-status">✓ CORRECT ANSWER</span>';
+            } else if (isCorrect && !isSelected) {
+              optionClass += ' option-correct';
+              optionIcon = '<i class="fa-solid fa-check"></i>';
+              optionLabel = '<span class="option-status">✓ CORRECT ANSWER</span>';
+            } else if (isSelected && !question.isCorrect) {
+              optionClass += ' option-incorrect';
+              optionIcon = '<i class="fa-solid fa-times"></i>';
+              optionLabel = '<span class="option-status">✗ YOUR ANSWER</span>';
+            } else {
+              optionClass += ' option-default';
+            }
+            
+            optionsHTML += `
+              <div class="${optionClass}">
+                <div class="option-letter">${optionLetter}</div>
+                <div class="option-content">
+                  <div class="option-text">${option}</div>
+                  ${optionLabel}
+                </div>
+                <div class="option-icon">${optionIcon}</div>
+              </div>
+            `;
+          });
+        } else {
+          // No allOptions available - show selected and correct answer only
+          if (!isSkipped) {
+            const answerClass = question.isCorrect ? 'option-correct' : 'option-incorrect';
+            const answerIcon = question.isCorrect ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-times"></i>';
+            const answerLabel = question.isCorrect ? '✓ CORRECT ANSWER' : '✗ YOUR ANSWER';
+            
+            optionsHTML += `
+              <div class="option-item ${answerClass}">
+                <div class="option-letter" style="background: transparent; color: currentColor; font-size: 1.2rem; width: auto; margin-right: 0.5rem;">
+                  ${answerIcon}
+                </div>
+                <div class="option-content">
+                  <div class="option-text">${question.selectedOptionText}</div>
+                  <span class="option-status">${answerLabel}</span>
+                </div>
+              </div>
+            `;
+            
+            // Show correct answer if wrong
+            if (!question.isCorrect && question.correctOptionText) {
+              optionsHTML += `
+                <div class="option-item option-correct" style="margin-top: 0.5rem;">
+                  <div class="option-letter" style="background: transparent; color: currentColor; font-size: 1.2rem; width: auto; margin-right: 0.5rem;">
+                    <i class="fa-solid fa-check"></i>
+                  </div>
+                  <div class="option-content">
+                    <div class="option-text">${question.correctOptionText}</div>
+                    <span class="option-status">✓ CORRECT ANSWER</span>
+                  </div>
+                </div>
+              `;
+            }
+          } else {
+            // Skipped - show correct answer
+            const correctIcon = '<i class="fa-solid fa-check"></i>';
+            optionsHTML += `
+              <div class="option-item option-correct">
+                <div class="option-letter" style="background: transparent; color: currentColor; font-size: 1.2rem; width: auto; margin-right: 0.5rem;">
+                  ${correctIcon}
+                </div>
+                <div class="option-content">
+                  <div class="option-text">${question.correctOptionText}</div>
+                  <span class="option-status">✓ CORRECT ANSWER</span>
+                </div>
+              </div>
+            `;
+          }
+        }
+      }
+      
+      optionsHTML += '</div>';
+
+      questionDiv.innerHTML = `
+        <div class="question-header">
+          <div class="question-icon">${iconChar}</div>
+          <div class="question-info">
+            <div class="question-text">${question.questionText}</div>
+            <div class="question-number">Question ${index + 1} of ${resultData.questions.length}</div>
+          </div>
+        </div>
+
+        ${optionsHTML}
+
+        ${question.explanation ? `
+          <div class="explanation">
+            <div class="explanation-label">
+              <i class="fa-solid fa-lightbulb"></i>
+              Explanation
+            </div>
+            <div class="explanation-text">${question.explanation}</div>
+          </div>
+        ` : ''}
+      `;
+
+      container.appendChild(questionDiv);
+    });
+  }
+
+  // ===== RETAKE QUIZ =====
+  function retakeQuiz() {
+    const queryParams = new URLSearchParams();
+    queryParams.set('quizId', resultData.quizId);
+    queryParams.set('mode', quizMode);
+    if (subjectId) {
+      queryParams.set('subjectId', subjectId);
+    }
+    // Store the source for back button
+    sessionStorage.setItem('quizSource', window.location.href);
+    window.location.href = `studentQuizQuestions.html?${queryParams.toString()}`;
+  }
+
+  // ===== GO BACK =====
+  function goBack() {
+    if (quizMode === 'practice') {
+      window.location.href = 'studentPractice.html';
+    } else if (quizMode === 'module' && subjectId) {
+      window.location.href = `studentModules.html?subjectId=${subjectId}`;
+    } else if (quizMode === 'exam') {
+      window.location.href = 'studentExamSimulation.html';
+    } else {
+      window.location.href = 'studentQuiz.html';
+    }
+  }
+
+  // ===== ACTIVE SIDEBAR HIGHLIGHTING =====
+  function highlightActiveSidebarItem() {
+    setTimeout(() => {
+      const sidebar = document.querySelector('#sidebar-container .sidebar, #sidebar-container');
+      if (sidebar) {
+        const allMenuItems = sidebar.querySelectorAll('.menu-item');
+        let quizMenuItem = null;
+
+        for (let item of allMenuItems) {
+          const text = item.textContent.toLowerCase();
+          if (text.includes('quiz') || text.includes('results')) {
+            quizMenuItem = item;
+            break;
+          }
+        }
+
+        if (quizMenuItem) {
+          allMenuItems.forEach(item => item.classList.remove('active'));
+          quizMenuItem.classList.add('active');
+        }
+      }
+    }, 200);
+  }
+</script>
+
+</body>
+</html>

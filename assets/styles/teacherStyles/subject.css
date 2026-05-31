@@ -1,0 +1,575 @@
+.content {
+  padding: 1.8rem 2rem 2.5rem;
+}
+
+/* Back navigation */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: #7c6ff7;
+}
+
+.back-link i {
+  font-size: 1.2rem;
+}
+
+/* Category header */
+.category-header {
+  margin-bottom: 1.5rem;
+}
+
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #ede9fe;
+  color: #5b21b6;
+  padding: 0.25rem 0.9rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.category-badge i {
+  font-size: 0.9rem;
+}
+
+.category-title {
+  font-weight: 800;
+  font-size: 2rem;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.3px;
+}
+
+.category-subtitle {
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Search bar */
+.search-wrapper {
+  position: relative;
+  max-width: 400px;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding: 0.75rem 1.2rem 0.75rem 2.8rem;
+  border-radius: 40px;
+  border: 1px solid #e2e8f0;
+  font-family: "Nunito", sans-serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: 0.2s;
+  outline: none;
+}
+
+.search-wrapper input:focus {
+  border-color: #7c6ff7;
+  box-shadow: 0 0 0 3px rgba(124, 111, 247, 0.15);
+}
+
+.search-wrapper i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+/* Header row with add button */
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-row .category-header {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Add New Subject Button */
+.add-subject-btn {
+  background: #7c6ff7;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 40px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.1s;
+  box-shadow: 0 4px 10px rgba(124, 111, 247, 0.25);
+  white-space: nowrap;
+  height: fit-content;
+  margin-top: 0.2rem;
+  font-family: "Nunito", sans-serif;
+}
+
+.add-subject-btn:hover {
+  background: #6d5cf0;
+}
+
+.add-subject-btn i {
+  font-size: 1.1rem;
+}
+
+/* Subject cards */
+.subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.subject-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.subject-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  border-color: #e2e8f0;
+}
+
+.subject-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: white;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.subject-icon.english {
+  background: linear-gradient(135deg, #7c6ff7, #8b7cf7);
+}
+
+.subject-icon.math {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+}
+
+.subject-icon.science {
+  background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+.subject-icon.filipino {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+}
+
+.subject-icon.social {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+}
+
+.subject-icon.custom-image {
+  background: #e2e8f0;
+  color: transparent;
+}
+
+.subject-icon.custom-image i {
+  display: none;
+}
+
+.subject-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #1e293b;
+  margin: 0;
+}
+
+.subject-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.subject-stats span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.subject-stats i {
+  font-size: 1rem;
+  color: #94a3b8;
+}
+
+/* Card bottom row */
+.card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+/* Edit and Delete buttons */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.card-actions button {
+  background: transparent;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 1rem;
+  transition: all 0.2s;
+  font-family: "Nunito", sans-serif;
+}
+
+.card-actions .edit-btn:hover {
+  background: #ede9fe;
+  color: #7c6ff7;
+}
+
+.card-actions .delete-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* Arrow button */
+.arrow-icon {
+  align-self: flex-end;
+  color: #cbd5e1;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: flex;
+}
+
+.subject-card:hover .arrow-icon {
+  transform: translateX(4px);
+  color: #7c6ff7;
+}
+
+/* Modal / Popup Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    visibility 0.2s,
+    opacity 0.2s ease;
+}
+
+.modal-overlay.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal {
+  background: white;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transform: scale(0.95);
+  transition: transform 0.2s ease;
+}
+
+.modal-overlay.active .modal {
+  transform: scale(1);
+}
+
+.modal h3 {
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.modal label {
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.modal input,
+.modal textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-family: "Nunito", sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: 0.2s;
+  background: #f8fafc;
+}
+
+.modal input:focus,
+.modal textarea:focus {
+  border-color: #7c6ff7;
+  box-shadow: 0 0 0 3px rgba(124, 111, 247, 0.15);
+  background: white;
+}
+
+.modal textarea {
+  resize: vertical;
+  min-height: 75px;
+}
+
+.modal .char-count {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-align: right;
+}
+
+/* Icon upload section */
+.icon-upload-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.icon-preview {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: #64748b;
+  border: 2px dashed #cbd5e1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+  transition: 0.2s;
+}
+
+.icon-preview.has-image {
+  border-style: solid;
+  border-color: #7c6ff7;
+}
+
+.icon-upload-btn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: 0.2s;
+  font-family: "Nunito", sans-serif;
+}
+
+.icon-upload-btn:hover {
+  background: #f8fafc;
+  border-color: #7c6ff7;
+  color: #7c6ff7;
+}
+
+.icon-upload-btn i {
+  font-size: 1rem;
+}
+
+.remove-image-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: none;
+  align-items: center;
+  gap: 0.2rem;
+  font-family: "Nunito", sans-serif;
+}
+
+.remove-image-btn.visible {
+  display: flex;
+}
+
+.remove-image-btn:hover {
+  text-decoration: underline;
+}
+
+.color-options {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.color-option {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.color-option.selected {
+  border-color: #1e293b;
+  transform: scale(1.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.color-blue {
+  background: #3b82f6;
+}
+.color-green {
+  background: #10b981;
+}
+.color-purple {
+  background: #8b5cf6;
+}
+.color-orange {
+  background: #f97316;
+}
+.color-red {
+  background: #ef4444;
+}
+.color-pink {
+  background: #ec4899;
+}
+.color-grey {
+  background: #64748b;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 40px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: "Nunito", sans-serif;
+}
+
+.btn-cancel:hover {
+  background: #e2e8f0;
+}
+
+.btn-save {
+  background: #7c6ff7;
+  border: none;
+  padding: 0.7rem 1.8rem;
+  border-radius: 40px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 4px 10px rgba(124, 111, 247, 0.3);
+  font-family: "Nunito", sans-serif;
+}
+
+.btn-save:hover {
+  background: #6d5cf0;
+}
+
+@media (max-width: 600px) {
+  .subjects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .header-row {
+    flex-direction: column;
+  }
+
+  .add-subject-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

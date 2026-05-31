@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>LearnIQ • Manage Categories</title>
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <!-- Remix Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
+  <!-- Reuse sidebar & dashboard styles (same as reference) -->
+  <link rel="stylesheet" href="../assets/styles/teacherStyles/sidebar.css" />
+  <link rel="stylesheet" href="../assets/styles/teacherStyles/dashboard.css" />
+  <link rel="stylesheet" href="../assets/styles/teacherStyles/categories.css">
+  <!-- Inline page‑specific styles for the category cards -->
+  
+</head>
+<body>
+  <!-- Sidebar placeholder (exactly as dashboard.html) -->
+  <div id="sidebar"></div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <!-- HEADER placeholder -->
+    <div id="header"></div>
+
+    <div class="content">
+      <!-- Page heading with Manage Category button (replacing search) -->
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1rem;">
+        <div>
+          <h1 style="font-weight: 800; font-size: 1.9rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            Select a category to manage your quizzes:
+            <span class="manage-badge">categories</span>
+          </h1>
+          <p class="page-subtitle">
+            <i class="ri-stack-line" style="color:#7c6ff7;"></i> Choose from available categories below
+          </p>
+        </div>
+        <!-- Manage Category Button (replaces search) -->
+        
+      </div>
+
+      <!-- Category cards – exactly three items as shown in the image -->
+      <div class="category-grid">
+        
+        <!-- General Education Card -->
+        <div class="category-card">
+          <div class="category-icon general">
+            <i class="ri-book-open-line"></i>
+          </div>
+          <h2 class="category-title">General Education</h2>
+          <p class="category-desc">
+            Manage quizzes for General Education subjects.
+          </p>
+          <a href="subject.html?categoryId=4" class="view-subjects-btn">
+            View Subjects <i class="ri-arrow-right-line"></i>
+          </a>
+        </div>
+
+        <!-- Professional Education Card -->
+        <div class="category-card">
+          <div class="category-icon professional">
+            <i class="ri-briefcase-line"></i>
+          </div>
+          <h2 class="category-title">Professional Education</h2>
+          <p class="category-desc">
+            Manage quizzes for Professional Education subjects.
+          </p>
+          <a href="subject.html?categoryId=5" class="view-subjects-btn">
+            View Subjects <i class="ri-arrow-right-line"></i>
+          </a>
+        </div>
+
+        <!-- Major / Specialization Card -->
+        <div class="category-card">
+          <div class="category-icon major">
+            <i class="ri-focus-2-line"></i>
+          </div>
+          <h2 class="category-title">Major / Specialization</h2>
+          <p class="category-desc">
+            Manage quizzes for Major or Specialization subjects.
+          </p>
+          <a href="subject.html?categoryId=6" class="view-subjects-btn">
+            View Subjects <i class="ri-arrow-right-line"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- end .content -->
+  </div>
+  <!-- end .main -->
+
+  <!-- Reuse the same layout JS from dashboard (loads sidebar & header) -->
+  <script src="../assets/scripts/layout.js"></script>
+  <script src="../assets/scripts/auth-guard.js"></script>
+  <script>
+    // Handle Manage Category button click
+    function handleManageCategory() {
+      // You can add navigation or modal logic here
+      alert('Manage Category functionality will be implemented here.');
+      // Example: window.location.href = 'manage-category.html';
+    }
+  </script>
+  <script src="../assets/scripts/api-config.js"></script>
+  <script src="../assets/scripts/ApiService.js"></script>
+  <script src="../assets/scripts/api.js"></script>
+</body>
+</html>

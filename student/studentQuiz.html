@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<title>Quiz Mode - LearnIQ</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<!-- Reusable sidebar + topbar styles -->
+<link rel="stylesheet" href="../assets/styles/studentStyles/studentSidebar.css" />
+
+<style>
+  /* ===== FADE-IN ANIMATION ===== */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* ===== OVERRIDE: Remove right sidebar column from dashboard ===== */
+  .dashboard {
+    display: flex !important;
+    width: calc(100% - 215px) !important;
+    margin-left: 215px !important;
+    min-height: 100vh;
+    padding: 24px 28px !important;
+    transition: margin-left 0.3s ease, width 0.3s ease;
+    gap: 0 !important;
+  }
+  
+  body.sidebar-collapsed .dashboard {
+    margin-left: 70px !important;
+    width: calc(100% - 70px) !important;
+  }
+  
+  .dashboard .main-content {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    flex: 1;
+  }
+  
+  .dashboard .sidebar-right {
+    display: none !important;
+  }
+  
+  /* Page title area */
+  .page-title-area {
+    margin-bottom: 1.5rem;
+  }
+  
+  .page-title-area h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+  
+  .page-sub {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+  
+  /* Quiz grid */
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  
+  /* Quiz cards */
+  .quiz-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: all 0.25s;
+    cursor: pointer;
+    border: 1px solid #eef2f6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 360px;
+  }
+  .quiz-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+    border-color: #e0e7ff;
+  }
+  
+  .green-card { border-top: 4px solid #10b981; }
+  .blue-card { border-top: 4px solid #6366f1; }
+  
+  .icon-box {
+    width: 52px;
+    height: 52px;
+    background: #eef2ff;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: #2f49e0;
+    font-size: 1.5rem;
+  }
+  .green-card .icon-box {
+    background: #e6f7ec;
+    color: #10b981;
+  }
+  .blue-card .icon-box {
+    background: #eef2ff;
+    color: #6366f1;
+  }
+  
+  .quiz-card h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+  }
+  .green-card h2 { color: #0a5c3e; }
+  .blue-card h2 { color: #4f46e5; }
+  
+  .tag {
+    font-size: 0.7rem;
+    background: #f1f5f9;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 30px;
+    color: #475569;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+  .green-card .tag {
+    background: #dff5e7;
+    color: #0a5c3e;
+  }
+  .blue-card .tag {
+    background: #e0e7ff;
+    color: #4f46e5;
+  }
+  
+  .desc {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+  
+  .card-btn {
+    background: #eef2ff;
+    color: #4f46e5;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+  }
+  .green-btn {
+    background: #e6f7ec;
+    color: #10b981;
+  }
+  .green-btn:hover {
+    background: #10b981;
+    color: white;
+  }
+  .blue-btn {
+    background: #eef2ff;
+    color: #4f46e5;
+  }
+  .blue-btn:hover {
+    background: #6366f1;
+    color: white;
+  }
+  
+  /* Info strip */
+  .info-strip {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f8fafc;
+    border: 1px solid #eef2f6;
+    border-radius: 20px;
+    padding: 1rem 1.5rem;
+    margin-top: 1.5rem;
+  }
+  .info-icon {
+    width: 34px;
+    height: 34px;
+    background: #2f49e0;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .info-strip p {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    line-height: 1.4;
+  }
+  
+  /* ===== IMPROVED CATEGORY CARDS WITH ICONS ===== */
+  .categories {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  
+  .category-card {
+    flex: 1 1 200px;
+    background: white;
+    border: 1.5px solid #eef2f6;
+    border-radius: 20px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+  
+  .category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    transition: background 0.3s ease;
+  }
+  
+  .category-card:hover::before {
+    background: #6366f1;
+  }
+  
+  .category-card:hover {
+    border-color: #6366f1;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -12px rgba(99, 102, 241, 0.25);
+  }
+  
+  .category-card.selected {
+    border: 2px solid #6366f1;
+    background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);
+    box-shadow: 0 8px 20px -8px rgba(99, 102, 241, 0.2);
+  }
+  
+  .category-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+    border-radius: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .category-card:hover .category-icon-wrapper {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  }
+  
+  .category-card.selected .category-icon-wrapper {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  }
+  
+  .category-main-icon {
+    font-size: 2rem;
+    color: #4f46e5;
+    transition: all 0.3s ease;
+  }
+  
+  .category-card:hover .category-main-icon,
+  .category-card.selected .category-main-icon {
+    color: white;
+    transform: scale(1.1);
+  }
+  
+  .cat-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+  }
+  
+  .category-card.selected .cat-label {
+    color: #4f46e5;
+  }
+  
+  .cat-description {
+    font-size: 0.7rem;
+    color: #6b7280;
+    line-height: 1.3;
+    transition: color 0.3s ease;
+  }
+  
+  .category-card.selected .cat-description {
+    color: #4f46e5;
+  }
+  
+  .indicator {
+    width: 16px;
+    height: 16px;
+    background: #4f46e5;
+    border-radius: 50%;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    box-shadow: 0 0 0 2px white, 0 0 0 4px rgba(99, 102, 241, 0.3);
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 2px white, 0 0 0 0px rgba(99, 102, 241, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 2px white, 0 0 0 6px rgba(99, 102, 241, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 2px white, 0 0 0 0px rgba(99, 102, 241, 0);
+    }
+  }
+  
+  /* Modal base styles */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1300;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  
+  .modal-box {
+    background: white;
+    width: 860px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.2);
+    animation: modalIn 0.2s ease-out;
+  }
+  
+  @keyframes modalIn {
+    from { transform: scale(0.96); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  
+  .modal-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #eef2f6;
+  }
+  .modal-head .back-icon {
+    cursor: pointer;
+    font-size: 1rem;
+    color: #2f49e0;
+    background: #eef2ff;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .modal-head .back-icon:hover {
+    background: #e0e7ff;
+    transform: scale(0.96);
+  }
+  .modal-head h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+  }
+  
+  .modal-box h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.25rem;
+  }
+  .modal-subtitle {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+  }
+  
+  .start-btn {
+    background: #2f49e0;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 40px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 0.5rem;
+  }
+  .start-btn:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .dashboard {
+      margin-left: 0 !important;
+      width: 100% !important;
+      padding: calc(70px + env(safe-area-inset-top, 0px)) 20px 30px !important;
+    }
+    body.sidebar-collapsed .dashboard {
+      margin-left: 0 !important;
+      width: 100% !important;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard {
+      padding: calc(65px + env(safe-area-inset-top, 0px)) 16px 20px !important;
+    }
+    .quiz-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .quiz-card {
+      padding: 1.25rem;
+      min-height: auto;
+    }
+    .page-title-area h1 {
+      font-size: 1.5rem;
+    }
+    .modal-box {
+      padding: 1.25rem;
+    }
+    
+    .categories {
+      gap: 0.75rem;
+    }
+    .category-card {
+      flex: 1 1 100%;
+      padding: 1rem;
+    }
+    .category-icon-wrapper {
+      width: 60px;
+      height: 60px;
+    }
+    .category-main-icon {
+      font-size: 1.6rem;
+    }
+    .cat-label {
+      font-size: 0.85rem;
+    }
+    .cat-description {
+      font-size: 0.65rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .dashboard {
+      padding: calc(60px + env(safe-area-inset-top, 0px)) 12px 16px !important;
+    }
+    .quiz-grid {
+      gap: 0.875rem;
+    }
+    .quiz-card {
+      padding: 1rem;
+    }
+    .icon-box {
+      width: 44px;
+      height: 44px;
+      font-size: 1.25rem;
+    }
+    .category-icon-wrapper {
+      width: 50px;
+      height: 50px;
+    }
+    .category-main-icon {
+      font-size: 1.3rem;
+    }
+  }
+  
+  body.modal-open {
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+
+<button class="hamburger-btn" id="hamburgerBtn" aria-label="Open sidebar">
+  <i class="fa-solid fa-bars"></i>
+</button>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div id="sidebar-container"></div>
+
+<div class="dashboard">
+  <div class="main-content">
+    <div id="topbar-container"></div>
+
+    <div class="fade-in">
+      <div class="page-title-area">
+        <h1>Quiz Mode</h1>
+        <div class="page-sub">Choose a quiz mode you want to begin</div>
+      </div>
+
+      <div class="quiz-grid">
+        <div class="quiz-card green-card" role="button" tabindex="0" onclick="openRandomQuiz()" onkeypress="if(event.key==='Enter') openRandomQuiz()">
+          <div>
+            <div class="icon-box">
+              <i class="fa-solid fa-shuffle"></i>
+            </div>
+            <h2>Random Quiz</h2>
+            <div class="tag">Mixed Questions</div>
+            <p class="desc">Get random questions from all categories. Perfect for quick practice and self-assessment.</p>
+          </div>
+          <button class="card-btn green-btn">Select Mode</button>
+        </div>
+
+        <div class="quiz-card blue-card" role="button" tabindex="0" onclick="openExamSimulation()" onkeypress="if(event.key==='Enter') openExamSimulation()">
+          <div>
+            <div class="icon-box">
+              <i class="fa-regular fa-clock"></i>
+            </div>
+            <h2>Exam Simulation</h2>
+            <div class="tag">Timed</div>
+            <p class="desc">Simulate real exam conditions with a timer. Pressure-ready training with strict time limits.</p>
+          </div>
+          <button class="card-btn blue-btn">Start Mock Exam</button>
+        </div>
+      </div>
+
+      <div class="info-strip">
+        <div class="info-icon"><i class="fa-solid fa-circle-info"></i></div>
+        <p>You can change the mode anytime before starting the quiz. Each mode tracks your progress separately.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="randomQuizModal" class="modal-backdrop" onclick="handleBackdropClick(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <i class="fa-solid fa-arrow-left back-icon" onclick="closeRandomQuiz()"></i>
+      <h3>Random Quiz Setup</h3>
+    </div>
+
+    <h4>Choose a Category</h4>
+    <p class="modal-subtitle">Select the subject area for your randomized quiz</p>
+
+    <div class="categories">
+      <div class="category-card selected" data-category="General Education" onclick="selectCategory(this)">
+        <div class="indicator"></div>
+        <div class="category-icon-wrapper">
+          <i class="fa-solid fa-graduation-cap category-main-icon"></i>
+        </div>
+        <div class="cat-label">General Education</div>
+        <div class="cat-description">Broad knowledge foundation</div>
+      </div>
+
+      <div class="category-card" data-category="Professional Education" onclick="selectCategory(this)">
+        <div class="category-icon-wrapper">
+          <i class="fa-solid fa-chalkboard-user category-main-icon"></i>
+        </div>
+        <div class="cat-label">Professional Education</div>
+        <div class="cat-description">Teaching methodologies & pedagogy</div>
+      </div>
+
+      <div class="category-card" data-category="Major/Specialization" onclick="selectCategory(this)">
+        <div class="category-icon-wrapper">
+          <i class="fa-solid fa-flask category-main-icon"></i>
+        </div>
+        <div class="cat-label">Major/Specialization</div>
+        <div class="cat-description">In-depth field expertise</div>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startQuiz()">
+      <i class="fa-solid fa-play" style="margin-right: 8px;"></i> Start Quiz
+    </button>
+  </div>
+</div>
+
+<script src="../assets/scripts/student-layout.js"></script>
+<script src="../assets/scripts/api-config.js"></script>
+<script src="../assets/scripts/ApiService.js"></script>
+<script src="../assets/scripts/NotificationManager.js"></script>
+
+<script>
+  let selectedCategory = null;
+  let selectedCategoryId = null;
+  let apiService = new ApiService();
+  let availableCategories = [];
+  let quizzesAvailableInCategory = [];
+  let categoryHasQuizzes = false;
+  let categoryNameToIdMap = {}; // Map category names to their IDs
+  
+  // ===== Load Categories on Page Load =====
+  async function loadCategories() {
+    try {
+      const categories = await apiService.getCategories();
+      if (Array.isArray(categories)) {
+        availableCategories = categories;
+        
+        // Build mapping of category names to IDs
+        categories.forEach(cat => {
+          categoryNameToIdMap[cat.name] = cat.id;
+        });
+        
+        console.log('✅ Category name-to-ID mapping:', categoryNameToIdMap);
+        
+        populateCategoryCards();
+      }
+    } catch (error) {
+      console.log('Categories API call (optional):', error.message);
+      // Categories endpoint might not be available, that's okay
+    }
+  }
+  
+  function populateCategoryCards() {
+    const categoryContainer = document.querySelector('.categories');
+    if (!categoryContainer) return;
+    
+    // Use API categories if available, otherwise keep existing
+    const categoriesToUse = availableCategories.length > 0 ? availableCategories : null;
+    
+    if (categoriesToUse && categoriesToUse.length > 0) {
+      categoryContainer.innerHTML = '';
+      categoriesToUse.forEach((cat, idx) => {
+        const categoryCard = document.createElement('div');
+        categoryCard.className = 'category-card' + (idx === 0 ? ' selected' : '');
+        categoryCard.dataset.category = cat.name;
+        categoryCard.dataset.categoryId = cat.id;
+        categoryCard.onclick = () => selectCategory(categoryCard);
+        
+        const iconMap = {
+          'General Education': 'fa-graduation-cap',
+          'Professional Education': 'fa-chalkboard-user',
+          'Major/Specialization': 'fa-flask'
+        };
+        const icon = iconMap[cat.name] || 'fa-book';
+        
+        categoryCard.innerHTML = `
+          <div class="indicator" ${idx === 0 ? 'style="display:block;"' : 'style="display:none;"'}></div>
+          <div class="category-icon-wrapper">
+            <i class="fa-solid ${icon} category-main-icon"></i>
+          </div>
+          <div class="cat-label">${cat.name}</div>
+          <div class="cat-description">${cat.description || 'Learning content'}</div>
+        `;
+        categoryContainer.appendChild(categoryCard);
+      });
+      
+      // Select first category by default
+      const firstCard = categoryContainer.querySelector('.category-card');
+      if (firstCard) {
+        selectCategory(firstCard);
+      }
+    } else {
+      // Update existing hardcoded category cards
+      const existingCards = categoryContainer.querySelectorAll('.category-card');
+      existingCards.forEach((card, idx) => {
+        const categoryName = card.getAttribute('data-category') || card.querySelector('.cat-label')?.textContent;
+        
+        // Set the category ID from the mapping
+        if (categoryName && categoryNameToIdMap[categoryName]) {
+          card.setAttribute('data-category-id', categoryNameToIdMap[categoryName]);
+        }
+        
+        card.onclick = () => selectCategory(card);
+        
+        if (idx === 0) {
+          card.classList.add('selected');
+          const indicator = card.querySelector('.indicator');
+          if (indicator) indicator.style.display = 'block';
+          selectCategory(card);
+        } else {
+          const indicator = card.querySelector('.indicator');
+          if (indicator) indicator.style.display = 'none';
+        }
+      });
+    }
+  }
+  
+  async function openRandomQuiz() {
+    const modal = document.getElementById("randomQuizModal");
+    if (modal) {
+      modal.classList.add("open");
+      document.body.classList.add("modal-open");
+      document.body.style.overflow = "hidden";
+      
+      // Ensure selected category has its indicator visible
+      const selectedCard = document.querySelector(".category-card.selected");
+      if (selectedCard) {
+        const indicator = selectedCard.querySelector(".indicator");
+        if (indicator) {
+          indicator.style.display = "block";
+        }
+        // Re-check question availability for the selected category
+        await checkQuizAvailabilityForCategory(selectedCategoryId);
+      }
+    }
+  }
+  
+  function closeRandomQuiz() {
+    const modal = document.getElementById("randomQuizModal");
+    if (modal) {
+      modal.classList.remove("open");
+      document.body.classList.remove("modal-open");
+      document.body.style.overflow = "";
+    }
+  }
+  
+  function handleBackdropClick(e) {
+    if (e.target === document.getElementById("randomQuizModal")) {
+      closeRandomQuiz();
+    }
+  }
+  
+  async function selectCategory(cardElement) {
+    const allCards = document.querySelectorAll(".category-card");
+    allCards.forEach(card => {
+      card.classList.remove("selected");
+      const indicator = card.querySelector(".indicator");
+      if (indicator) indicator.style.display = "none";
+    });
+    
+    cardElement.classList.add("selected");
+    selectedCategory = cardElement.getAttribute("data-category") || cardElement.querySelector(".cat-label")?.textContent;
+    
+    // Try to get ID from data attribute first
+    selectedCategoryId = cardElement.getAttribute("data-category-id");
+    
+    // If not found, try to get from mapping using category name
+    if (!selectedCategoryId && selectedCategory) {
+      selectedCategoryId = categoryNameToIdMap[selectedCategory];
+      console.log(`📍 Mapped category "${selectedCategory}" to ID: ${selectedCategoryId}`);
+    }
+    
+    // Fallback (shouldn't reach here if mapping works)
+    if (!selectedCategoryId) {
+      console.error(`❌ Could not find category ID for "${selectedCategory}"`);
+      const categoryIndex = Array.from(allCards).indexOf(cardElement);
+      selectedCategoryId = categoryIndex;
+    }
+    
+    console.log(`✅ Selected category: "${selectedCategory}" (ID: ${selectedCategoryId})`);
+    
+    // Show visual indicator
+    const indicator = cardElement.querySelector(".indicator");
+    if (indicator) {
+      indicator.style.display = "block";
+    }
+    
+    // Check question availability for this category
+    await checkQuizAvailabilityForCategory(selectedCategoryId);
+  }
+  
+  // Check if the selected category has active questions available for random quiz
+  async function checkQuizAvailabilityForCategory(categoryId) {
+    try {
+      console.log('🔍 Checking questions for category:', categoryId);
+      
+      let totalQuestions = 0;
+      categoryHasQuizzes = false;
+      quizzesAvailableInCategory = [];
+      
+      // Get subjects in this category
+      const categorySubjects = await apiService.getSubjectsByCategory(categoryId);
+      console.log('📖 Subjects in category:', categorySubjects.length);
+      
+      // Fetch questions for each subject (we need questions for random quiz, not quiz records)
+      for (const subject of categorySubjects) {
+        try {
+          const questionsResponse = await fetch(`${apiService.baseURL}/questions?subjectId=${subject.id}`, {
+            headers: apiService.getHeaders(!!apiService.token)
+          });
+          
+          if (questionsResponse.ok) {
+            const questions = await questionsResponse.json();
+            totalQuestions += questions.length;
+            console.log(`  📝 Subject "${subject.name}": ${questions.length} questions`);
+          }
+        } catch (e) {
+          console.warn('Could not load questions for subject', subject.id);
+        }
+      }
+      
+      // For random quiz, we just need questions available, not quiz records
+      console.log(`✅ Total questions available: ${totalQuestions}`);
+      categoryHasQuizzes = totalQuestions > 0;
+      
+      // Update start button state
+      updateStartButtonState();
+      
+    } catch (error) {
+      console.error('❌ Error checking question availability:', error);
+      categoryHasQuizzes = false;
+      quizzesAvailableInCategory = [];
+      updateStartButtonState();
+    }
+  }
+  
+  function updateStartButtonState() {
+    const startBtn = document.querySelector('.start-btn');
+    if (!startBtn) return;
+    
+    if (categoryHasQuizzes) {
+      // Questions available - enable button
+      startBtn.disabled = false;
+      startBtn.style.opacity = '1';
+      startBtn.style.cursor = 'pointer';
+      console.log('✅ Start button enabled - questions available');
+    } else {
+      // No questions - disable button
+      startBtn.disabled = true;
+      startBtn.style.opacity = '0.5';
+      startBtn.style.cursor = 'not-allowed';
+      console.log('⚠️ Start button disabled - no questions in category');
+    }
+  }
+  
+  function openExamSimulation() {
+    localStorage.setItem("quizMode", "exam");
+    localStorage.setItem("examTimed", "true");
+    localStorage.setItem("examStartTime", Date.now().toString());
+    
+    if (typeof window.navigateWithTransition === 'function') {
+      window.navigateWithTransition('../student/studentExamSimulation.html');
+    } else {
+      window.location.href = '../student/studentExamSimulation.html';
+    }
+  }
+  
+  function startQuiz() {
+    if (!selectedCategory) {
+      alert('Please select a category');
+      return;
+    }
+    
+    // Verify questions are available
+    if (!categoryHasQuizzes) {
+      alert(`❌ No questions available in ${selectedCategory}.\n\nPlease ask your instructor to create and publish questions for this category.`);
+      return;
+    }
+    
+    localStorage.setItem("selectedQuizCategory", selectedCategory);
+    localStorage.setItem("selectedCategoryId", selectedCategoryId);
+    localStorage.setItem("quizMode", "random");
+    localStorage.setItem("quizStartTime", Date.now().toString());
+    
+    closeRandomQuiz();
+    
+    setTimeout(() => {
+      // Navigate with mode in URL for proper routing
+      const quizUrl = `../student/studentQuizQuestions.html?mode=random&subject=${encodeURIComponent(selectedCategory)}`;
+      if (typeof window.navigateWithTransition === 'function') {
+        window.navigateWithTransition(quizUrl);
+      } else {
+        window.location.href = quizUrl;
+      }
+    }, 50);
+  }
+  
+  document.addEventListener("DOMContentLoaded", function() {
+    loadCategories();
+    
+    setTimeout(() => {
+      const sidebar = document.querySelector('#sidebar-container .sidebar, #sidebar-container');
+      if (sidebar) {
+        const quizLink = Array.from(sidebar.querySelectorAll('.menu-item')).find(item => 
+          item.textContent.toLowerCase().includes('quiz')
+        );
+        if (quizLink) {
+          document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+          quizLink.classList.add('active');
+        }
+      }
+    }, 150);
+  });
+  
+  window.navigateWithTransition = window.navigateWithTransition || function(url) {
+    window.location.href = url;
+  };
+  
+  window.addEventListener('pageshow', function() {
+    document.body.style.overflow = "";
+    document.body.classList.remove("modal-open");
+    const modal = document.getElementById("randomQuizModal");
+    if (modal) modal.classList.remove("open");
+  });
+</script>
+</body>
+</html>

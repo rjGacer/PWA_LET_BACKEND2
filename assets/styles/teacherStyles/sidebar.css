@@ -1,0 +1,385 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* CRITICAL FIX: Body uses flex to position sidebar + main side by side */
+body {
+  display: flex;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+  background: #f5f5f7;
+  color: #202124;
+}
+
+/* =========================
+       SIDEBAR
+    ========================== */
+.sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #ececec;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px 16px;
+  flex-shrink: 0;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+}
+
+.sidebar-top {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* LOGO */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.logo-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6c63ff, #4f46e5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+}
+
+.logo h2 {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.logo span {
+  color: #5b4ffb;
+}
+
+/* NAVIGATION */
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-item {
+  width: 100%;
+}
+
+.nav-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #444;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.25s ease;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+.nav-link-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-link i {
+  font-size: 18px;
+}
+
+.nav-link:hover {
+  background: #f4f2ff;
+  color: #5b4ffb;
+}
+
+.nav-link.active {
+  background: linear-gradient(90deg, #5b4ffb, #6949ff);
+  color: white;
+  box-shadow: 0 6px 18px rgba(91, 79, 251, 0.25);
+}
+
+/* DROPDOWN */
+.submenu {
+  margin-top: 6px;
+  margin-left: 18px;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.submenu.show {
+  display: flex;
+}
+
+.submenu a {
+  text-decoration: none;
+  color: #555;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  transition: 0.2s;
+}
+
+.submenu a:hover {
+  background: #f4f2ff;
+  color: #5b4ffb;
+}
+
+/* PROMO CARD */
+.promo-card {
+  background: linear-gradient(180deg, #5b4ffb, #7367ff);
+  border-radius: 20px;
+  padding: 22px 18px;
+  text-align: center;
+  color: white;
+  margin-top: 20px;
+}
+
+.promo-card .cloud {
+  width: 70px;
+  height: 70px;
+  margin: auto;
+  margin-bottom: 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+}
+
+.promo-card h4 {
+  font-size: 15px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.promo-card p {
+  font-size: 12px;
+  opacity: 0.9;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.sync-btn {
+  border: none;
+  background: white;
+  color: #5b4ffb;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.sync-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* SIDEBAR BOTTOM */
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.bottom-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  text-decoration: none;
+  border-radius: 12px;
+  color: #444;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.bottom-link:hover {
+  background: #f4f2ff;
+  color: #5b4ffb;
+}
+
+/* =========================
+       HEADER (inside main)
+    ========================== */
+.header {
+  height: 78px;
+  background: #ffffff;
+  border-bottom: 1px solid #ececec;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.menu-toggle {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: none;
+  background: #f5f5ff;
+  color: #5b4ffb;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.menu-toggle:hover {
+  background: #ece9ff;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #202124;
+}
+
+/* RIGHT SIDE */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+/* Notification */
+.notification {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #f5f5ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5b4ffb;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.notification:hover {
+  background: #ece9ff;
+}
+
+.notification i {
+  font-size: 20px;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff4d67;
+  border: 2px solid white;
+}
+
+/* PROFILE */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.profile-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5b4ffb, #7c72ff);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #202124;
+  margin: 0;
+}
+
+.profile-info p {
+  font-size: 12px;
+  color: #777;
+  margin: 0;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 6px 8px;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.logout-btn:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    height: 100%;
+    z-index: 1000;
+    transition: 0.3s ease;
+  }
+
+  .sidebar.show-sidebar {
+    left: 0;
+  }
+
+  .header {
+    padding: 0 18px;
+  }
+
+  .profile-info {
+    display: none;
+  }
+}

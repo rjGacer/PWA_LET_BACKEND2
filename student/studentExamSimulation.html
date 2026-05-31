@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>Exam Simulation - LearnIQ</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+<link rel="stylesheet" href="../assets/styles/studentStyles/studentExamSimulation.css" />
+    <!-- Reusable sidebar + topbar styles -->
+    <link
+      rel="stylesheet"
+      href="../assets/styles/studentStyles/studentSidebar.css"
+    />
+
+  
+  </head>
+  <body>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open sidebar">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div id="sidebar-container"></div>
+
+    <div class="dashboard">
+      <div class="main-content">
+        <div id="topbar-container"></div>
+
+        <div class="fade-in">
+          <div class="page-title-area">
+            <div class="back-link" onclick="goBack()">
+              <i class="fa-solid fa-chevron-left"></i>
+              Quiz Mode
+            </div>
+            <h1>Exam Simulation</h1>
+            <div class="page-sub">
+              Simulate real LET exam conditions with timed mock tests
+            </div>
+          </div>
+
+          <!-- Info Cards -->
+          <div class="info-cards">
+            <div class="info-card">
+              <div class="info-icon-circle">
+                <i class="fa-regular fa-circle-question"></i>
+              </div>
+              <div class="info-content">
+                <h3>Multiple Choice Questions</h3>
+                <p>Professionally crafted MCQs covering all LET domains</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon-circle">
+                <i class="fa-solid fa-shuffle"></i>
+              </div>
+              <div class="info-content">
+                <h3>Randomized Questions</h3>
+                <p>Unique question sets per attempt for authentic practice</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon-circle">
+                <i class="fa-solid fa-hourglass-half"></i>
+              </div>
+              <div class="info-content">
+                <h3>Timed Mock Exams</h3>
+                <p>Auto-submit when time expires, just like the real exam</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exam Setup Section -->
+          <div class="exam-setup-section">
+            <div class="section-header">
+              <i class="fa-solid fa-gear"></i>
+              <h2>Exam Configuration</h2>
+            </div>
+
+            <div class="setup-options">
+              <div class="option-card">
+                <div class="option-label">
+                  <i class="fa-solid fa-layer-group"></i>
+                  <span>Category</span>
+                </div>
+                <select id="examCategory">
+                  <option value="All">All Categories</option>
+                  <option value="General Education">General Education</option>
+                  <option value="Professional Education">
+                    Professional Education
+                  </option>
+                  <option value="Major/Specialization">
+                    Major/Specialization
+                  </option>
+                </select>
+              </div>
+
+              <div class="option-card">
+                <div class="option-label">
+                  <i class="fa-solid fa-list-ol"></i>
+                  <span>Number of Questions</span>
+                </div>
+                <select id="questionCount">
+                  <option value="10">10 Questions (Quick Quiz)</option>
+                  <option value="20">20 Questions (Practice)</option>
+                  <option value="30">30 Questions (Standard)</option>
+                  <option value="50">50 Questions (Full Mock)</option>
+                  <option value="100">100 Questions (Comprehensive)</option>
+                </select>
+              </div>
+
+              <div class="option-card">
+                <div class="option-label">
+                  <i class="fa-solid fa-hourglass-half"></i>
+                  <span>Time Limit</span>
+                </div>
+                <div class="time-input-group">
+                  <input
+                    type="number"
+                    id="minutesInput"
+                    placeholder="Minutes"
+                    value="60"
+                    min="1"
+                    max="180"
+                  />
+                  <span><i class="fa-regular fa-clock"></i> minutes</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="start-exam-btn" onclick="startExam()">
+              <i class="fa-solid fa-play"></i>
+              Start Exam Simulation
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Exam Modal -->
+    <div id="examModal" class="exam-modal">
+      <div class="exam-container">
+        <div class="exam-header">
+          <h3><i class="fa-regular fa-file-lines"></i> LET Exam Simulation</h3>
+          <div class="timer-box" id="timerDisplay">
+            <i class="fa-regular fa-hourglass-half"></i>
+            <span id="timerText">60:00</span>
+          </div>
+        </div>
+        <div class="exam-body">
+          <div class="question-text" id="questionText">
+            <i class="fa-regular fa-question-circle"></i> Loading question...
+          </div>
+          <div class="options-list" id="optionsList"></div>
+        </div>
+        <div class="exam-footer">
+          <div class="question-counter" id="questionCounter">
+            <i class="fa-regular fa-rectangle-list"></i>
+            <span>Question 1 / 0</span>
+          </div>
+          <div class="nav-buttons">
+            <button class="nav-btn prev" onclick="prevQuestion()">
+              <i class="fa-solid fa-arrow-left"></i> Previous
+            </button>
+            <button class="nav-btn next" onclick="nextQuestion()">
+              Next <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <button class="submit-btn" onclick="submitExam()">
+              <i class="fa-solid fa-check-double"></i> Submit Exam
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="resultsModal" class="results-modal">
+      <div class="results-container">
+        <div class="score-circle">
+          <span class="score-number" id="scoreNumber">0</span>
+          <span class="score-label"
+            >out of <span id="totalQuestions">0</span></span
+          >
+        </div>
+        <h3 id="resultTitle">
+          <i class="fa-regular fa-star"></i> Exam Complete!
+        </h3>
+        <p id="resultMessage">Great job on completing the simulation!</p>
+        <button class="close-results-btn" onclick="closeResults()">
+          <i class="fa-solid fa-check"></i> Close
+        </button>
+      </div>
+    </div>
+
+    <script src="../assets/scripts/student-layout.js"></script>
+    <script src="../assets/scripts/api-config.js"></script>
+    <script src="../assets/scripts/ApiService.js?v=3"></script>
+    <script src="../assets/scripts/QuizResultsManager.js?v=3"></script>
+
+    <script>
+      let apiService = new ApiService();
+      let allQuestions = [];
+      let availableCategories = [];
+      let currentQuestions = [];
+      let userAnswers = [];
+      let currentIndex = 0;
+      let timerInterval = null;
+      let timeRemaining = 0;
+      let examActive = false;
+      let examStartTime = null;
+      let selectedCategoryId = null;
+      let selectedCategoryName = null;
+      let totalAvailableQuestions = 0; // Track total questions in selected category
+
+      // ===== Load Categories & Questions on Page Load =====
+      async function initializeExam() {
+        try {
+          console.log('🎓 Initializing Exam Simulation...');
+          
+          // Load categories
+          const categories = await apiService.getCategories();
+          console.log('📚 Categories loaded:', categories);
+          
+          const categorySelect = document.getElementById('examCategory');
+          categorySelect.innerHTML = '<option value="all">All Categories</option>';
+          
+          categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            categorySelect.appendChild(option);
+          });
+
+          // Add event listener to update available quiz count
+          categorySelect.addEventListener('change', updateQuizAvailability);
+          
+          // Check initial availability
+          updateQuizAvailability();
+          
+        } catch (error) {
+          console.error('❌ Error initializing exam:', error.message);
+        }
+      }
+
+      // Check how many questions are available for selected category
+      async function updateQuizAvailability() {
+        try {
+          const categoryId = document.getElementById('examCategory').value;
+          console.log('🔍 Checking questions for category:', categoryId);
+          
+          let totalQuestions = 0;
+          let subjects = [];
+          
+          if (categoryId === 'all') {
+            // Get all subjects for all categories
+            subjects = await apiService.getSubjects();
+            console.log('📖 All subjects:', subjects.length);
+          } else {
+            // Get subjects in this specific category
+            subjects = await apiService.getSubjectsByCategory(categoryId);
+            console.log('📖 Subjects in category:', subjects.length);
+          }
+          
+          // Count questions from all subjects
+          for (const subject of subjects) {
+            try {
+              const questionsResponse = await fetch(`${apiService.baseURL}/questions?subjectId=${subject.id}`, {
+                headers: apiService.getHeaders(!!apiService.token)
+              });
+              
+              if (questionsResponse.ok) {
+                const questions = await questionsResponse.json();
+                totalQuestions += questions.length;
+                console.log(`  📝 Subject "${subject.name}": ${questions.length} questions`);
+              }
+            } catch (e) {
+              console.warn('Could not load questions for subject', subject.id);
+            }
+          }
+          
+          // Store the total count
+          totalAvailableQuestions = totalQuestions;
+          console.log(`✅ Total questions available in category: ${totalQuestions}`);
+          
+          // Update question count options based on availability
+          updateQuestionCountOptions(totalQuestions);
+          
+          // Update UI to show availability
+          const startBtn = document.querySelector('.start-exam-btn');
+          const configSection = document.querySelector('.exam-setup-section');
+          const infoCardSection = document.querySelector('.setup-options');
+          
+          if (totalQuestions === 0) {
+            // No questions available - disable entire config section
+            startBtn.disabled = true;
+            startBtn.style.opacity = '0.5';
+            configSection.style.opacity = '0.5';
+            configSection.style.pointerEvents = 'none';
+            infoCardSection.style.opacity = '0.6';
+            infoCardSection.style.pointerEvents = 'none';
+            
+            // Add visual indicator
+            if (!configSection.querySelector('.no-questions-badge')) {
+              const badge = document.createElement('div');
+              badge.className = 'no-questions-badge';
+              badge.innerHTML = '<i class="fa-solid fa-lock"></i> No questions available';
+              badge.style.cssText = 'position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;';
+              configSection.style.position = 'relative';
+              configSection.appendChild(badge);
+            }
+            
+            console.warn('⚠️ No questions available for selected category');
+          } else {
+            // Questions available - enable exam
+            startBtn.disabled = false;
+            startBtn.style.opacity = '1';
+            configSection.style.opacity = '1';
+            configSection.style.pointerEvents = 'auto';
+            infoCardSection.style.opacity = '1';
+            infoCardSection.style.pointerEvents = 'auto';
+            
+            // Remove badge if it exists
+            const badge = configSection.querySelector('.no-questions-badge');
+            if (badge) badge.remove();
+            
+            console.log(`✅ Exam ready! ${totalQuestions} question(s) available`);
+          }
+          
+        } catch (error) {
+          console.error('❌ Error updating question availability:', error);
+          document.querySelector('.start-exam-btn').disabled = true;
+        }
+      }
+
+      // Update question count dropdown options based on available questions
+      function updateQuestionCountOptions(availableCount) {
+        const questionCountSelect = document.getElementById('questionCount');
+        const options = questionCountSelect.querySelectorAll('option');
+        
+        // Enable/disable options based on available questions
+        options.forEach(option => {
+          const optionValue = parseInt(option.value);
+          
+          if (optionValue > availableCount) {
+            // Not enough questions - disable this option
+            option.disabled = true;
+            option.textContent = option.textContent.split(' (')[0] + ` (Only ${availableCount} available)`;
+          } else {
+            // Enough questions - enable this option
+            option.disabled = false;
+            
+            // Restore original text
+            if (optionValue === 10) option.textContent = '10 Questions (Quick Quiz)';
+            else if (optionValue === 20) option.textContent = '20 Questions (Practice)';
+            else if (optionValue === 30) option.textContent = '30 Questions (Standard)';
+            else if (optionValue === 50) option.textContent = '50 Questions (Full Mock)';
+            else if (optionValue === 100) option.textContent = '100 Questions (Comprehensive)';
+          }
+        });
+        
+        // Make sure the currently selected option is still valid
+        if (questionCountSelect.selectedOptions[0]?.disabled) {
+          // Find first enabled option and select it
+          for (const option of options) {
+            if (!option.disabled) {
+              questionCountSelect.value = option.value;
+              break;
+            }
+          }
+        }
+      }
+
+      
+
+      // ===== GO BACK FUNCTION =====
+      function goBack() {
+        const examModal = document.getElementById("examModal");
+        if (examModal && examModal.classList.contains("active")) {
+          if (confirm("You have an ongoing exam. Leave without completing?")) {
+            if (timerInterval) clearInterval(timerInterval);
+            examModal.classList.remove("active");
+            document.body.classList.remove("modal-open");
+            document.body.style.overflow = "";
+            if (typeof window.navigateWithTransition === "function") {
+              window.navigateWithTransition("../student/studentQuiz.html");
+            } else {
+              window.location.href = "../student/studentQuiz.html";
+            }
+          }
+        } else {
+          if (typeof window.navigateWithTransition === "function") {
+            window.navigateWithTransition("../student/studentQuiz.html");
+          } else {
+            window.location.href = "../student/studentQuiz.html";
+          }
+        }
+      }
+
+      async function startExam() {
+        const categorySelect = document.getElementById("examCategory");
+        const categoryId = categorySelect.value;
+        const categoryName = categorySelect.options[categorySelect.selectedIndex].text;
+        const questionCount = parseInt(document.getElementById("questionCount").value);
+        const minutes = parseInt(document.getElementById("minutesInput").value);
+
+        if (isNaN(minutes) || minutes < 1) {
+          alert("Please enter a valid time limit (1-180 minutes)");
+          return;
+        }
+
+        if (totalAvailableQuestions === 0) {
+          alert("❌ No questions available for the selected category.\n\nPlease ask your instructor to create and publish questions for this category.");
+          return;
+        }
+
+        // Store selected category for later use
+        selectedCategoryId = categoryId;
+        selectedCategoryName = categoryName;
+
+        // Disable start button while loading
+        const startBtn = document.querySelector('.start-exam-btn');
+        const originalText = startBtn.textContent;
+        startBtn.disabled = true;
+        startBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading exam...';
+
+        try {
+          // Collect all questions from selected category
+          await collectQuestionsFromCategory(categoryId, questionCount, minutes);
+        } catch (error) {
+          console.error('❌ Error starting exam:', error);
+          alert("Error starting exam. Please try again.");
+        } finally {
+          // Re-enable start button
+          startBtn.disabled = false;
+          startBtn.innerHTML = originalText;
+        }
+      }
+
+      async function collectQuestionsFromCategory(categoryId, questionCount, minutes) {
+        try {
+          console.log('🔄 Collecting questions from category:', categoryId);
+          
+          const allCollectedQuestions = [];
+          let subjects = [];
+          
+          // Get subjects for the selected category
+          if (categoryId === 'all') {
+            subjects = await apiService.getSubjects();
+          } else {
+            subjects = await apiService.getSubjectsByCategory(categoryId);
+          }
+          
+          console.log(`📖 Processing ${subjects.length} subjects...`);
+          
+          // Fetch questions from all subjects
+          for (const subject of subjects) {
+            try {
+              const questionsResponse = await fetch(`${apiService.baseURL}/questions?subjectId=${subject.id}`, {
+                headers: apiService.getHeaders(!!apiService.token)
+              });
+              
+              if (questionsResponse.ok) {
+                const questionsList = await questionsResponse.json();
+                console.log(`  📝 Subject "${subject.name}": ${questionsList.length} questions found`);
+                
+                // Fetch full details (with options) for each question
+                const batchSize = 5;
+                for (let i = 0; i < questionsList.length; i += batchSize) {
+                  const batch = questionsList.slice(i, i + batchSize);
+                  const batchResults = await Promise.all(
+                    batch.map(async (q) => {
+                      try {
+                        if (!q.id) return null;
+                        
+                        const detailResponse = await fetch(`${apiService.baseURL}/questions/${q.id}`, {
+                          headers: apiService.getHeaders(!!apiService.token)
+                        });
+                        
+                        if (detailResponse.ok) {
+                          return await detailResponse.json();
+                        }
+                        return null;
+                      } catch (e) {
+                        console.warn(`Could not fetch question ${q.id}`);
+                        return null;
+                      }
+                    })
+                  );
+                  
+                  batchResults.forEach(q => {
+                    if (q && q.options && Array.isArray(q.options)) {
+                      // Validate question has 4 valid options
+                      const validOptions = q.options.filter(opt => opt && opt.option_text);
+                      if (validOptions.length >= 4) {
+                        const correctIndex = q.options.findIndex(opt => opt.is_correct === true || opt.is_correct === 1);
+                        if (correctIndex !== -1) {
+                          allCollectedQuestions.push({
+                            id: q.id,
+                            text: q.question_text,
+                            options: q.options.slice(0, 4).map(opt => opt.option_text),
+                            correct: correctIndex,
+                            subjectId: subject.id,
+                            subjectName: subject.name
+                          });
+                        }
+                      }
+                    }
+                  });
+                }
+              }
+            } catch (e) {
+              console.warn(`Could not load questions for subject ${subject.id}:`, e);
+            }
+          }
+
+          console.log(`✅ Collected ${allCollectedQuestions.length} valid questions`);
+
+          if (allCollectedQuestions.length === 0) {
+            alert("❌ No valid questions found in the selected category.\n\nMake sure questions have 4 options and a marked correct answer.\n\nPlease ask your instructor to complete the question setup.");
+            return;
+          }
+
+          // Deduplicate questions by ID
+          const uniqueQuestionsMap = new Map();
+          allCollectedQuestions.forEach(q => {
+            if (!uniqueQuestionsMap.has(q.id)) {
+              uniqueQuestionsMap.set(q.id, q);
+            }
+          });
+          const deduplicatedQuestions = Array.from(uniqueQuestionsMap.values());
+          
+          console.log(`🔄 Deduplicated: ${allCollectedQuestions.length} → ${deduplicatedQuestions.length} unique questions`);
+          
+          // Shuffle questions using Fisher-Yates algorithm
+          let shuffled = [...deduplicatedQuestions];
+          for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+          }
+
+          // Take requested number of questions (or all if not enough)
+          const questionsToUse = shuffled.slice(0, Math.min(questionCount, shuffled.length));
+          
+          // Check if we have fewer questions than requested
+          if (questionsToUse.length < questionCount) {
+            console.warn(`⚠️ Only ${questionsToUse.length} unique questions available, but ${questionCount} requested`);
+          }
+          
+          currentQuestions = questionsToUse;
+
+          console.log(`🎯 Starting exam with ${currentQuestions.length} questions, ${minutes} minutes`);
+          console.log('📝 Exam questions:', currentQuestions.map(q => ({ id: q.id, text: q.text.substring(0, 50) })));
+
+          // Initialize exam state
+          userAnswers = new Array(currentQuestions.length).fill(null);
+          currentIndex = 0;
+          timeRemaining = minutes * 60;
+          examStartTime = new Date();
+
+          // Show exam modal
+          document.getElementById("examModal").classList.add("active");
+          document.body.classList.add("modal-open");
+          document.body.style.overflow = "hidden";
+
+          updateTimerDisplay();
+          renderCurrentQuestion();
+          updateQuestionCounter();
+
+          // Start timer
+          if (timerInterval) clearInterval(timerInterval);
+          timerInterval = setInterval(() => {
+            if (!examActive && document.getElementById("examModal").classList.contains("active")) {
+              examActive = true;
+            }
+            if (timeRemaining > 0) {
+              timeRemaining--;
+              updateTimerDisplay();
+
+              const timerBox = document.getElementById("timerDisplay");
+              if (timeRemaining <= 60) {
+                timerBox.classList.add("warning");
+              }
+
+              if (timeRemaining === 0) {
+                clearInterval(timerInterval);
+                autoSubmitExam();
+              }
+            }
+          }, 1000);
+        } catch (error) {
+          console.error('❌ Error collecting questions:', error);
+          alert("Error loading exam questions. Please try again.");
+        }
+      }
+
+      function updateTimerDisplay() {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        document.getElementById("timerText").textContent =
+          `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      }
+
+      function renderCurrentQuestion() {
+        if (!currentQuestions.length || currentIndex >= currentQuestions.length) return;
+
+        const q = currentQuestions[currentIndex];
+        document.getElementById("questionText").innerHTML =
+          `<i class="fa-regular fa-question-circle"></i> ${escapeHtml(q.text)}`;
+
+        const optionsHtml = q.options
+          .map((opt, idx) => `
+      <div class="option-item ${userAnswers[currentIndex] === idx ? "selected" : ""}" onclick="selectOption(${idx})">
+        <div class="option-radio"></div>
+        <div class="option-text">${String.fromCharCode(65 + idx)}. ${escapeHtml(opt)}</div>
+      </div>
+    `)
+          .join("");
+
+        document.getElementById("optionsList").innerHTML = optionsHtml;
+      }
+
+      function selectOption(optionIndex) {
+        userAnswers[currentIndex] = optionIndex;
+        renderCurrentQuestion();
+      }
+
+      function prevQuestion() {
+        if (currentIndex > 0) {
+          currentIndex--;
+          renderCurrentQuestion();
+          updateQuestionCounter();
+        }
+      }
+
+      function nextQuestion() {
+        if (currentIndex < currentQuestions.length - 1) {
+          currentIndex++;
+          renderCurrentQuestion();
+          updateQuestionCounter();
+        }
+      }
+
+      function updateQuestionCounter() {
+        document.getElementById("questionCounter").innerHTML =
+          `<i class="fa-regular fa-rectangle-list"></i> <span>Question ${currentIndex + 1} / ${currentQuestions.length}</span>`;
+      }
+
+      async function submitExam() {
+        if (timerInterval) clearInterval(timerInterval);
+
+        let score = 0;
+        let answered = 0;
+        const answers = [];
+        const questions = [];
+        
+        currentQuestions.forEach((q, idx) => {
+          const isCorrect = userAnswers[idx] === q.correct;
+          if (userAnswers[idx] !== null) answered++;
+          if (isCorrect) score++;
+          
+          answers.push({
+            questionId: q.id || `q-${idx}`,
+            selectedAnswer: userAnswers[idx] !== null ? String.fromCharCode(65 + userAnswers[idx]) : null,
+            isCorrect: isCorrect,
+            timeSpent: 0
+          });
+
+          // Build question data for results display
+          const selectedOptionText = userAnswers[idx] !== null ? q.options[userAnswers[idx]] : null;
+          const correctOptionText = q.options[q.correct];
+          
+          questions.push({
+            questionId: q.id || `q-${idx}`,
+            questionText: q.text,
+            selectedOptionText: selectedOptionText,
+            correctOptionText: correctOptionText,
+            selectedOptionIndex: userAnswers[idx],
+            correctOptionIndex: q.correct,
+            options: q.options,
+            explanation: q.explanation || 'No explanation provided',
+            isCorrect: isCorrect
+          });
+        });
+
+        const percentage = Math.round((score / currentQuestions.length) * 100);
+        const timeSpentSeconds = Math.round((new Date() - examStartTime) / 1000);
+        const timeSpentMinutes = Math.floor(timeSpentSeconds / 60);
+        const timeSpentSecs = timeSpentSeconds % 60;
+        
+        console.log(`✅ Exam submitted! Score: ${score}/${currentQuestions.length} (${percentage}%)`);
+        console.log(`⏱️ Time taken: ${timeSpentMinutes}m ${timeSpentSecs}s (${timeSpentSeconds} seconds total)`);
+
+        try {
+          // Save exam result to QuizResultsManager
+          const studentId = localStorage.getItem('userId');
+          if (!studentId) {
+            alert('Error: Student ID not found. Please log in again.');
+            window.location.href = '../student/studentDashboard.html';
+            return;
+          }
+
+          const examResult = {
+            studentId: parseInt(studentId),
+            quizId: null,  // Exam doesn't have a specific quiz ID
+            quizTitle: 'Exam Simulation',
+            category: selectedCategoryName || 'All Categories',
+            mode: 'exam',
+            score: percentage,
+            correctCount: score,
+            totalQuestions: currentQuestions.length,
+            answered: answered,
+            timeSpent: timeSpentSeconds,
+            timeTaken: `${timeSpentMinutes}m ${timeSpentSecs}s`,
+            questions: questions
+          };
+
+          // Save using QuizResultsManager
+          const resultId = await quizResultsManager.saveExamResult(examResult);
+          console.log('✅ EXAM result saved with ID:', resultId);
+
+          // Store result in localStorage for results page
+          localStorage.setItem("resultId", resultId);
+          localStorage.setItem("resultMode", 'exam');
+          localStorage.setItem("resultScore", percentage);
+          localStorage.setItem("resultCorrectCount", score);
+          localStorage.setItem("resultTotalQuestions", currentQuestions.length);
+          localStorage.setItem("resultAnswered", answered);
+          localStorage.setItem("resultQuizId", "");
+          localStorage.setItem("resultQuizTitle", 'Exam Simulation');
+          localStorage.setItem("resultCategory", selectedCategoryName || 'All Categories');
+          localStorage.setItem("resultTimeSpent", timeSpentSeconds);
+          localStorage.setItem("resultTimeTaken", `${timeSpentMinutes}m ${timeSpentSecs}s`);
+          localStorage.setItem("resultQuestions", JSON.stringify(questions));
+
+          console.log('✅ Result data stored in localStorage, navigating to results page...');
+
+          // Store complete result data in sessionStorage for immediate display
+          sessionStorage.setItem('currentResultData', JSON.stringify(examResult));
+          sessionStorage.setItem('currentResultId', resultId);
+
+          // Navigate to results page
+          setTimeout(() => {
+            window.location.href = `../student/studentQuizResults.html?resultId=${encodeURIComponent(resultId)}&mode=exam`;
+          }, 500);
+          
+        } catch (error) {
+          console.error('❌ Error saving exam result:', error);
+          alert('Error saving exam. Please try again.');
+        }
+      }
+
+      function autoSubmitExam() {
+        alert("Time is up! Submitting your exam...");
+        submitExam();
+      }
+
+      function closeResults() {
+        document.getElementById("resultsModal").classList.remove("active");
+        document.body.classList.remove("modal-open");
+        document.body.style.overflow = "";
+        examActive = false;
+        currentQuestions = [];
+        userAnswers = [];
+        currentIndex = 0;
+        if (timerInterval) clearInterval(timerInterval);
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function (m) {
+          if (m === "&") return "&amp;";
+          if (m === "<") return "&lt;";
+          if (m === ">") return "&gt;";
+          return m;
+        });
+      }
+
+      // Active sidebar highlighting
+      function highlightActiveSidebarItem() {
+        setTimeout(() => {
+          const sidebar = document.querySelector("#sidebar-container .sidebar, #sidebar-container");
+          if (sidebar) {
+            const allMenuItems = sidebar.querySelectorAll(".menu-item");
+            let quizMenuItem = null;
+
+            for (let item of allMenuItems) {
+              const text = item.textContent.toLowerCase();
+              if (text.includes("quiz") || text.includes("quiz mode")) {
+                quizMenuItem = item;
+                break;
+              }
+            }
+
+            if (quizMenuItem) {
+              allMenuItems.forEach((item) => item.classList.remove("active"));
+              quizMenuItem.classList.add("active");
+            }
+          }
+        }, 200);
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeExam();
+        highlightActiveSidebarItem();
+
+        const observer = new MutationObserver(function (mutations) {
+          const sidebarContainer = document.getElementById("sidebar-container");
+          if (sidebarContainer && sidebarContainer.children.length > 0) {
+            highlightActiveSidebarItem();
+            observer.disconnect();
+          }
+        });
+
+        observer.observe(document.getElementById("sidebar-container"), {
+          childList: true,
+          subtree: true,
+        });
+      });
+
+      window.addEventListener("load", function () {
+        highlightActiveSidebarItem();
+      });
+
+      window.navigateWithTransition = window.navigateWithTransition || function (url) {
+        window.location.href = url;
+      };
+    </script>
+  </body>
+</html>

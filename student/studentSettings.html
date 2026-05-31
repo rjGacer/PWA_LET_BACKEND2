@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <title>Settings | LearnIQ</title>
+
+  <!-- Fonts & Icons (using Inter + Poppins blend) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Sidebar CSS (external reference) -->
+  <link rel="stylesheet" href="../assets/styles/studentStyles/studentSidebar.css" />
+
+  <style>
+    /* ============================================
+       SETTINGS PAGE STYLES 
+       Matches the design language from history page
+       (clean cards, rounded corners, subtle shadows)
+       Does NOT affect sidebar/topbar — only main area.
+    ============================================ */
+    
+    /* Override dashboard grid — ensure main content uses full width */
+    .dashboard {
+      display: flex !important;
+      width: calc(100% - 215px) !important;
+      margin-left: 215px !important;
+      min-height: 100vh;
+      padding: 28px 32px !important;
+      gap: 0 !important;
+      background: #f3f4fc;
+    }
+    
+    .dashboard .main-content {
+      width: 100% !important;
+      max-width: 100% !important;
+      flex: 1 !important;
+      padding: 0 !important;
+    }
+    
+    /* Hide right sidebar (if any) */
+    .sidebar-right {
+      display: none !important;
+    }
+    
+    /* Sidebar collapsed state adjustment */
+    body.sidebar-collapsed .dashboard {
+      margin-left: 70px !important;
+      width: calc(100% - 70px) !important;
+    }
+    
+    /* ========== SETTINGS SPECIFIC COMPONENTS ========== */
+    .settings-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 12px;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(47, 73, 224, 0.12);
+    }
+    
+    .settings-header h1 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      font-family: 'Poppins', sans-serif;
+      background: #1f2937;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    
+    .settings-header p {
+      font-size: 0.85rem;
+      color: #475569;
+      font-weight: 450;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    /* Settings grid layout */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 28px;
+      margin-top: 16px;
+    }
+    
+    /* Settings Sidebar / Tabs */
+    .settings-tabs {
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid #eef2ff;
+      overflow: hidden;
+      padding: 12px 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    
+    .settings-tab-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 24px;
+      width: 100%;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #6b6b6b;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    
+    .settings-tab-item i {
+      width: 22px;
+      font-size: 1rem;
+      color: #2f49e0;
+      transition: all 0.2s;
+    }
+    
+    .settings-tab-item:hover {
+      background: #e9edff;
+      color: #1e293b;
+    }
+    
+    .settings-tab-item.active {
+      background: #2f49e0;
+      color: white;
+      box-shadow: 0 8px 18px rgba(47, 73, 224, 0.25);
+    }
+    
+    .settings-tab-item.active i {
+      color: white;
+    }
+    
+    /* Settings Content Panels */
+    .settings-panels {
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid #eef2ff;
+      padding: 28px 32px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    
+    .settings-panel {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+    
+    .settings-panel.active-panel {
+      display: block;
+    }
+    
+    .panel-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 8px;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .panel-subtitle {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 28px;
+      border-bottom: 1px solid #eef2ff;
+      padding-bottom: 16px;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    /* Form styles */
+    .settings-form-group {
+      margin-bottom: 24px;
+    }
+    
+    .settings-form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 8px;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .settings-form-group label i {
+      color: #2f49e0;
+      margin-right: 8px;
+      font-size: 0.85rem;
+    }
+    
+    .settings-form-group input,
+    .settings-form-group select,
+    .settings-form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 450;
+      background: white;
+      transition: all 0.2s;
+      color: #1e293b;
+    }
+    
+    .settings-form-group input:focus,
+    .settings-form-group select:focus,
+    .settings-form-group textarea:focus {
+      outline: none;
+      border-color: #2f49e0;
+      box-shadow: 0 0 0 3px rgba(47, 73, 224, 0.1);
+    }
+    
+    .settings-form-group input::placeholder,
+    .settings-form-group textarea::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    
+    .settings-form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .toggle-info h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 4px;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .toggle-info h4 i {
+      color: #2f49e0;
+      margin-right: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .toggle-info p {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-family: 'Inter', sans-serif;
+      font-weight: 450;
+    }
+    
+    .toggle-btn {
+      width: 52px;
+      height: 28px;
+      background: #cbd5e1;
+      border-radius: 40px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      border: none;
+      flex-shrink: 0;
+    }
+    
+    .toggle-btn.active {
+      background: #2f49e0;
+      box-shadow: 0 2px 6px rgba(47, 73, 224, 0.3);
+    }
+    
+    .toggle-btn::after {
+      content: "";
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px;
+      left: 4px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    .toggle-btn.active::after {
+      transform: translateX(24px);
+    }
+    
+    /* Danger Zone */
+    .danger-zone {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 2px solid #fee2e2;
+    }
+    
+    .danger-zone h3 {
+      color: #dc2626;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .danger-zone h3 i {
+      font-size: 1rem;
+    }
+    
+    .danger-btn {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .danger-btn:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      transform: translateY(-1px);
+    }
+    
+    /* Save Button */
+    .save-settings-btn {
+      background: #2f49e0;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 16px;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 4px rgba(47, 73, 224, 0.2);
+    }
+    
+    .save-settings-btn:hover {
+      background: #1e3a8a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(47, 73, 224, 0.3);
+    }
+    
+    .save-settings-btn:active {
+      transform: translateY(0);
+    }
+    
+    /* Avatar upload */
+    .avatar-section {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    
+    .avatar-preview {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #eef2ff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .upload-btn {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #1e293b;
+      transition: all 0.2s;
+    }
+    
+    .upload-btn:hover {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+    
+    .upload-btn i {
+      color: #2f49e0;
+    }
+    
+    /* Select dropdown styling */
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px;
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    .fade-transition {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .dashboard {
+        width: 100% !important;
+        margin-left: 0 !important;
+        padding: calc(70px + env(safe-area-inset-top, 0px)) 20px 30px !important;
+      }
+    }
+    
+    @media (max-width: 900px) {
+      .settings-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .settings-tabs {
+        display: flex;
+        overflow-x: auto;
+        padding: 8px 12px;
+        gap: 6px;
+        border-radius: 60px;
+      }
+      .settings-tab-item {
+        padding: 10px 18px;
+        white-space: nowrap;
+        border-radius: 40px;
+        justify-content: center;
+      }
+      .settings-tab-item.active {
+        background: #2f49e0;
+        color: white;
+        border-radius: 40px;
+      }
+      .settings-panels {
+        padding: 24px;
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .settings-form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .panel-title {
+        font-size: 1.2rem;
+      }
+      .settings-panels {
+        padding: 20px;
+      }
+    }
+    
+    button i {
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- HAMBURGER BUTTON (for sidebar toggle) -->
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open sidebar">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div id="sidebar-container"></div>
+
+  <div class="dashboard">
+    <div class="main-content">
+      <div id="topbar-container"></div>
+
+      <!-- SETTINGS MAIN CONTENT -->
+      <div class="fade-transition">
+        <!-- Header Area -->
+        <div class="settings-header">
+          <div class="header-title">
+            <h1>Settings</h1>
+            <p>Manage your account preferences, notifications, and privacy settings</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Settings Tabs Sidebar -->
+          <div class="settings-tabs">
+            <button class="settings-tab-item active" data-tab="profile"><i class="fa-solid fa-user"></i>  <span>Profile</span>
+            </button>
+            <button class="settings-tab-item" data-tab="account">
+              <i class="fa-regular fa-envelope"></i> <span>Account</span>
+            </button>
+            <button class="settings-tab-item" data-tab="notifications">
+              <i class="fa-regular fa-bell"></i> <span>Notifications</span>
+            </button>
+          </div>
+
+          <!-- Settings Panels Content -->
+          <div class="settings-panels">
+            <!-- Profile Panel -->
+            <div class="settings-panel active-panel" id="panel-profile">
+              <h2 class="panel-title"><i class="fa-regular fa-id-card"></i> Profile Information</h2>
+              <p class="panel-subtitle"> Update your personal details and how others see you on LearnIQ</p>
+              
+              <div class="avatar-section">
+                <img class="avatar-preview" id="avatarPreview" src="https://i.pravatar.cc/150?img=12" alt="Avatar">
+                <button class="upload-btn" id="changeAvatarBtn"><i class="fa-regular fa-camera"></i> Change Photo</button>
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+              </div>
+
+              <div class="settings-form-group">
+                <label><i class="fa-regular fa-user"></i> Full Name</label>
+                <input type="text" id="fullName" placeholder="Alexander Montefalco" value="Alexander Montefalco">
+              </div>
+
+              <div class="settings-form-row">
+                <div class="settings-form-group">
+                  <label><i class="fa-regular fa-envelope"></i> Email Address</label>
+                  <input type="email" id="email" value="alex.montefalco@learniq.edu" readonly style="background-color: #f1f5f9; cursor: not-allowed; opacity: 0.6;">
+                </div>
+                <div class="settings-form-group">
+                  <label><i class="fa-regular fa-graduation-cap"></i> Course / Program</label>
+                  <input type="text" id="course" value="BS Information Technology">
+                </div>
+              </div>
+
+              <div class="settings-form-group">
+                <label><i class="fa-regular fa-comment"></i> Bio</label>
+                <textarea rows="3" placeholder="Tell us about yourself..." id="bio">Passionate IT student aiming to become full-stack developer. Love quizzes and interactive learning.</textarea>
+              </div>
+
+              <button class="save-settings-btn" id="saveProfileBtn"><i class="fa-regular fa-floppy-disk"></i> Save Changes</button>
+            </div>
+
+            <!-- Account Panel -->
+            <div class="settings-panel" id="panel-account">
+              <h2 class="panel-title"><i class="fa-solid fa-user"></i></i> Account Settings</h2>
+              <p class="panel-subtitle"> Manage your email, password, and account security</p>
+              
+              <div class="settings-form-group">
+                <label><i class="fa-regular fa-lock"></i> Current Password</label>
+                <input type="password" placeholder="••••••••" id="currentPassword">
+              </div>
+              <div class="settings-form-row">
+                <div class="settings-form-group">
+                  <label><i class="fa-solid fa-key"></i> New Password</label>
+                  <input type="password" placeholder="Enter new password" id="newPassword">
+                </div>
+                <div class="settings-form-group">
+                  <label><i class="fa-regular fa-check-circle"></i> Confirm Password</label>
+                  <input type="password" placeholder="Confirm new password" id="confirmPassword">
+                </div>
+              </div>
+              <button class="save-settings-btn" id="updatePasswordBtn"><i class="fa-regular fa-arrow-right-to-bracket"></i> Update Password</button>
+              
+              <div class="danger-zone">
+                <h3><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</h3>
+                <button class="danger-btn" id="deleteAccountBtn"><i class="fa-regular fa-trash-can"></i> Delete Account</button>
+                <p style="font-size:0.7rem; margin-top:12px; color:#94a3b8;"><i class="fa-regular fa-circle-info"></i> Once deleted, all your quiz history and data will be permanently removed. This action cannot be undone.</p>
+              </div>
+            </div>
+
+            <!-- Notifications Panel -->
+            <div class="settings-panel" id="panel-notifications">
+              <h2 class="panel-title"><i class="fa-regular fa-bell"></i> Notification Preferences</h2>
+              <p class="panel-subtitle">Choose which updates and reminders you want to receive</p>
+              
+              <div class="toggle-switch">
+                <div class="toggle-info">
+                  <h4><i class="fa-regular fa-envelope"></i> Email Reminders</h4>
+                  <p>Get reminders about upcoming quizzes and deadlines via email</p>
+                </div>
+                <button class="toggle-btn active" id="emailRemindersToggle"></button>
+              </div>
+
+              <div class="toggle-switch">
+                <div class="toggle-info">
+                  <h4><i class="fa-regular fa-bell"></i> Push Notifications</h4>
+                  <p>Receive real-time alerts on your browser or device</p>
+                </div>
+                <button class="toggle-btn active" id="pushNotificationsToggle"></button>
+              </div>
+
+              <div class="toggle-switch">
+                <div class="toggle-info">
+                  <h4><i class="fa-regular fa-chart-line"></i> Weekly Performance Report</h4>
+                  <p>Get a summary of your progress and achievements every Monday</p>
+                </div>
+                <button class="toggle-btn" id="weeklyReportToggle"></button>
+              </div>
+
+              <button class="save-settings-btn" id="saveNotificationsBtn"><i class="fa-regular fa-floppy-disk"></i> Save Preferences</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../assets/scripts/student-auth-guard.js"></script>
+  <script src="../assets/scripts/student-layout.js"></script>
+  <script src="../assets/scripts/api-config.js"></script>
+  <script src="../assets/scripts/ApiService.js"></script>
+  <script src="../assets/scripts/db-manager.js"></script>
+  <script src="../assets/scripts/progress-tracker.js"></script>
+  <script src="../assets/scripts/engagement.js"></script>
+  <script src="../assets/scripts/NotificationManager.js"></script>
+  <script src="../assets/scripts/offline-sync.js"></script>
+
+  <script>
+    // Tab switching functionality
+    const tabButtons = document.querySelectorAll('.settings-tab-item');
+    const panels = document.querySelectorAll('.settings-panel');
+
+    function switchTab(tabId) {
+      panels.forEach(panel => panel.classList.remove('active-panel'));
+      const activePanel = document.getElementById(`panel-${tabId}`);
+      if (activePanel) activePanel.classList.add('active-panel');
+      
+      tabButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-tab') === tabId) {
+          btn.classList.add('active');
+        }
+      });
+    }
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.getAttribute('data-tab');
+        switchTab(tabId);
+      });
+    });
+
+    // Helper: Toggle button visual state
+    function initToggle(btnId, defaultValue = true) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      if (defaultValue) btn.classList.add('active');
+      else btn.classList.remove('active');
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+      });
+    }
+
+    initToggle('emailRemindersToggle', true);
+    initToggle('pushNotificationsToggle', true);
+    initToggle('weeklyReportToggle', false);
+
+    // Avatar upload simulation
+    const avatarUpload = document.getElementById('avatarUpload');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+    let profilePictureBase64 = null;
+    
+    changeAvatarBtn?.addEventListener('click', () => {
+      avatarUpload.click();
+    });
+    
+    avatarUpload?.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('✗ File size must be less than 5MB');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          profilePictureBase64 = event.target.result;
+          avatarPreview.src = profilePictureBase64;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Use ApiService so frontend talks to backend host:port correctly
+    const api = new ApiService();
+
+    // Load student settings on page load
+    async function loadStudentSettings() {
+      try {
+        const data = await api.request('/students/profile');
+        document.getElementById('fullName').value = data.name || '';
+        document.getElementById('email').value = data.email || '';
+        // Leave course and bio blank per request
+        document.getElementById('course').value = '';
+        document.getElementById('bio').value = '';
+
+        // Load profile picture
+        const avatarPreview = document.getElementById('avatarPreview');
+        if (data.profile_picture) {
+          avatarPreview.src = data.profile_picture;
+        } else {
+          // Use a default avatar if no profile picture is set
+          avatarPreview.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.name || 'User') + '&background=2f49e0&color=fff&size=80';
+        }
+
+        // Load preferences
+        if (data.preferences) {
+          const btn1 = document.getElementById('emailRemindersToggle');
+          const btn2 = document.getElementById('pushNotificationsToggle');
+          const btn3 = document.getElementById('weeklyReportToggle');
+
+          if (data.preferences.email_reminders && btn1) btn1.classList.add('active');
+          if (data.preferences.push_notifications && btn2) btn2.classList.add('active');
+          if (data.preferences.weekly_report && btn3) btn3.classList.add('active');
+        }
+      } catch (error) {
+        console.warn('Could not load settings:', error);
+      }
+    }
+    
+    // Save profile
+    document.getElementById('saveProfileBtn')?.addEventListener('click', async () => {
+      const name = document.getElementById('fullName').value;
+      const course = document.getElementById('course').value;
+      const bio = document.getElementById('bio').value;
+      
+      if (!name.trim()) {
+        alert('✗ Please enter your full name.');
+        return;
+      }
+      
+      try {
+        const profileData = { name, course, bio };
+        if (profilePictureBase64) {
+          profileData.profile_picture = profilePictureBase64;
+        }
+
+        await api.request('/students/profile', {
+          method: 'PUT',
+          body: JSON.stringify(profileData)
+        });
+
+        alert(`✓ Profile updated successfully, ${name}! Changes will reflect across LearnIQ.`);
+        profilePictureBase64 = null; // Reset after save
+        // Refresh the page to show updates
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } catch (error) {
+        alert('✗ Error updating profile: ' + error.message);
+      }
+    });
+    
+    // Update password
+    document.getElementById('updatePasswordBtn')?.addEventListener('click', async () => {
+      const currentPwd = document.getElementById('currentPassword').value;
+      const newPwd = document.getElementById('newPassword').value;
+      const confirmPwd = document.getElementById('confirmPassword').value;
+      
+      if (!currentPwd || !newPwd || !confirmPwd) {
+        alert('✗ Please fill in all password fields.');
+        return;
+      }
+      
+      if (newPwd !== confirmPwd) {
+        alert('✗ New passwords do not match. Please try again.');
+        return;
+      }
+      
+      if (newPwd.length < 6) {
+        alert('✗ Password must be at least 6 characters.');
+        return;
+      }
+      
+      try {
+        await api.request('/students/password', {
+          method: 'POST',
+          body: JSON.stringify({ 
+            currentPassword: currentPwd,
+            newPassword: newPwd, 
+            confirmPassword: confirmPwd 
+          })
+        });
+
+        alert('✓ Password updated successfully!');
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+      } catch (error) {
+        alert('✗ ' + error.message);
+      }
+    });
+    
+    // Save notification preferences
+    document.getElementById('saveNotificationsBtn')?.addEventListener('click', async () => {
+      const email_reminders = document.getElementById('emailRemindersToggle')?.classList.contains('active') || false;
+      const push_notifications = document.getElementById('pushNotificationsToggle')?.classList.contains('active') || false;
+      const weekly_report = document.getElementById('weeklyReportToggle')?.classList.contains('active') || false;
+      
+      try {
+        await api.request('/students/preferences', {
+          method: 'PUT',
+          body: JSON.stringify({ 
+            email_reminders,
+            push_notifications,
+            weekly_report
+          })
+        });
+
+        alert('✓ Notification preferences saved.');
+      } catch (error) {
+        alert('✗ Error saving preferences: ' + error.message);
+      }
+    });
+    
+    // Delete account
+    document.getElementById('deleteAccountBtn')?.addEventListener('click', () => {
+      if (confirm('⚠️ WARNING: This will permanently delete your account and all data. Type "DELETE" to confirm.')) {
+        const userConfirm = prompt('Type DELETE to confirm account deletion:');
+        if (userConfirm === 'DELETE') {
+          deleteAccount();
+        } else {
+          alert('Deletion cancelled.');
+        }
+      }
+    });
+    
+    async function deleteAccount() {
+      try {
+        await api.request('/students/account', { method: 'DELETE' });
+
+        alert('Account deletion request submitted. Redirecting to login...');
+        localStorage.clear();
+        if (window.navigateWithTransition) window.navigateWithTransition('../index.html');
+        else window.location.href = '../index.html';
+      } catch (error) {
+        alert('✗ Error deleting account: ' + error.message);
+      }
+    }
+    
+    // highlight settings active in sidebar
+    function highlightSettingsSidebar() {
+      setTimeout(() => {
+        const sidebarContainer = document.querySelector('#sidebar-container');
+        if (sidebarContainer) {
+          const allMenuItems = sidebarContainer.querySelectorAll('.menu-item');
+          allMenuItems.forEach(item => item.classList.remove('active'));
+          const settingsItem = Array.from(allMenuItems).find(item => 
+            item.textContent.toLowerCase().includes('settings') || 
+            item.querySelector('span')?.textContent.toLowerCase().includes('settings')
+          );
+          if (settingsItem) settingsItem.classList.add('active');
+        }
+      }, 200);
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      highlightSettingsSidebar();
+      loadStudentSettings();
+    });
+    
+    const observer = new MutationObserver(() => highlightSettingsSidebar());
+    observer.observe(document.getElementById('sidebar-container') || document.body, { childList: true, subtree: true });
+  </script>
+</body>
+</html>

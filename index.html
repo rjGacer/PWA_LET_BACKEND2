@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="LearnIQ - Offline-capable PWA reviewer for Licensure Examination for Teachers with online teacher management system"
+    />
+    <meta name="theme-color" content="#0f3b5e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <!-- Favicon -->
+    
+    <title>LearnIQ</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- iOS PWA Settings -->
+    <link rel="apple-touch-icon" href="/assets/images/icon-192.png" />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/styles/style.css" />
+    
+    <style>
+        /* ============================================
+           MODAL STYLES - Added without affecting existing CSS
+           ============================================ */
+        .auth-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s ease;
+        }
+        .auth-modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .auth-modal-container {
+            background: white;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.3);
+            transform: scale(0.96);
+            transition: transform 0.2s ease;
+        }
+        .auth-modal-overlay.active .auth-modal-container {
+            transform: scale(1);
+        }
+        .auth-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 1.8rem;
+            border-bottom: 2px solid #eef2f6;
+            background: white;
+            border-radius: 28px 28px 0 0;
+        }
+        .auth-modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #312e81;
+            margin: 0;
+        }
+        .auth-close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: 0.2s;
+            line-height: 1;
+        }
+        .auth-close-modal:hover {
+            color: #e74c3c;
+        }
+        .auth-modal-body {
+            padding: 1.8rem;
+        }
+        .auth-role-tabs {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.8rem;
+            background: #f1f5f9;
+            padding: 0.4rem;
+            border-radius: 60px;
+        }
+        .auth-role-tab {
+            flex: 1;
+            text-align: center;
+            padding: 0.7rem 0;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            transition: 0.2s;
+            color: #334155;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .auth-role-tab i {
+            font-size: 1rem;
+        }
+        .auth-role-tab.active {
+            background: #312e81;
+            color: white;
+            box-shadow: 0 2px 8px rgba(15,59,94,0.2);
+        }
+        .auth-mode-switch-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1.2rem;
+        }
+        .auth-mode-switch-group {
+            background: #f1f5f9;
+            border-radius: 40px;
+            padding: 0.2rem;
+            display: inline-flex;
+        }
+        .auth-mode-btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            border: none;
+            background: transparent;
+            color: #475569;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .auth-mode-btn i {
+            font-size: 0.8rem;
+        }
+        .auth-mode-btn.active {
+            background: #312e81;
+            color: white;
+        }
+        .auth-form-group {
+            margin-bottom: 1.2rem;
+        }
+        .auth-form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: #1e293b;
+            font-size: 0.85rem;
+        }
+        .auth-form-group label i {
+            margin-right: 0.4rem;
+            color: #1e1b4b;
+            width: 16px;
+        }
+        .auth-form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        .auth-form-group input:focus {
+            outline: none;
+            border-color: #1e1b4b;
+            box-shadow: 0 0 0 3px rgba(30,107,159,0.1);
+        }
+        .auth-submit-btn {
+            width: 100%;
+            background: #312e81;
+            color: white;
+            border: none;
+            padding: 0.85rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .auth-submit-btn i {
+            font-size: 1rem;
+        }
+        .auth-submit-btn:hover {
+            background: #818cf8;
+            transform: translateY(-1px);
+        }
+        .auth-error-msg {
+            background: #fee2e2;
+            color: #c0392b;
+            padding: 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-top: 0.8rem;
+            display: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .auth-error-msg i {
+            font-size: 0.9rem;
+        }
+        .auth-demo-note {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 1.2rem;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1rem;
+        }
+        .auth-demo-note i {
+            margin-right: 4px;
+        }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-container">
+        <a href="#" class="nav-logo">
+          <i class="fas fa-book-open logo-icon-small"></i>
+          <img src="" alt="">
+          <!-- NOT SURE IF THE NAME AND LOGO SHOULD BE CHANGED DEPENDING ON THE ADMIN -->
+          <span>Learn<span class="logo-highlight">IQ</span></span>
+        </a>
+        <ul class="nav-menu" id="navMenu">
+          <li class="nav-item">
+            <a href="#home" class="nav-link active">Home</a>
+          </li>
+          <li class="nav-item">
+            <a href="#features" class="nav-link">Features</a>
+          </li>
+          <li class="nav-item">
+            <a href="#how-it-works" class="nav-link">How It Works</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="#" class="btn-nav btn-primary-nav" id="getStartedBtn">Get Started</a>
+          </li>
+        </ul>
+        <div class="hamburger" id="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-text">
+            <span class="hero-badge">
+              <i class="fas fa-wifi"></i> Offline-First PWA Technology
+            </span>
+            <h1 class="hero-title">
+              Ace Your <span class="text-highlight">LET Exam</span> Anytime,
+              Anywhere
+            </h1>
+            <p class="hero-description">
+              A comprehensive Progressive Web Application designed for future
+              educators. Study offline with thousands of practice questions,
+              track your progress, and let teachers manage content through a
+              powerful online dashboard.
+            </p>
+            <div class="hero-cta">
+              <a href="#" class="btn btn-primary" id="startStudyingBtn">
+                <i class="fas fa-rocket"></i> Start Studying
+              </a>
+            </div>
+            <div class="hero-stats">
+              <div class="stat-item">
+                <span class="stat-number">50,000+</span>
+                <span class="stat-label">Practice Questions</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">98%</span>
+                <span class="stat-label">Pass Rate</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Offline Access</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="app-mockup">
+              <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+                  <div class="app-header">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>LearnIQ</span>
+                  </div>
+                  <div class="app-content">
+                    <div class="quiz-card">
+                      <span class="quiz-badge offline">Offline</span>
+                      <h4>Professional Education</h4>
+                      <p>150 questions available</p>
+                      <div class="progress-bar">
+                        <div class="progress" style="width: 65%"></div>
+                      </div>
+                      <small>65% completed</small>
+                    </div>
+                    <div class="quiz-card">
+                      <span class="quiz-badge offline">Offline</span>
+                      <h4>General Education</h4>
+                      <p>200 questions available</p>
+                      <div class="progress-bar">
+                        <div class="progress" style="width: 40%"></div>
+                      </div>
+                      <small>40% completed</small>
+                    </div>
+                    <div class="quiz-card">
+                      <span class="quiz-badge sync">Synced</span>
+                      <h4>Majorship - Math</h4>
+                      <p>180 questions available</p>
+                      <div class="progress-bar">
+                        <div class="progress" style="width: 80%"></div>
+                      </div>
+                      <small>80% completed</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-header">
+          <h2>
+            Powerful Features for <span class="text-highlight">Success</span>
+          </h2>
+          <p>
+            Everything you need to prepare for the LET examination in one place
+          </p>
+        </div>
+
+        <!-- STUDENT FEATURES -->
+        <div class="features-subsection">
+          <h3 class="features-role-title">
+            <i class="fas fa-user-graduate"></i>
+            For Students
+          </h3>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-cloud-download-alt"></i>
+              </div>
+              <h3>Offline Mode</h3>
+              <p>
+                Full access to quizzes without internet. Uses local database
+                (SQLite / IndexedDB) so you can study anytime, anywhere.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-download"></i>
+              </div>
+              <h3>Installable App</h3>
+              <p>
+                Install as PWA or APK (via Capacitor) on your device. Access from
+                home screen with a native app-like experience.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-brain"></i>
+              </div>
+              <h3>Review & Quiz System</h3>
+              <p>
+                Categorized modules (GenEd, ProfEd, Majorship), multiple choice
+                questions randomized per attempt, and timed exam simulation with
+                auto-submit.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <h3>Progress Tracking</h3>
+              <p>
+                Scores per category, quiz history with attempt logs, performance
+                insights identifying weak/strong topics with simple
+                recommendations.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-trophy"></i>
+              </div>
+              <h3>Engagement Features</h3>
+              <p>
+                Offline notifications reminding "Time to review!", gamification
+                with badges (e.g., "GenEd Master"), and daily streaks to keep you
+                motivated.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TEACHER / ADMIN FEATURES -->
+        <div class="features-subsection">
+          <h3 class="features-role-title">
+            <i class="fas fa-chalkboard-teacher"></i>
+            For Teachers / Admin
+          </h3>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-globe"></i>
+              </div>
+              <h3>Web-Based Admin Panel</h3>
+              <p>
+                Accessible via browser as a separate system. Manage everything
+                from one centralized online dashboard.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-pen-to-square"></i>
+              </div>
+              <h3>Content Management System</h3>
+              <p>
+                Create/edit MCQs with explanations, organize subjects/topics with
+                category management, bulk upload via CSV/Excel, and add
+                images/diagrams.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-sync-alt"></i>
+              </div>
+              <h3>Sync & Deployment</h3>
+              <p>
+                Push updates to student apps. Students download updates when
+                online through a pull-based sync strategy.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-magnifying-glass-chart"></i>
+              </div>
+              <h3>Monitoring</h3>
+              <p>
+                Student performance dashboard showing average scores per category,
+                user insights with active users and quiz attempts.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-users-gear"></i>
+              </div>
+              <h3>User Management</h3>
+              <p>
+                Teacher accounts with role-based access (Admin, Teacher) for
+                secure and organized content management.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+      <div class="container">
+        <div class="section-header">
+          <h2>How <span class="text-highlight">LearnIQ</span> Works</h2>
+          <p>Simple setup for both students and teachers</p>
+        </div>
+        <div class="dual-cards">
+          <!-- Student Card -->
+          <div class="role-card student-card">
+            <div class="card-header">
+              <div class="card-icon-large">
+                <i class="fas fa-user-graduate"></i>
+              </div>
+              <h3>For LET Students</h3>
+            </div>
+            <div class="card-body">
+              <ul class="steps-list">
+                <li>
+                  <span class="step-number">1</span>
+                  <div>
+                    <strong>Access through Web or Install the App</strong>
+                    <p>
+                      Add to home screen on any device - no app store required
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span class="step-number">2</span>
+                  <div>
+                    <strong>Download Content</strong>
+                    <p>Save modules and question banks for offline access</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="step-number">3</span>
+                  <div>
+                    <strong>Study Anywhere</strong>
+                    <p>
+                      Practice with timed quizzes, flashcards, and mock exams
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span class="step-number">4</span>
+                  <div>
+                    <strong>Sync & Improve</strong>
+                    <p>Connect to track progress and receive updated content</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Teacher Card -->
+          <div class="role-card teacher-card">
+            <div class="card-header">
+              <div class="card-icon-large">
+                <i class="fas fa-chalkboard-teacher"></i>
+              </div>
+              <h3>For Teachers</h3>
+            </div>
+            <div class="card-body">
+              <ul class="steps-list">
+                <li>
+                  <span class="step-number">1</span>
+                  <div>
+                    <strong>Access Dashboard</strong>
+                    <p>Login to the online teacher management portal</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="step-number">2</span>
+                  <div>
+                    <strong>Create Content</strong>
+                    <p>
+                      Build quizzes, organize categories, and set difficulty
+                      levels
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span class="step-number">3</span>
+                  <div>
+                    <strong>Publish Updates</strong>
+                    <p>Push new questions and modules to all student apps</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="step-number">4</span>
+                  <div>
+                    <strong>Monitor Progress</strong>
+                    <p>View student analytics and identify learning gaps</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-content">
+          <h2>Ready to Pass the LET?</h2>
+          <p>
+            Join thousands of successful teachers who prepared with LearnIQ
+          </p>
+          <div class="cta-buttons">
+            <a href="#" class="btn btn-light" id="installPwaBtn">
+              <i class="fas fa-download"></i> Install PWA
+            </a>
+            <a href="#" class="btn btn-outline-light" id="createAccountBtn">
+              <i class="fas fa-user-plus"></i> Create Account
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>LearnIQ</h3>
+            <p>
+              Empowering future educators with accessible, offline-capable
+              review tools.
+            </p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="#home">Home</a></li>
+              <li><a href="#features">Features</a></li>
+              <li><a href="#how-it-works">How It Works</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Resources</h4>
+            <ul>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">LET Exam Guide</a></li>
+              <li><a href="#">Study Tips</a></li>
+              <li><a href="#">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Contact</h4>
+            <ul>
+              <li><i class="fas fa-envelope"></i> hello@learniq.ph</li>
+              <li><i class="fas fa-phone"></i> +63 912 345 6789</li>
+              <li><i class="fas fa-map-marker-alt"></i> Manila, Philippines</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            &copy; 2024 LearnIQ. All rights reserved. |
+            <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ============================================
+         SIGNUP/LOGIN MODAL HTML (with Font Awesome icons)
+         ============================================ -->
+    <div id="authModal" class="auth-modal-overlay">
+        <div class="auth-modal-container">
+            <div class="auth-modal-header">
+                <h3 id="authModalTitle"><i class="fas fa-graduation-cap"></i> Welcome to LearnIQ</h3>
+                <button class="auth-close-modal" id="authCloseModalBtn">&times;</button>
+            </div>
+            <div class="auth-modal-body">
+                <!-- Role Tabs: Student / Teacher -->
+                <div class="auth-role-tabs">
+                    <button class="auth-role-tab active" data-auth-role="student">
+                        <i class="fas fa-user-graduate"></i> Student
+                    </button>
+                    <button class="auth-role-tab" data-auth-role="teacher">
+                        <i class="fas fa-chalkboard-teacher"></i> Teacher
+                    </button>
+                </div>
+                
+                <!-- Login / Signup Toggle -->
+                <div class="auth-mode-switch-container">
+                    <div class="auth-mode-switch-group">
+                        <button id="authSwitchToLogin" class="auth-mode-btn active" data-auth-mode="login">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <button id="authSwitchToSignup" class="auth-mode-btn" data-auth-mode="signup">
+                            <i class="fas fa-user-plus"></i> Sign Up
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Login Form -->
+                <form id="authLoginForm" class="auth-form-container">
+                    <div class="auth-form-group">
+                        <label><i class="fas fa-envelope"></i> Email / Username</label>
+                        <input type="text" id="authLoginEmail" placeholder="your@email.com" required>
+                    </div>
+                    <div class="auth-form-group" id="authLoginPasswordGroup">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="authLoginPassword" placeholder="••••••">
+                    </div>
+                    <button type="submit" class="auth-submit-btn">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <div id="authLoginError" class="auth-error-msg">
+                        <i class="fas fa-exclamation-circle"></i> <span></span>
+                    </div>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="authSignupForm" class="auth-form-container" style="display: none;">
+                    <div class="auth-form-group">
+                        <label><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" id="authSignupName" placeholder="Juan Dela Cruz" required>
+                    </div>
+                    <div class="auth-form-group">
+                        <label><i class="fas fa-envelope"></i> Email Address</label>
+                        <input type="email" id="authSignupEmail" placeholder="student@letreview.ph" required>
+                    </div>
+                    <div id="authSignupPasswordGroup" class="auth-form-group">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="authSignupPassword" placeholder="Create password (min 6 chars)">
+                    </div>
+                    <div id="authSignupConfirmGroup" class="auth-form-group">
+                        <label><i class="fas fa-check-circle"></i> Confirm Password</label>
+                        <input type="password" id="authSignupConfirm" placeholder="Confirm password">
+                    </div>
+                    <button type="submit" class="auth-submit-btn">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                    <div id="authSignupError" class="auth-error-msg">
+                        <i class="fas fa-exclamation-circle"></i> <span></span>
+                    </div>
+                </form>
+                
+                <div class="auth-demo-note">
+                    <i class="fas fa-info-circle"></i> Real authentication with JWT tokens. Register an account or login with existing credentials.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- API Configuration - Must load first for environment variables -->
+    <script src="assets/scripts/api-config.js"></script>
+    
+    <script src="js/main.js"></script>
+    
+    <!-- Modal JavaScript -->
+    <script>
+        (function() {
+            // Get modal elements
+            const modal = document.getElementById('authModal');
+            const closeBtn = document.getElementById('authCloseModalBtn');
+            const roleTabs = document.querySelectorAll('.auth-role-tab');
+            const loginForm = document.getElementById('authLoginForm');
+            const signupForm = document.getElementById('authSignupForm');
+            const switchToLogin = document.getElementById('authSwitchToLogin');
+            const switchToSignup = document.getElementById('authSwitchToSignup');
+            const loginError = document.getElementById('authLoginError');
+            const signupError = document.getElementById('authSignupError');
+            const modalTitle = document.getElementById('authModalTitle');
+            
+            // Buttons that trigger the modal
+            const getStartedBtn = document.getElementById('getStartedBtn');
+            const startStudyingBtn = document.getElementById('startStudyingBtn');
+            const createAccountBtn = document.getElementById('createAccountBtn');
+            
+            let currentRole = 'student';
+            let currentMode = 'login';
+            
+            // Helper: update UI based on mode & role
+            function updateModalUI() {
+                if (currentMode === 'login') {
+                    loginForm.style.display = 'block';
+                    signupForm.style.display = 'none';
+                    switchToLogin.classList.add('active');
+                    switchToSignup.classList.remove('active');
+                    modalTitle.innerHTML = currentRole === 'student' 
+                        ? '<i class="fas fa-user-graduate"></i> Student Login' 
+                        : '<i class="fas fa-chalkboard-teacher"></i> Teacher Login';
+                    
+                    // Show password field for all users
+                    const passwordGroup = document.getElementById('authLoginPasswordGroup');
+                    passwordGroup.style.display = 'block';
+                    document.getElementById('authLoginPassword').setAttribute('required', 'required');
+                } else {
+                    loginForm.style.display = 'none';
+                    signupForm.style.display = 'block';
+                    switchToSignup.classList.add('active');
+                    switchToLogin.classList.remove('active');
+                    modalTitle.innerHTML = currentRole === 'student' 
+                        ? '<i class="fas fa-user-graduate"></i> Student Sign Up' 
+                        : '<i class="fas fa-chalkboard-teacher"></i> Teacher Registration';
+                    
+                    // Show password fields for all users
+                    const passwordGroup = document.getElementById('authSignupPasswordGroup');
+                    const confirmGroup = document.getElementById('authSignupConfirmGroup');
+                    passwordGroup.style.display = 'block';
+                    confirmGroup.style.display = 'block';
+                    document.getElementById('authSignupPassword').setAttribute('required', 'required');
+                    document.getElementById('authSignupConfirm').setAttribute('required', 'required');
+                }
+                // clear errors
+                loginError.style.display = 'none';
+                signupError.style.display = 'none';
+            }
+            
+            function setActiveRole(role) {
+                currentRole = role;
+                roleTabs.forEach(tab => {
+                    if (tab.getAttribute('data-auth-role') === role) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                updateModalUI();
+            }
+            
+            // Role tab listeners
+            roleTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const role = tab.getAttribute('data-auth-role');
+                    setActiveRole(role);
+                });
+            });
+            
+            // Switch between login/signup
+            switchToLogin.addEventListener('click', () => {
+                currentMode = 'login';
+                updateModalUI();
+            });
+            switchToSignup.addEventListener('click', () => {
+                currentMode = 'signup';
+                updateModalUI();
+            });
+            
+            // Get dynamic API URL based on current location
+            const getApiUrl = () => {
+              const protocol = window.location.protocol;
+              const hostname = window.location.hostname;
+              const port = window.location.port;
+              const portString = port && (protocol === 'http:' ? port !== '80' : port !== '443') ? `:${port}` : '';
+              return `${protocol}//${hostname}${portString}/api/v1`;
+            };
+            const API_URL = getApiUrl();
+            
+            // Real authentication function
+            async function authenticateUser(email, password, role, isSignup = false, name = '') {
+                try {
+                    let endpoint, payload;
+                    
+                    if (isSignup) {
+                        if (!name) {
+                            return { success: false, message: 'Please enter your full name.' };
+                        }
+                        if (!email) {
+                            return { success: false, message: 'Please enter your email.' };
+                        }
+
+                        // Both students and teachers require password
+                        if (!password || password.length < 6) {
+                            return { success: false, message: 'Password must be at least 6 characters.' };
+                        }
+                        const confirmPwd = document.getElementById('authSignupConfirm').value;
+                        if (confirmPwd !== password) {
+                            return { success: false, message: 'Passwords do not match.' };
+                        }
+
+                        if (role === 'teacher') {
+                            endpoint = `${API_URL}/auth/teacher/register`;
+                            payload = { name, email, password, phone: null, specialization: null };
+                        } else {
+                            endpoint = `${API_URL}/auth/student/register`;
+                            payload = { name, email, password, device_id: 'web-' + Date.now() };
+                        }
+                    } else {
+                        // Login - both students and teachers require email and password
+                        if (!email || !password) {
+                            return { success: false, message: 'Please fill in all fields.' };
+                        }
+
+                        if (role === 'teacher') {
+                            endpoint = `${API_URL}/auth/teacher/login`;
+                            payload = { email, password };
+                        } else {
+                            // Student login now also requires password
+                            endpoint = `${API_URL}/auth/student/login`;
+                            payload = { email, password, device_id: 'web-' + Date.now() };
+                        }
+                    }
+
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        return { success: false, message: data.error || 'Authentication failed' };
+                    }
+
+                    // Store token and user info
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('userRole', role);
+                    localStorage.setItem('userName', data.user.name);
+                    localStorage.setItem('userId', data.user.id);
+                    if (data.user.device_id) {
+                        localStorage.setItem('deviceId', data.user.device_id);
+                    }
+
+                    return { success: true, message: data.message, user: data.user };
+                } catch (error) {
+                    return { success: false, message: 'Network error: ' + error.message };
+                }
+            }
+            
+            // Handle Login
+            async function onLogin(e) {
+                e.preventDefault();
+                const email = document.getElementById('authLoginEmail').value.trim();
+                const password = document.getElementById('authLoginPassword').value;
+                
+                const submitBtn = loginForm.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+                
+                const result = await authenticateUser(email, password, currentRole, false);
+                
+                if (result.success) {
+                    const message = `✅ Welcome ${result.user.name}!`;
+                    const errorSpan = loginError.querySelector('span');
+                    if (errorSpan) errorSpan.innerText = message;
+                    loginError.style.display = 'flex';
+                    loginError.style.background = '#d4edda';
+                    loginError.style.color = '#155724';
+                    
+                    setTimeout(() => {
+                        closeModal();
+                        // Update Get Started button text
+                        if (getStartedBtn) {
+                            getStartedBtn.innerHTML = `<i class="fas fa-user-check"></i> ${currentRole === 'student' ? 'Student' : 'Teacher'} Dashboard`;
+                        }
+                        // Redirect based on role
+                        if (currentRole === 'teacher') {
+                            window.location.href = './teacher/dashboard.html';
+                        } else if (currentRole === 'student') {
+                            window.location.href = './student/studentDashboard.html';
+                        }
+                    }, 1000);
+                } else {
+                    const errorSpan = loginError.querySelector('span');
+                    if (errorSpan) errorSpan.innerText = result.message;
+                    loginError.style.display = 'flex';
+                    loginError.style.background = '#f8d7da';
+                    loginError.style.color = '#721c24';
+                }
+                
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+            }
+            
+            // Handle Signup
+            async function onSignup(e) {
+                e.preventDefault();
+                const name = document.getElementById('authSignupName').value.trim();
+                const email = document.getElementById('authSignupEmail').value.trim();
+                const password = document.getElementById('authSignupPassword').value;
+                
+                if (!name || !email || !password) {
+                    const errorSpan = signupError.querySelector('span');
+                    if (errorSpan) errorSpan.innerText = 'All fields are required.';
+                    signupError.style.display = 'flex';
+                    return;
+                }
+                
+                const submitBtn = signupForm.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                
+                const result = await authenticateUser(email, password, currentRole, true, name);
+                
+                if (result.success) {
+                    const message = `🎉 Account created, ${name}!`;
+                    const errorSpan = signupError.querySelector('span');
+                    if (errorSpan) errorSpan.innerText = message;
+                    signupError.style.display = 'flex';
+                    signupError.style.background = '#d4edda';
+                    signupError.style.color = '#155724';
+                    
+                    // switch to login mode after 1.5 seconds
+                    setTimeout(() => {
+                        currentMode = 'login';
+                        updateModalUI();
+                        // clear signup fields
+                        document.getElementById('authSignupName').value = '';
+                        document.getElementById('authSignupEmail').value = '';
+                        document.getElementById('authSignupPassword').value = '';
+                        document.getElementById('authSignupConfirm').value = '';
+                    }, 1500);
+                } else {
+                    const errorSpan = signupError.querySelector('span');
+                    if (errorSpan) errorSpan.innerText = result.message;
+                    signupError.style.display = 'flex';
+                    signupError.style.background = '#f8d7da';
+                    signupError.style.color = '#721c24';
+                }
+                
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+            }
+            
+            // Modal open/close functions
+            function openModal() {
+                modal.classList.add('active');
+                // reset forms and errors
+                if (document.getElementById('authLoginEmail')) {
+                    document.getElementById('authLoginEmail').value = '';
+                    document.getElementById('authLoginPassword').value = '';
+                }
+                loginError.style.display = 'none';
+                signupError.style.display = 'none';
+                setActiveRole('student');
+                currentMode = 'login';
+                updateModalUI();
+            }
+            
+            function closeModal() {
+                modal.classList.remove('active');
+            }
+            
+            // Attach modal triggers to buttons
+            if (getStartedBtn) {
+                getStartedBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal();
+                });
+            }
+            
+            if (startStudyingBtn) {
+                startStudyingBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal();
+                });
+            }
+            
+            if (createAccountBtn) {
+                createAccountBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal();
+                });
+            }
+            
+            // Close modal events
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeModal);
+            }
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+            
+            // Form submissions
+            loginForm.addEventListener('submit', onLogin);
+            signupForm.addEventListener('submit', onSignup);
+            
+            // ESC key closes modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+            
+            // Install PWA button handler (optional)
+            const installPwaBtn = document.getElementById('installPwaBtn');
+            if (installPwaBtn) {
+                installPwaBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    alert('📲 To install as PWA: On Android/iOS, tap "Add to Home Screen" or use browser menu. This app supports offline mode with service worker.');
+                });
+            }
+        })();
+
+        // ============================================
+        // SERVICE WORKER REGISTRATION
+        // ============================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js', {
+                        scope: '/',
+                    });
+                    console.log('✓ Service Worker registered successfully:', registration);
+
+                    // Check for updates
+                    registration.addEventListener('updatefound', () => {
+                        console.log('Service Worker update found');
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('New Service Worker available');
+                                // Notify user about update
+                                showUpdateNotification();
+                            }
+                        });
+                    });
+
+                    // Request update periodically
+                    setInterval(() => {
+                        registration.update();
+                    }, 60000); // Check every minute
+                } catch (error) {
+                    console.error('✗ Service Worker registration failed:', error);
+                }
+            });
+
+            // Handle messages from service worker
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                const { type, data } = event.data;
+                console.log('Message from Service Worker:', type, data);
+
+                if (type === 'SYNC_COMPLETE') {
+                    console.log('Offline data synced successfully');
+                }
+            });
+        } else {
+            console.warn('Service Workers not supported in this browser');
+        }
+
+        // Show update notification
+        function showUpdateNotification() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #312e81;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                z-index: 10000;
+                font-weight: 600;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            `;
+            notification.innerHTML = `
+                <div style="margin-bottom: 0.5rem;">🔄 App update available!</div>
+                <button onclick="window.location.reload()" style="
+                    background: #818cf8;
+                    color: white;
+                    border: none;
+                    padding: 0.5rem 1rem;
+                    border-radius: 0.25rem;
+                    cursor: pointer;
+                    font-weight: 600;
+                ">Refresh Now</button>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 10000);
+        }
+
+        // ============================================
+        // REQUEST PERSISTENT STORAGE
+        // ============================================
+        if (navigator.storage && navigator.storage.persist) {
+            navigator.storage.persist().then((persistent) => {
+                console.log(`Persistent storage ${persistent ? 'granted' : 'denied'}`);
+            });
+        }
+    </script>
+  </body>
+</html>

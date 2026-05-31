@@ -1,0 +1,162 @@
+/* gently extend dashboard.css without breaking layout */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+}
+
+.category-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.5rem 1.25rem 1.25rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.category-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.07);
+}
+
+.category-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  color: white;
+  background: #7c6ff7; /* purple default */
+}
+
+.category-icon.general {
+  background: #7c6ff7;
+}
+.category-icon.professional {
+  background: #3b82f6;
+}
+.category-icon.major {
+  background: #10b981;
+}
+
+.category-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1e293b;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.2px;
+}
+
+.category-desc {
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+  flex: 1;
+}
+
+.view-subjects-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 40px;
+  padding: 0.65rem 1.2rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1e293b;
+  text-decoration: none;
+  transition: 0.2s;
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+
+.view-subjects-btn i {
+  font-size: 1.1rem;
+  color: #6366f1;
+  transition: transform 0.2s;
+}
+
+.view-subjects-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.view-subjects-btn:hover i {
+  transform: translateX(4px);
+}
+
+/* Manage Category button styling */
+.manage-category-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #7c6ff7;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  padding: 0.7rem 1.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: "Nunito", sans-serif;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 4px 12px rgba(124, 111, 247, 0.25);
+  white-space: nowrap;
+}
+
+.manage-category-btn i {
+  font-size: 1.2rem;
+}
+
+.manage-category-btn:hover {
+  background: #6d5ff0;
+  box-shadow: 0 6px 16px rgba(124, 111, 247, 0.35);
+  transform: translateY(-1px);
+}
+
+.page-subtitle {
+  color: #475569;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.manage-badge {
+  background: #ede9fe;
+  color: #5b21b6;
+  padding: 0.15rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+/* keep header spacing consistent */
+.content {
+  padding: 1.8rem 2rem 2.5rem;
+}
+
+@media (max-width: 600px) {
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .manage-category-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

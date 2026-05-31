@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnIQ Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <!-- CSS: sidebar MUST load first, then dashboard -->
+    <link rel="stylesheet" href="../assets/styles/teacherStyles/sidebar.css" />
+    <link rel="stylesheet" href="../assets/styles/teacherStyles/dashboard.css" />
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div id="sidebar"></div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+      <!-- HEADER -->
+      <div id="header"></div>
+
+      <div class="content">
+        <!-- Stat Cards -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m4-4a4 4 0 100-8 4 4 0 000 8z" />
+              </svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Total Students</div>
+              <div class="stat-value">1,248</div>
+              <div class="stat-change">↑ 12.5% <span>from last month</span></div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon blue">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" stroke-linecap="round" stroke-linejoin="round" />
+                <polyline points="16 7 22 7 22 13" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Average Score</div>
+              <div class="stat-value">72.4%</div>
+              <div class="stat-change">↑ 8.6% <span>from last month</span></div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="4" width="16" height="16" rx="2" stroke-linecap="round" stroke-linejoin="round" />
+                <line x1="8" y1="9" x2="16" y2="9" stroke-linecap="round" />
+                <line x1="8" y1="13" x2="16" y2="13" stroke-linecap="round" />
+                <line x1="8" y1="17" x2="12" y2="17" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Quiz Attempts</div>
+              <div class="stat-value">5,892</div>
+              <div class="stat-change">↑ 15.3% <span>from last month</span></div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="4" stroke-linecap="round" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 20v-1a6 6 0 0112 0v1" />
+              </svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Active Users</div>
+              <div class="stat-value">892</div>
+              <div class="stat-change">↑ 18.7% <span>from last month</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle Row -->
+        <div class="mid-row">
+          <!-- Bar Chart Card -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Average Score per Category</span>
+              <div class="chart-filter">
+                This Month
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            </div>
+            <div class="bar-chart-wrap">
+              <div class="y-axis">
+                <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
+              </div>
+              <div class="bars-area" style="height: 230px">
+                <div class="grid-lines">
+                  <div class="grid-line"></div><div class="grid-line"></div>
+                  <div class="grid-line"></div><div class="grid-line"></div>
+                  <div class="grid-line"></div>
+                </div>
+                <div class="bars-row" style="height: calc(100% - 28px)">
+                  <div class="bar-col">
+                    <span class="bar-pct">74.6%</span>
+                    <div class="bar" style="background: #a78bfa; height: 136px;"></div>
+                  </div>
+                  <div class="bar-col">
+                    <span class="bar-pct">68.1%</span>
+                    <div class="bar" style="background: #60a5fa; height: 124px;"></div>
+                  </div>
+                  <div class="bar-col">
+                    <span class="bar-pct">76.8%</span>
+                    <div class="bar" style="background: #4ade80; height: 140px;"></div>
+                  </div>
+                </div>
+                <div class="bars-bottom" style="margin-top: 6px">
+                  <span class="bar-label">General<br />Education</span>
+                  <span class="bar-label">Professional<br />Education</span>
+                  <span class="bar-label">Major /<br />Specialization</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Quiz Activity -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Recent Quiz Activity</span>
+            </div>
+            <div class="quiz-list">
+              <div class="quiz-item">
+                <div class="quiz-badge gened">GenEd</div>
+                <div class="quiz-info">
+                  <div class="quiz-name">General Education Quiz 10</div>
+                  <div class="quiz-meta">May 29, 2025 <span class="dot">•</span> 124 students</div>
+                </div>
+                <div class="quiz-score">
+                  <div class="quiz-score-label">Average Score</div>
+                  <div class="quiz-score-val">76.3%</div>
+                </div>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-badge profed">ProfEd</div>
+                <div class="quiz-info">
+                  <div class="quiz-name">Professional Education Quiz 8</div>
+                  <div class="quiz-meta">May 28, 2025 <span class="dot">•</span> 98 students</div>
+                </div>
+                <div class="quiz-score">
+                  <div class="quiz-score-label">Average Score</div>
+                  <div class="quiz-score-val">68.4%</div>
+                </div>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-badge major">Major</div>
+                <div class="quiz-info">
+                  <div class="quiz-name">Major/Specialization Quiz 6</div>
+                  <div class="quiz-meta">May 27, 2025 <span class="dot">•</span> 112 students</div>
+                </div>
+                <div class="quiz-score">
+                  <div class="quiz-score-label">Average Score</div>
+                  <div class="quiz-score-val">81.7%</div>
+                </div>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-badge gened">GenEd</div>
+                <div class="quiz-info">
+                  <div class="quiz-name">General Education Quiz 9</div>
+                  <div class="quiz-meta">May 26, 2025 <span class="dot">•</span> 134 students</div>
+                </div>
+                <div class="quiz-score">
+                  <div class="quiz-score-label">Average Score</div>
+                  <div class="quiz-score-val">72.1%</div>
+                </div>
+              </div>
+            </div>
+            <a class="view-all" href="#">View all activity <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></a>
+          </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div class="bottom-row">
+          <!-- Top Performing Topics -->
+          <div class="card">
+            <div class="card-header" style="margin-bottom: 14px">
+              <span class="card-title">Top Performing Topics</span>
+              <div class="section-icon trophy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2">
+                  <path d="M8 21h8M12 17v4M5 3H3v5a4 4 0 004 4m10-9h2v5a4 4 0 01-4 4M7 12a5 5 0 005 5 5 5 0 005-5V3H7v9z" />
+                </svg>
+              </div>
+            </div>
+            <div class="topic-list">
+              <div class="topic-row"><span class="topic-name">Mathematics</span><div class="topic-bar-bg"><div class="topic-bar-fill" style="width: 82%; background: #22c55e"></div></div><span class="topic-pct">82%</span></div>
+              <div class="topic-row"><span class="topic-name">English</span><div class="topic-bar-bg"><div class="topic-bar-fill" style="width: 78%; background: #22c55e"></div></div><span class="topic-pct">78%</span></div>
+              <div class="topic-row"><span class="topic-name">Science</span><div class="topic-bar-bg"><div class="topic-bar-fill" style="width: 76%; background: #22c55e"></div></div><span class="topic-pct">76%</span></div>
+              <div class="topic-row"><span class="topic-name">Filipino</span><div class="topic-bar-bg"><div class="topic-bar-fill" style="width: 72%; background: #22c55e"></div></div><span class="topic-pct">72%</span></div>
+              <div class="topic-row"><span class="topic-name">Social Studies</span><div class="topic-bar-bg"><div class="topic-bar-fill" style="width: 68%; background: #22c55e"></div></div><span class="topic-pct">68%</span></div>
+            </div>
+          </div>
+
+          <!-- Topics That Need Improvement -->
+          <div class="card">
+            <div class="card-header" style="margin-bottom: 14px">
+              <span class="card-title">Topics That Need Improvement</span>
+              <div class="section-icon warn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+            </div>
+            <div class="topic-list">
+              <div class="topic-row"><span class="topic-name" style="width: 130px; font-size: 12px">Assessment in Learning</span><div class="topic-bar-bg"><div class="topic-bar-fill" style="width: 48%; background: #ef4444"></div></div><span class="topic-pct">48%</span></div>
+              <div class="topic-row"><span class="topic-name" style="width: 130px; font-size: 12px">Classroom Management</span><div class="topic-bar-bg"><div class="topic-bar-fill" style="width: 51%; background: #ef4444"></div></div><span class="topic-pct">51%</span></div>
+              <div class="topic-row"><span class="topic-name" style="width: 130px; font-size: 12px">Theories of Learning</span><div class="topic-bar-bg"><div class="topic-bar-fill" style="width: 55%; background: #ef4444"></div></div><span class="topic-pct">55%</span></div>
+              <div class="topic-row"><span class="topic-name" style="width: 130px; font-size: 12px">Educational Psychology</span><div class="topic-bar-bg"><div class="topic-bar-fill" style="width: 58%; background: #ef4444"></div></div><span class="topic-pct">58%</span></div>
+              <div class="topic-row"><span class="topic-name" style="width: 130px; font-size: 12px">Research in Education</span><div class="topic-bar-bg"><div class="topic-bar-fill" style="width: 60%; background: #ef4444"></div></div><span class="topic-pct">60%</span></div>
+            </div>
+          </div>
+
+          <!-- System Overview -->
+          <div class="card">
+            <div class="card-header" style="margin-bottom: 10px">
+              <span class="card-title">System Overview</span>
+            </div>
+            <div class="system-wrap">
+              <div class="donut-row">
+                <canvas id="donutChart" width="130" height="130"></canvas>
+                <div class="donut-legend">
+                  <div class="legend-item"><div class="legend-dot" style="background: #7c6ff7"></div><span class="legend-label">Questions</span><span class="legend-val">12,560</span></div>
+                  <div class="legend-item"><div class="legend-dot" style="background: #60a5fa"></div><span class="legend-label">Categories</span><span class="legend-val">38</span></div>
+                  <div class="legend-item"><div class="legend-dot" style="background: #4ade80"></div><span class="legend-label">Students</span><span class="legend-val">1,248</span></div>
+                  <div class="legend-item"><div class="legend-dot" style="background: #fb923c"></div><span class="legend-label">Teachers</span><span class="legend-val">24</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../assets/scripts/layout.js"></script>
+    <script>
+      // Load sidebar and header components
+      fetch('../components/sidebar.html')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('sidebar').innerHTML = data;
+          // Dropdown toggle functionality
+          const dropdownBtn = document.querySelector('.dropdown-btn');
+          if (dropdownBtn) {
+            dropdownBtn.addEventListener('click', () => {
+              const submenu = dropdownBtn.parentElement.querySelector('.submenu');
+              if (submenu) submenu.classList.toggle('show');
+            });
+          }
+          // Active link highlighting
+          const currentPage = window.location.pathname.split('/').pop();
+          if (currentPage === 'dashboard.html' || currentPage === '') {
+            const activeLink = document.querySelector('.nav-link[href="dashboard.html"]');
+            if (activeLink) activeLink.classList.add('active');
+          }
+        })
+        .catch(error => console.error('Error loading sidebar:', error));
+
+      fetch('../components/header.html')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('header').innerHTML = data;
+          // Mobile menu toggle
+          const menuToggle = document.querySelector('#menuToggle');
+          if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+              const sidebar = document.querySelector('.sidebar');
+              if (sidebar) sidebar.classList.toggle('show-sidebar');
+            });
+          }
+        })
+        .catch(error => console.error('Error loading header:', error));
+
+      // Donut Chart
+      (function() {
+        const canvas = document.getElementById("donutChart");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const outerR = 56;
+        const innerR = 34;
+        const slices = [
+          { color: "#7c6ff7", value: 55 },
+          { color: "#60a5fa", value: 18 },
+          { color: "#4ade80", value: 20 },
+          { color: "#fb923c", value: 7 },
+        ];
+        const total = slices.reduce((s, v) => s + v.value, 0);
+        let startAngle = -Math.PI / 2;
+        slices.forEach((slice) => {
+          const sweep = (slice.value / total) * 2 * Math.PI;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.arc(cx, cy, outerR, startAngle, startAngle + sweep);
+          ctx.closePath();
+          ctx.fillStyle = slice.color;
+          ctx.fill();
+          startAngle += sweep;
+        });
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR, 0, 2 * Math.PI);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        startAngle = -Math.PI / 2;
+        slices.forEach((slice) => {
+          const sweep = (slice.value / total) * 2 * Math.PI;
+          ctx.beginPath();
+          ctx.moveTo(cx + innerR * Math.cos(startAngle), cy + innerR * Math.sin(startAngle));
+          ctx.lineTo(cx + outerR * Math.cos(startAngle), cy + outerR * Math.sin(startAngle));
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          startAngle += sweep;
+        });
+      })();
+    </script>
+    <script src="../assets/scripts/api-config.js"></script>
+    <script src="../assets/scripts/auth-guard.js"></script>
+    <script src="../assets/scripts/ApiService.js"></script>
+    <script src="../assets/scripts/api.js"></script>
+    <script src="../assets/scripts/dashboard-integration.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <title>Mathematics - Learning Modules | LearnIQ</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Sidebar CSS -->
+  <link rel="stylesheet" href="../assets/styles/studentStyles/studentSidebar.css" />
+
+  <!-- View Module Page Styles - with proper dashboard override -->
+  <style>
+    /* ============================================
+       OVERRIDE DASHBOARD GRID LAYOUT
+       Removes right sidebar, keeps left sidebar functional
+    ============================================ */
+    
+    /* Override dashboard display - use flex instead of grid */
+    .dashboard {
+      display: flex !important;
+      width: calc(100% - 215px) !important;
+      margin-left: 215px !important;
+      min-height: 100vh;
+      padding: 24px 28px !important;
+      gap: 0 !important;
+      grid-template-columns: none !important;
+    }
+    
+    /* Main content takes full width */
+    .dashboard .main-content {
+      width: 100% !important;
+      max-width: 100% !important;
+      flex: 1 !important;
+      padding: 0 !important;
+    }
+    
+    /* Completely hide right sidebar */
+    .sidebar-right {
+      display: none !important;
+    }
+    
+    /* When sidebar is collapsed on desktop */
+    body.sidebar-collapsed .dashboard {
+      margin-left: 70px !important;
+      width: calc(100% - 70px) !important;
+    }
+    
+    /* Back link styling */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      color: #4f46e5;
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+      padding: 0.5rem 0;
+      margin-bottom: 1rem;
+      transition: all 0.2s;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .back-link:hover {
+      gap: 0.75rem;
+      color: #4338ca;
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    
+    .breadcrumb span {
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+    
+    .breadcrumb span.active {
+      color: #2f49e0;
+      font-weight: 600;
+    }
+    
+    .breadcrumb i {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+    }
+    
+    /* Stats Cards */
+    .stats-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0 1.75rem;
+    }
+    
+    .stat-card-mini {
+      background: #fff;
+      border-radius: 20px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border: 1px solid #eef2ff;
+      transition: all 0.2s;
+    }
+    
+    .stat-card-mini:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+    
+    .stat-icon-mini {
+      width: 48px;
+      height: 48px;
+      background: #2f49e015;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2f49e0;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    
+    .stat-info-mini h4 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    
+    .stat-info-mini p {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+    
+    /* Search Section */
+    .search-section {
+      margin-bottom: 1.75rem;
+    }
+    
+    .search-wrapper {
+      position: relative;
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .search-wrapper i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8ba0c0;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 1px solid #eef2ff;
+      border-radius: 60px;
+      font-size: 0.875rem;
+      font-family: 'Poppins', sans-serif;
+      background: white;
+      transition: all 0.2s;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: #2f49e0;
+      box-shadow: 0 0 0 3px rgba(47, 73, 224, 0.1);
+    }
+    
+    /* Section Titles */
+    .section-title-module {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1f2b6e;
+      margin: 1.5rem 0 1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .section-title-module i {
+      color: #2f49e0;
+      font-size: 1.1rem;
+    }
+    
+    /* Quiz Cards Grid */
+    .quizzes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .quiz-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 1.25rem;
+      border: 1px solid #eef2ff;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .quiz-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      border-color: #e0e7ff;
+    }
+    
+    .quiz-info {
+      flex: 1;
+    }
+    
+    .quiz-title {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .quiz-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .quiz-type, .quiz-date {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+    
+    .open-quiz-btn, .view-score-btn {
+      background: #eef0ff;
+      color: #2f49e0;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Poppins', sans-serif;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .open-quiz-btn:hover, .view-score-btn:hover {
+      background: #e0e7ff;
+      transform: scale(1.02);
+    }
+    
+    /* Learning Modules List */
+    .modules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .module-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border: 1px solid #eef2ff;
+      transition: all 0.2s;
+    }
+    
+    .module-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      border-color: #e0e7ff;
+    }
+    
+    .module-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+    
+    .module-icon {
+      width: 44px;
+      height: 44px;
+      background: #f1f5f9;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    
+    .module-details {
+      flex: 1;
+    }
+    
+    .module-details h4 {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 0.9375rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .module-details p {
+      font-size: 0.75rem;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
+    .module-badge {
+      background: #f1f5f9;
+      padding: 0.1875rem 0.625rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #475569;
+    }
+    
+    .open-module-btn {
+      background: #2f49e0;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Poppins', sans-serif;
+      flex-shrink: 0;
+    }
+    
+    .open-module-btn:hover {
+      background: #1e3ad0;
+      transform: translateY(-1px);
+    }
+    
+    /* Empty State */
+    .empty-state-module {
+      text-align: center;
+      padding: 3rem;
+      background: white;
+      border-radius: 24px;
+      color: #64748b;
+      border: 1px solid #eef2ff;
+    }
+    
+    .empty-state-module i {
+      font-size: 3rem;
+      color: #cbd5e1;
+      margin-bottom: 1rem;
+    }
+    
+    /* Category Footer */
+    .category-footer {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #eef2ff;
+      flex-wrap: wrap;
+    }
+    
+    .category-badge-footer {
+      background: #f1f5f9;
+      padding: 0.3125rem 1rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #475569;
+    }
+    
+    /* Page Header */
+    .page-header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    
+    .page-header p {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    
+    /* ========== RESPONSIVE BREAKPOINTS ========== */
+    
+    /* Tablet and below - sidebar becomes off-canvas */
+    @media (max-width: 1024px) {
+      .dashboard {
+        width: 100% !important;
+        margin-left: 0 !important;
+        padding: calc(70px + env(safe-area-inset-top, 0px)) 20px 30px !important;
+      }
+      
+      body.sidebar-collapsed .dashboard {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard {
+        padding: calc(65px + env(safe-area-inset-top, 0px)) 14px 20px !important;
+      }
+      
+      .stats-summary {
+        gap: 0.75rem;
+      }
+      
+      .quizzes-grid {
+        grid-template-columns: 1fr;
+        gap: 0.875rem;
+      }
+      
+      .quiz-card {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .open-quiz-btn, .view-score-btn {
+        align-self: flex-start;
+      }
+      
+      .module-item {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .module-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+      
+      .open-module-btn {
+        align-self: flex-start;
+      }
+      
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .stats-summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .stat-card-mini {
+        padding: 0.875rem;
+      }
+      
+      .stat-icon-mini {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+      
+      .stat-info-mini h4 {
+        font-size: 1.25rem;
+      }
+      
+      .section-title-module {
+        font-size: 1.125rem;
+      }
+      
+      .back-link {
+        font-size: 0.8125rem;
+      }
+      
+      .breadcrumb span {
+        font-size: 0.75rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .dashboard {
+        padding: calc(60px + env(safe-area-inset-top, 0px)) 12px 16px !important;
+      }
+      
+      .stats-summary {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      
+      .search-wrapper {
+        max-width: 100%;
+      }
+      
+      .quiz-title {
+        font-size: 0.9375rem;
+      }
+      
+      .module-details h4 {
+        font-size: 0.875rem;
+      }
+      
+      .module-details p {
+        gap: 0.5rem;
+        font-size: 0.7rem;
+      }
+      
+      .empty-state-module {
+        padding: 2rem 1rem;
+      }
+      
+      .empty-state-module i {
+        font-size: 2.5rem;
+      }
+      
+      .page-header h1 {
+        font-size: 1.35rem;
+      }
+    }
+    
+    /* Mobile Modal Styles */
+    @media (max-width: 768px) {
+      .module-view-modal {
+        padding: 12px !important;
+        padding-top: max(12px, env(safe-area-inset-top, 12px)) !important;
+        padding-bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
+      }
+      
+      .module-modal-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 20px !important;
+        border-radius: 16px !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+      }
+      
+      .file-preview-modal {
+        padding: 0 !important;
+        background: white !important;
+      }
+      
+      .file-preview-modal-content {
+        width: 100% !important;
+        height: 100% !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+      }
+      
+      #filePreviewContent {
+        max-height: none !important;
+        padding: 24px !important;
+        background: #f5f5f5 !important;
+      }
+      
+      #filePreviewContent iframe,
+      #filePreviewContent img,
+      #filePreviewContent video,
+      #filePreviewContent audio {
+        max-width: 100% !important;
+        width: auto !important;
+        height: auto !important;
+        max-height: calc(100vh - 80px) !important;
+        object-fit: contain !important;
+      }
+      
+      .module-modal-content h2 {
+        font-size: 1.25rem !important;
+      }
+      
+      .module-modal-content > div:nth-child(4) {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .module-view-modal {
+        padding: 8px !important;
+        padding-top: max(8px, env(safe-area-inset-top, 8px)) !important;
+        padding-bottom: max(8px, env(safe-area-inset-bottom, 8px)) !important;
+      }
+      
+      .module-modal-content {
+        padding: 16px !important;
+        border-radius: 12px !important;
+      }
+      
+      .file-preview-modal {
+        padding: 0 !important;
+        background: white !important;
+      }
+      
+      .file-preview-modal-content {
+        border-radius: 0 !important;
+      }
+      
+      #filePreviewContent {
+        max-height: none !important;
+        padding: 16px !important;
+      }
+    }
+    
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+  </style>
+
+  <style>
+    /* Mobile-specific file preview styling to mimic full-page viewer */
+    @media (max-width: 768px) {
+      .file-preview-modal {
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.45) !important;
+        padding: 12px !important;
+      }
+
+      .file-preview-modal-content {
+        width: min(420px, 96vw) !important;
+        height: calc(94vh) !important;
+        border-radius: 14px !important;
+        border: 6px solid rgba(0,0,0,0.95) !important;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.45) !important;
+        overflow: hidden !important;
+        background: white !important;
+      }
+
+      .file-preview-modal-content > div:first-child {
+        background: transparent !important;
+        padding: 12px 16px !important;
+        border-bottom: none !important;
+      }
+
+      #filePreviewTitle {
+        font-size: 1rem !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      #filePreviewContent {
+        background: white !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: stretch !important;
+        justify-content: stretch !important;
+      }
+
+      #filePreviewContent iframe,
+      #filePreviewContent img,
+      #filePreviewContent video {
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+        border: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HAMBURGER BUTTON -->
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open sidebar">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <!-- OVERLAY (for mobile sidebar) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- REUSABLE SIDEBAR (loaded by student-layout.js) -->
+  <div id="sidebar-container"></div>
+
+  <!-- DASHBOARD LAYOUT -->
+  <div class="dashboard">
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- REUSABLE TOPBAR (loaded by student-layout.js) -->
+      <div id="topbar-container"></div>
+
+      <!-- VIEW MODULE PAGE CONTENT -->
+      <div class="fade-in">
+        <!-- Back Button -->
+        <button class="back-link" id="backToModulesBtn">
+          <i class="fa-solid fa-arrow-left"></i> Back to Modules
+        </button>
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span id="breadcrumbCategory">General Education</span>
+          <i class="fa-solid fa-chevron-right"></i>
+          <span class="active" id="breadcrumbSubject">Mathematics</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 id="pageSubjectTitle">Mathematics</h1>
+          <p id="pageSubjectDesc">Complete learning resources for Mathematics</p>
+        </div>
+
+        <!-- Stats Summary Cards -->
+        <div class="stats-summary">
+          <div class="stat-card-mini">
+            <div class="stat-icon-mini"><i class="fa-solid fa-clipboard-list"></i></div>
+            <div class="stat-info-mini">
+              <h4 id="quizCount">4</h4>
+              <p>Quizzes Available</p>
+            </div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="stat-icon-mini"><i class="fa-solid fa-book-open"></i></div>
+            <div class="stat-info-mini">
+              <h4 id="moduleCount">8</h4>
+              <p>Learning Modules</p>
+            </div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="stat-icon-mini"><i class="fa-regular fa-clock"></i></div>
+            <div class="stat-info-mini">
+              <h4 id="estStudyTime">0 min</h4>
+              <p>Est. Study Time</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+          <div class="search-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="search-input" id="searchModulesInput" placeholder="Search modules, quizzes, or topics...">
+          </div>
+        </div>
+
+        <!-- Upcoming Quizzes Section -->
+        <div class="section-title-module">
+          <i class="fa-solid fa-clipboard-question"></i>
+          Upcoming Quizzes
+        </div>
+        <div class="quizzes-grid" id="quizzesContainer"></div>
+
+        <!-- Learning Modules Section -->
+        <div class="section-title-module">
+          <i class="fa-solid fa-book"></i>
+          Learning Modules
+        </div>
+        <div class="modules-list" id="modulesContainer"></div>
+
+        <!-- Category Footer Badges -->
+        <div class="category-footer">
+          <span class="category-badge-footer">General Education</span>
+          <span class="category-badge-footer">Professional Education</span>
+          <span class="category-badge-footer">Major/Specialization</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Module View Modal -->
+  <div id="moduleViewModal" class="module-view-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; padding-top: env(safe-area-inset-top, 20px); padding-bottom: env(safe-area-inset-bottom, 20px);">
+    <div class="module-modal-content" style="background: white; border-radius: 20px; padding: 32px; max-width: 700px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s ease;">
+      <button onclick="closeModuleViewModal()" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280; z-index: 1;">✕</button>
+      
+      <div style="margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <div id="moduleViewIcon" style="width: 56px; height: 56px; background: #f1f5f9; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #2f49e0; flex-shrink: 0;"><i class="fa-solid fa-book"></i></div>
+          <div style="min-width: 0;">
+            <h2 id="moduleViewTitle" style="font-size: 1.5rem; font-weight: 700; color: #1f2937; margin: 0; word-break: break-word;">Module Title</h2>
+            <p id="moduleViewType" style="color: #6b7280; margin: 4px 0 0 0; font-size: 0.875rem;">Module Type</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 24px; padding: 16px; background: #f8fafc; border-radius: 12px;">
+        <h3 style="font-size: 0.875rem; font-weight: 600; color: #475569; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">Description</h3>
+        <p id="moduleViewContent" style="color: #1f2937; margin: 0; line-height: 1.6; font-size: 0.9375rem; word-break: break-word;">Module description goes here</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #eef2ff;">
+        <div>
+          <p style="color: #6b7280; font-size: 0.75rem; margin: 0 0 4px 0;">Module Type</p>
+          <p id="moduleViewFileType" style="color: #1f2937; font-size: 1rem; font-weight: 600; margin: 0;">Module</p>
+        </div>
+        <div>
+          <p style="color: #6b7280; font-size: 0.75rem; margin: 0 0 4px 0;">Added Date</p>
+          <p id="moduleViewDate" style="color: #1f2937; font-size: 1rem; font-weight: 600; margin: 0;">May 27, 2026</p>
+        </div>
+      </div>
+
+      <!-- Files Section -->
+      <div id="moduleFilesSection" style="margin-bottom: 24px;">
+        <h3 style="font-size: 0.875rem; font-weight: 600; color: #475569; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;"><i class="fa-solid fa-file"></i> Module Files</h3>
+        <div id="moduleFilesList" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; max-height: 300px; overflow-y: auto;"></div>
+      </div>
+
+      <button onclick="closeModuleViewModal()" style="width: 100%; padding: 12px; background: #2f49e0; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif;">Close</button>
+    </div>
+  </div>
+
+  <!-- File Preview Modal -->
+  <div id="filePreviewModal" class="file-preview-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 10000; overflow: hidden; padding: 0;">
+    <div class="file-preview-modal-content" style="background: white; width: 100%; height: 100%; display: flex; flex-direction: column; border-radius: 0;">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-bottom: 1px solid #e2e8f0; flex-shrink: 0; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+        <h3 id="filePreviewTitle" style="font-size: 1.125rem; font-weight: 700; color: #1f2937; margin: 0;">Preview</h3>
+        <button onclick="closeFilePreviewModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #6b7280; padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: background 0.2s;">✕</button>
+      </div>
+      <div id="filePreviewContent" style="flex: 1; overflow: auto; padding: 24px; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #f5f5f5;">
+        <!-- Content will be injected here -->
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+
+  <!-- Scripts -->
+  <script src="../assets/scripts/student-auth-guard.js"></script>
+  <script src="../assets/scripts/student-layout.js"></script>
+  <script src="../assets/scripts/api-config.js"></script>
+  <script src="../assets/scripts/ApiService.js?v=3"></script>
+  <script src="../assets/scripts/db-manager.js"></script>
+  <script src="../assets/scripts/progress-tracker.js"></script>
+  <script src="../assets/scripts/engagement.js"></script>
+  <script src="../assets/scripts/NotificationManager.js"></script>
+  <script src="../assets/scripts/offline-sync.js"></script>
+  <script src="../assets/scripts/QuizResultsManager.js?v=3"></script>
+
+  <!-- Page Data and Interactions -->
+  <script>
+    // Get subject ID from URL query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const subjectId = urlParams.get('subjectId');
+    const subjectName = urlParams.get('name') || 'Subject';
+
+    // Initialize API service
+    // ApiService automatically detects the correct base URL from window.location
+    const viewModulesApi = window.api || new ApiService();
+
+    // Data storage
+    let subjectData = {
+      quizzes: [],
+      modules: [],
+      subject: { id: subjectId, name: subjectName }
+    };
+
+    // DOM Elements
+    const quizzesContainer = document.getElementById('quizzesContainer');
+    const modulesContainer = document.getElementById('modulesContainer');
+    const searchInput = document.getElementById('searchModulesInput');
+    const backBtn = document.getElementById('backToModulesBtn');
+    const quizCountSpan = document.getElementById('quizCount');
+    const moduleCountSpan = document.getElementById('moduleCount');
+
+    // Helper: Format date
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+    }
+
+    // Helper: Load subject data from API
+    async function loadSubjectData() {
+      try {
+        console.log('[StudentViewModules] Loading data for subjectId:', subjectId, 'subjectName:', subjectName);
+        
+        if (!subjectId) {
+          console.error('[StudentViewModules] No subjectId provided');
+          return;
+        }
+
+        // Clear old quiz and module cache from IndexedDB to ensure fresh data
+        try {
+          if (db && db.db) {
+            await db.clear('quizzes');
+            await db.clear('modules');
+            console.log('✓ IndexedDB quiz and module caches cleared');
+          }
+        } catch (err) {
+          console.warn('Could not clear IndexedDB cache:', err);
+        }
+
+        // Load modules for this subject
+        const modules = await viewModulesApi.getModules(subjectId);
+        console.log('[StudentViewModules] Modules loaded:', modules);
+        subjectData.modules = modules || [];
+
+        // Load quizzes for this subject with mode='exam' to show only subject quiz attempts
+        const quizzes = await viewModulesApi.getQuizzes(subjectId, 'exam');
+        console.log('[StudentViewModules] Quizzes loaded:', quizzes);
+        subjectData.quizzes = quizzes || [];
+
+        // Update page title and breadcrumb with ACTUAL subject name from URL parameter
+        const finalName = subjectName || 'Subject';
+        document.getElementById('pageSubjectTitle').textContent = finalName;
+        document.getElementById('breadcrumbSubject').textContent = finalName;
+        document.getElementById('pageSubjectDesc').textContent = `Complete learning resources for ${finalName}`;
+        
+        console.log('[StudentViewModules] Updated page headers with subject name:', finalName);
+
+        // Update UI with loaded data - renderQuizzes is now async
+        await renderQuizzes();
+        renderModules();
+        updateCounts();
+      } catch (error) {
+        console.error('[StudentViewModules] Error loading subject data:', error);
+        quizzesContainer.innerHTML = '<div class="empty-state-module" style="grid-column: 1/-1;"><i class="fa-solid fa-exclamation-triangle"></i><p>Error loading quizzes</p></div>';
+        modulesContainer.innerHTML = '<div class="empty-state-module"><i class="fa-solid fa-exclamation-triangle"></i><p>Error loading modules</p></div>';
+      }
+    }
+
+    // Update counts
+    function updateCounts() {
+      if (quizCountSpan) quizCountSpan.textContent = subjectData.quizzes.length;
+      if (moduleCountSpan) moduleCountSpan.textContent = subjectData.modules.length;
+      
+      // Calculate total estimated study time from all quizzes
+      const totalTime = subjectData.quizzes.reduce((sum, quiz) => {
+        const time = parseInt(quiz.time_limit || quiz.duration || 0);
+        return sum + (isNaN(time) ? 0 : time);
+      }, 0);
+      
+      const estStudyTimeEl = document.getElementById('estStudyTime');
+      if (estStudyTimeEl) {
+        estStudyTimeEl.textContent = totalTime > 0 ? `${totalTime} min${totalTime !== 1 ? 's' : ''}` : '0 min';
+      }
+    }
+
+    // Helper: Escape HTML
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Back to modules page
+    function goBackToModules() {
+      window.location.href = 'studentModules.html';
+    }
+
+    // Render Quizzes (NOW ASYNC - checks both backend AND local results)
+    // Render Quizzes (FIXED - properly checks local results and renders buttons)
+    async function renderQuizzes(filterText = '') {
+      if (!quizzesContainer) return;
+      
+      const filtered = subjectData.quizzes.filter(q => 
+        q.title.toLowerCase().includes(filterText.toLowerCase())
+      );
+      
+      if (filtered.length === 0) {
+        quizzesContainer.innerHTML = `<div class="empty-state-module" style="grid-column: 1/-1;"><i class="fa-regular fa-clipboard"></i><p>No quizzes available for this subject</p></div>`;
+        return;
+      }
+      
+      const studentId = localStorage.getItem('userId');
+      console.log(`\n🔍 [renderQuizzes] STARTING - StudentId: ${studentId}, Filtering ${filtered.length} quizzes`);
+      
+      // Load ALL module results once at the beginning
+      let allModuleResults = [];
+      if (window.quizResultsManager && studentId) {
+        try {
+          // Ensure QuizResultsManager is ready before using it
+          await window.quizResultsManager.ensureReady();
+          
+          // Try getting from QuizResultsManager
+          allModuleResults = await window.quizResultsManager.getStudentResultsByMode(studentId, 'module');
+          console.log(`✅ [renderQuizzes] QuizResultsManager returned ${allModuleResults.length} module results`);
+          
+          if (allModuleResults.length === 0) {
+            // Fallback: check localStorage directly
+            console.log(`⚠️  [renderQuizzes] No results from manager, checking localStorage directly...`);
+            const raw = localStorage.getItem('module_results');
+            console.log(`📦 [renderQuizzes] localStorage module_results content:`, raw);
+            if (raw) {
+              try {
+                const parsed = JSON.parse(raw);
+                console.log(`📦 [renderQuizzes] Parsed ${parsed.length} results from localStorage:`, parsed);
+                allModuleResults = parsed.filter(r => {
+                  const match = r.studentId === studentId || r.studentId === parseInt(studentId);
+                  console.log(`   - Checking result ID: ${r.id}, studentId: ${r.studentId}, match: ${match}`);
+                  return match;
+                });
+                console.log(`✅ [renderQuizzes] Filtered to ${allModuleResults.length} results for this student`);
+              } catch (e) {
+                console.error(`❌ [renderQuizzes] Failed to parse localStorage:`, e);
+              }
+            }
+          }
+          
+          // Display all loaded results
+          allModuleResults.forEach((r, idx) => {
+            console.log(`   [${idx}] Result: quizId=${r.quizId}, quizTitle=${r.quizTitle}, score=${r.score}, timestamp=${new Date(r.timestamp).toLocaleString()}`);
+          });
+          
+        } catch (e) {
+          console.error(`❌ [renderQuizzes] Failed to load module results:`, e);
+          allModuleResults = [];
+        }
+      } else {
+        console.warn(`⚠️  [renderQuizzes] QuizResultsManager not available or no studentId`);
+      }
+      
+      let htmlContent = '';
+      
+      // Process each quiz
+      for (const q of filtered) {
+        console.log(`\n📝 [renderQuizzes] Processing quiz: "${q.title}" (ID: ${q.id})`);
+        
+        // ⭐ CRITICAL FIX: Ignore q.student_has_attempted from API (it includes ALL modes)
+        // Only trust locally loaded module results
+        let hasAttempted = false;  // Start as false, don't use API flag
+        let localResult = null;
+        
+        // Find result for THIS quiz from the loaded MODUL results ONLY
+        if (allModuleResults.length > 0) {
+          console.log(`   Searching in ${allModuleResults.length} MODULE results...`);
+          localResult = allModuleResults.find(r => {
+            const rQuizId = parseInt(r.quizId) || r.quizId;
+            const qId = parseInt(q.id) || q.id;
+            const match = String(rQuizId) === String(qId);
+            console.log(`   - Comparing: result.quizId=${rQuizId} (${typeof rQuizId}) vs quiz.id=${qId} (${typeof qId}) → ${match}`);
+            return match;
+          });
+          
+          if (localResult) {
+            hasAttempted = true;
+            console.log(`✅ FOUND - Quiz has MODULE attempt! Score: ${localResult.score}%`);
+          } else {
+            console.log(`❌ NO MODULE RESULT FOUND for this quiz (random/other results are ignored)`);
+          }
+        } else {
+          console.log(`⚠️  No module results available to check`);
+        }
+        
+        // Determine button text and style
+        const scoreText = (localResult && localResult.score) 
+          ? `${localResult.score}%` 
+          : (q.last_attempt && q.last_attempt.percentage) 
+            ? `${q.last_attempt.percentage}%` 
+            : 'Taken';
+        
+        const buttonText = hasAttempted ? `📊 View Score` : '<i class="fa-regular fa-play"></i> Take Quiz';
+        const buttonClass = hasAttempted ? 'view-score-btn' : 'open-quiz-btn';
+        
+        // Display score if attempted
+        const scoreDisplay = hasAttempted && (localResult || q.last_attempt) 
+          ? `<div class="quiz-score" style="margin-top: 8px; padding: 8px; background: #eef1fd; border-radius: 6px; font-size: 13px; color: #4f46e5; font-weight: 600;"><i class="fa-solid fa-check-circle"></i> Score: ${scoreText}</div>` 
+          : '';
+        
+        htmlContent += `
+        <div class="quiz-card" data-quiz-id="${q.id}" data-has-attempted="${hasAttempted}" data-result-id="${localResult ? localResult.id : ''}">
+          <div class="quiz-info">
+            <div class="quiz-title">${escapeHtml(q.title)}</div>
+            <div class="quiz-meta">
+              <span class="quiz-type"><i class="fa-regular fa-file-lines"></i> ${escapeHtml(q.description || q.type || '')}</span>
+              <span class="quiz-date"><i class="fa-regular fa-calendar"></i> ${formatDate(q.created_at || q.date)}</span>
+              <span><i class="fa-regular fa-clock"></i> ${(q.time_limit || q.duration || 'N/A')} mins</span>
+            </div>
+            ${scoreDisplay}
+          </div>
+          <button class="${buttonClass}" data-quiz-title="${escapeHtml(q.title)}" data-quiz-id="${q.id}" data-result-id="${localResult ? localResult.id : ''}">
+            ${buttonText}
+          </button>
+        </div>
+      `;
+      }
+      
+      // Set all HTML at once
+      quizzesContainer.innerHTML = htmlContent;
+      console.log(`\n✅ [renderQuizzes] COMPLETE - HTML rendered`);
+      
+      // NOW attach all button handlers
+      attachQuizButtonHandlers();
+    }
+    
+    // Attach button handlers - separated for clarity
+    function attachQuizButtonHandlers() {
+      // Handle "Take Quiz" buttons
+      document.querySelectorAll('.open-quiz-btn').forEach(btn => {
+        btn.innerHTML = '<i class="fa-solid fa-play"></i> Take Quiz';
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const quizCard = btn.closest('.quiz-card');
+          const quizId = btn.getAttribute('data-quiz-id');
+          const title = btn.getAttribute('data-quiz-title');
+          
+          console.log('🎯 Starting quiz:', { quizId, title });
+          
+          localStorage.setItem("selectedQuizId", quizId);
+          localStorage.setItem("selectedQuizCategory", title);
+          localStorage.setItem("selectedSubjectId", subjectId);
+          localStorage.setItem("quizMode", "module");
+          
+          const quiz = subjectData.quizzes.find(q => q.id == quizId);
+          if (quiz) {
+            const timeLimit = quiz.time_limit || quiz.duration;
+            if (timeLimit) {
+              localStorage.setItem("quizTimeLimit", timeLimit);
+              console.log('📝 Quiz time limit:', timeLimit);
+            }
+          }
+          
+          sessionStorage.setItem("quizFromPage", "studentViewModules.html");
+          const quizUrl = `../student/studentQuizQuestions.html?quizId=${encodeURIComponent(quizId)}&mode=module&subject=${encodeURIComponent(title)}&subjectId=${encodeURIComponent(subjectId)}`;
+          
+          if (typeof window.navigateWithTransition === 'function') {
+            window.navigateWithTransition(quizUrl);
+          } else {
+            window.location.href = quizUrl;
+          }
+        });
+      });
+      
+      // Handle "View Score" buttons
+      document.querySelectorAll('.view-score-btn').forEach(btn => {
+        btn.innerHTML = '<i class="fa-solid fa-chart-pie"></i> View Score';
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          
+          const quizId = btn.getAttribute('data-quiz-id');
+          const resultId = btn.getAttribute('data-result-id');
+          const title = btn.getAttribute('data-quiz-title');
+          
+          console.log('📊 View Score clicked:', { quizId, resultId, title });
+          
+          // ===== NEW: Use the result ID directly from IndexedDB =====
+          if (resultId) {
+            console.log('✅ Using local result ID:', resultId);
+            // Navigate directly to results page with the result ID and mode=module
+            const resultUrl = `../student/studentQuizResults.html?resultId=${encodeURIComponent(resultId)}&mode=module&subjectId=${encodeURIComponent(subjectId)}`;
+            
+            if (typeof window.navigateWithTransition === 'function') {
+              window.navigateWithTransition(resultUrl);
+            } else {
+              window.location.href = resultUrl;
+            }
+            return;
+          }
+          
+          // ===== FALLBACK: If no local result ID, use API (backward compatibility) =====
+          console.log('⚠️  No local result ID, falling back to API...');
+          
+          // Clear any previous result data to prevent caching issues
+          sessionStorage.removeItem('currentResultData');
+          
+          console.log('📊 View Score clicked for quiz:', { quizId, title });
+          
+          const studentId = localStorage.getItem('userId');
+          if (!studentId) {
+            alert('Error: Student ID not found. Please log in again.');
+            return;
+          }
+          
+          try {
+            // Query the backend API directly to get the quiz attempt
+            console.log(`📊 [View Score] Fetching attempt for quiz ${quizId}, student ${studentId}...`);
+            const apiBaseUrl = viewModulesApi.baseURL || window.location.origin + '/api/v1';
+            const response = await fetch(`${apiBaseUrl}/quizzes/student/${studentId}/attempts`, {
+              headers: viewModulesApi.getHeaders(!!viewModulesApi.token)
+            });
+            
+            if (response.ok) {
+              const attempts = await response.json();
+              console.log(`✅ Got attempts from API:`, attempts);
+              console.log(`🔍 Looking for quiz ID: ${quizId} (type: ${typeof quizId})`);
+              
+              // Find the attempt for this specific quiz - match by quiz_id with proper type conversion
+              // CRITICAL: Look for MODULE mode attempt, not practice/random
+              let attempt = null;
+              for (const att of attempts) {
+                console.log(`  Checking attempt - quiz_id: ${att.quiz_id} (type: ${typeof att.quiz_id}), mode: ${att.mode}, id: ${att.id}`);
+                // Match quiz_id AND make sure it's module mode (not practice, random, or exam)
+                const quizIdMatch = String(att.quiz_id) === String(quizId);
+                const modeMatch = att.mode === 'module' || (!att.mode);  // Only module or no mode
+                if (quizIdMatch && modeMatch) {
+                  attempt = att;
+                  console.log('✅ Found matching MODULE attempt for quiz:', quizId, 'mode:', att.mode);
+                  break;
+                } else if (quizIdMatch) {
+                  console.log(`   ⚠️ Quiz ID matched but mode rejected (mode=${att.mode}, looking for module)`);
+                }
+              }
+              
+              if (attempt) {
+                // Found an attempt from the API - now fetch detailed attempt data
+                console.log('📊 Fetching detailed attempt data for attemptId:', attempt.id);
+                try {
+                  const apiBaseUrl = viewModulesApi.baseURL || window.location.origin + '/api/v1';
+                  const detailedResponse = await fetch(`${apiBaseUrl}/quizzes/attempts/${attempt.id}`, {
+                    headers: viewModulesApi.getHeaders(!!viewModulesApi.token)
+                  });
+                  
+                  console.log('📊 Detailed response status:', detailedResponse.status);
+                  
+                  if (detailedResponse.ok) {
+                    const detailedAttempt = await detailedResponse.json();
+                    console.log('📊 Got detailed attempt data:', detailedAttempt);
+                    
+                    // Log the raw questions structure from API
+                    console.log('📊 Raw questions from API:');
+                    if (detailedAttempt.questions && detailedAttempt.questions.length > 0) {
+                      for (let i = 0; i < Math.min(3, detailedAttempt.questions.length); i++) {
+                        const q = detailedAttempt.questions[i];
+                        console.log(`  Q${i + 1}:`, {
+                          id: q.id,
+                          question_text: q.question_text,
+                          student_answer: q.student_answer,
+                          is_correct: q.is_correct,
+                          optionsCount: q.options?.length,
+                          optionIds: q.options?.map(o => o.id),
+                          firstOption: q.options?.[0]
+                        });
+                      }
+                    }
+                    
+                    // Transform detailed attempt data to match studentQuizResults format
+                    const questions = (detailedAttempt.questions || []).map((q, idx) => {
+                      // Find the selected option text
+                      let selectedOptionText = 'No answer selected';
+                      let correctOptionText = '';
+                      
+                      // Check if student provided an answer (student_answer could be 0, so check !== null)
+                      if (q.student_answer !== null && q.student_answer !== undefined && q.options && q.options.length > 0) {
+                        // Try to find matching option by id - handle both string and number comparisons
+                        const selectedOption = q.options.find(opt => 
+                          opt.id === q.student_answer || 
+                          String(opt.id) === String(q.student_answer)
+                        );
+                        if (selectedOption) {
+                          selectedOptionText = selectedOption.text;
+                        } else {
+                          console.warn(`⚠️ Question ${idx + 1}: Could not find option id ${q.student_answer} in options:`, q.options);
+                        }
+                      }
+                      
+                      // Find the correct option text
+                      if (q.options && q.options.length > 0) {
+                        const correctOption = q.options.find(opt => opt.is_correct);
+                        if (correctOption) {
+                          correctOptionText = correctOption.text;
+                        }
+                      }
+                      
+                      return {
+                        questionText: q.question_text,
+                        selectedOptionText: selectedOptionText,
+                        isCorrect: q.is_correct || false,
+                        correctOptionText: correctOptionText,
+                        explanation: q.explanation
+                      };
+                    });
+                    
+                    console.log('📊 Transformed questions count:', questions.length);
+                    console.log('📊 Sample transformed question:', questions[0]);
+                    
+                    // Analyze the transformed data
+                    const skipped = questions.filter(q => q.selectedOptionText === 'No answer selected').length;
+                    const correct = questions.filter(q => q.isCorrect === true).length;
+                    const incorrect = questions.filter(q => q.isCorrect === false).length;
+                    console.log('📊 Analysis: Correct:', correct, 'Incorrect:', incorrect, 'Skipped:', skipped, 'Total:', questions.length);
+                    
+                    const resultData = {
+                      id: detailedAttempt.id,
+                      quizId: detailedAttempt.quiz_id || quizId,
+                      quizTitle: title,
+                      studentId: studentId,
+                      score: detailedAttempt.percentage || 0,
+                      timeTaken: detailedAttempt.time_spent || 0,
+                      is_passed: detailedAttempt.is_passed,
+                      percentage: detailedAttempt.percentage,
+                      timestamp: detailedAttempt.submitted_at,
+                      attemptId: detailedAttempt.id,
+                      submittedAt: detailedAttempt.submitted_at,
+                      questions: questions
+                    };
+                    
+                    console.log('✅ Created result data with questions:', resultData);
+                    // Store with unique key based on attemptId
+                    sessionStorage.setItem('currentResultData', JSON.stringify(resultData));
+                    // Also cache in localStorage for persistence
+                    localStorage.setItem(`result_${resultData.attemptId}`, JSON.stringify(resultData));
+                    console.log('💾 Cached result in both sessionStorage and localStorage');
+                    const resultsUrl = `../student/studentQuizResults.html?mode=module&subjectId=${encodeURIComponent(subjectId)}&resultId=${encodeURIComponent(resultData.attemptId)}`;
+                    window.location.href = resultsUrl;
+                    return;
+                  } else {
+                    const errorText = await detailedResponse.text();
+                    console.error('❌ Failed to fetch detailed attempt data. Status:', detailedResponse.status, 'Error:', errorText);
+                  }
+                } catch (fetchError) {
+                  console.error('❌ Error fetching detailed attempt:', fetchError);
+                }
+              }
+            }
+            
+            // Fallback to IndexedDB if API fails
+            console.warn('⚠️ No attempt from API, trying IndexedDB...');
+            const results = await quizResultsManager.getStudentResultsByMode(studentId, 'module');
+            const result = results.find(r => String(r.quizId) === String(quizId));
+            
+            if (result) {
+              console.log('✅ Found result in IndexedDB:', result);
+              sessionStorage.setItem('currentResultData', JSON.stringify(result));
+              // Also cache in localStorage
+              if (result.attemptId) {
+                localStorage.setItem(`result_${result.attemptId}`, JSON.stringify(result));
+              }
+              const attemptId = result.attemptId || result.id;
+              const resultsUrl = `../student/studentQuizResults.html?mode=module&subjectId=${encodeURIComponent(subjectId)}&resultId=${encodeURIComponent(attemptId)}`;
+              window.location.href = resultsUrl;
+            } else {
+              alert('Error: Unable to find quiz result. Please try again.');
+            }
+          } catch (error) {
+            console.error('❌ Error loading quiz result:', error);
+            alert('Error: ' + error.message);
+          }
+        });
+      });
+    }
+
+    // Render Learning Modules
+    function renderModules(filterText = '') {
+      if (!modulesContainer) return;
+      
+      const filtered = subjectData.modules.filter(m => 
+        m.title.toLowerCase().includes(filterText.toLowerCase()) || 
+        (m.description || '').toLowerCase().includes(filterText.toLowerCase())
+      );
+      
+      if (filtered.length === 0) {
+        modulesContainer.innerHTML = `<div class="empty-state-module"><i class="fa-regular fa-folder-open"></i><p>No modules match your search</p></div>`;
+        return;
+      }
+      
+      modulesContainer.innerHTML = filtered.map(m => {
+        // Determine icon and color based on file_type
+        let icon = m.icon || 'fa-book';
+        let badgeIcon = 'fa-file';
+        let color = m.color || '#4f46e5';
+        let fileType = m.file_type || 'Learning Module';
+        
+        // Map file types to appropriate icons and colors
+        if (fileType.toLowerCase().includes('pdf')) {
+          icon = 'fa-file-pdf';
+          badgeIcon = 'fa-file-pdf';
+          color = '#ef4444';
+        } else if (fileType.toLowerCase().includes('video')) {
+          icon = 'fa-video';
+          badgeIcon = 'fa-video';
+          color = '#10b981';
+        } else if (fileType.toLowerCase().includes('audio')) {
+          icon = 'fa-music';
+          badgeIcon = 'fa-music';
+          color = '#f59e0b';
+        } else if (fileType.toLowerCase().includes('interactive') || fileType.toLowerCase().includes('lms')) {
+          icon = 'fa-chalkboard-user';
+          badgeIcon = 'fa-chalkboard-user';
+          color = '#2f49e0';
+        } else if (fileType.toLowerCase().includes('doc') || fileType.toLowerCase().includes('text')) {
+          icon = 'fa-file-lines';
+          badgeIcon = 'fa-file-lines';
+          color = '#8b5cf6';
+        }
+        
+        return `
+          <div class="module-item" data-module-id="${m.id}">
+            <div class="module-info">
+              <div class="module-icon" style="background: ${color}10; color: ${color}">
+                <i class="fa-solid ${icon}"></i>
+              </div>
+              <div class="module-details">
+                <h4>${escapeHtml(m.title)}</h4>
+                <p>
+                  <span class="module-badge"><i class="fa-regular ${badgeIcon}"></i> ${escapeHtml(fileType)}</span>
+                  <span><i class="fa-regular fa-calendar"></i> ${formatDate(m.created_at || '')}</span>
+                  <span><i class="fa-regular fa-hard-drive"></i> ${m.file_size || '-'}</span>
+                </p>
+              </div>
+            </div>
+            <button class="open-module-btn" data-module-id="${m.id}">
+              <i class="fa-regular fa-eye"></i> View Module
+            </button>
+          </div>
+        `;
+      }).join('');
+      
+      // Attach module button handlers
+      document.querySelectorAll('.open-module-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const moduleId = btn.getAttribute('data-module-id');
+          openModuleViewModal(moduleId);
+        });
+      });
+    }
+
+    // Open module view modal
+    function openModuleViewModal(moduleId) {
+      const module = subjectData.modules.find(m => m.id == moduleId);
+      
+      if (!module) {
+        alert('Module not found');
+        return;
+      }
+      
+      // Get file type icon with color mapping
+      let icon = 'fa-book';
+      let color = '#4f46e5';
+      let fileType = module.file_type || 'Learning Module';
+      
+      if (fileType.toLowerCase().includes('pdf')) {
+        icon = 'fa-file-pdf';
+        color = '#ef4444';
+      } else if (fileType.toLowerCase().includes('video')) {
+        icon = 'fa-video';
+        color = '#10b981';
+      } else if (fileType.toLowerCase().includes('audio')) {
+        icon = 'fa-music';
+        color = '#f59e0b';
+      } else if (fileType.toLowerCase().includes('interactive') || fileType.toLowerCase().includes('lms')) {
+        icon = 'fa-chalkboard-user';
+        color = '#2f49e0';
+      } else if (fileType.toLowerCase().includes('doc') || fileType.toLowerCase().includes('text')) {
+        icon = 'fa-file-lines';
+        color = '#8b5cf6';
+      }
+      
+      // Populate modal
+      document.getElementById('moduleViewTitle').textContent = module.title;
+      document.getElementById('moduleViewType').textContent = fileType;
+      document.getElementById('moduleViewContent').textContent = module.content || module.description || 'No description provided';
+      document.getElementById('moduleViewFileType').textContent = fileType;
+      document.getElementById('moduleViewDate').textContent = formatDate(module.created_at);
+      document.getElementById('moduleViewIcon').innerHTML = `<i class="fa-solid ${icon}" style="color: ${color}"></i>`;
+      
+      // Display files
+      displayModuleFilesInModal(module);
+      
+      // Show modal
+      document.getElementById('moduleViewModal').style.display = 'flex';
+    }
+
+    // Display module files in the modal
+    function displayModuleFilesInModal(module) {
+      const filesList = document.getElementById('moduleFilesList');
+      const filesSection = document.getElementById('moduleFilesSection');
+      
+      if (!module.files || module.files.length === 0) {
+        filesSection.style.display = 'none';
+        return;
+      }
+      
+      filesSection.style.display = 'block';
+      
+      filesList.innerHTML = module.files.map((file, index) => {
+        const fileName = file.original_name || file.file_name;
+        const fileExt = fileName.split('.').pop().toLowerCase();
+        let icon = 'fa-file';
+        
+        if (['pdf'].includes(fileExt)) icon = 'fa-file-pdf';
+        else if (['mp4', 'webm', 'avi', 'mov'].includes(fileExt)) icon = 'fa-video';
+        else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) icon = 'fa-image';
+        else if (['mp3', 'wav', 'ogg'].includes(fileExt)) icon = 'fa-music';
+        else if (['doc', 'docx', 'txt'].includes(fileExt)) icon = 'fa-file-lines';
+        else if (['ppt', 'pptx'].includes(fileExt)) icon = 'fa-file-powerpoint';
+        
+        const displayName = fileName.length > 50 ? fileName.substring(0, 47) + '...' : fileName;
+        
+        return `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; gap: 12px; border-bottom: 1px solid #f1f5f9; transition: background 0.2s;">
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; cursor: pointer;" onclick="previewFile('${file.file_path}', '${fileExt}', '${fileName.replace(/'/g, "\\'")}')">
+              <i class="fa-solid ${icon}" style="color: #7c6ff7; font-size: 1.25rem; flex-shrink: 0;"></i>
+              <div style="flex: 1; min-width: 0;">
+                <p style="font-size: 0.9rem; color: #1f2937; margin: 0; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${fileName}">${displayName}</p>
+                <p style="font-size: 0.75rem; color: #6b7280; margin: 2px 0 0 0;">${fileExt.toUpperCase()}</p>
+              </div>
+            </div>
+            <a href="${file.file_path}" download="${fileName}" style="background: #2f49e0; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+              <i class="fa-solid fa-download"></i> Download
+            </a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Preview file in modal
+    function previewFile(filePath, fileExt, fileName) {
+      const previewContent = document.getElementById('filePreviewContent');
+      document.getElementById('filePreviewTitle').textContent = fileName;
+      
+      fileExt = fileExt.toLowerCase();
+      
+      // Construct full URL for relative paths
+      let fullFilePath = filePath;
+      if (filePath.startsWith('/') && !filePath.startsWith('http')) {
+        const protocol = window.location.protocol;
+        const hostname = window.location.hostname;
+        const port = window.location.port;
+        const portString = port && (protocol === 'http:' ? port !== '80' : port !== '443') ? `:${port}` : '';
+        fullFilePath = `${protocol}//${hostname}${portString}${filePath}`;
+      }
+      
+      // Helper to inject a centered iframe
+      function injectIframe(src) {
+        previewContent.innerHTML = `<iframe src="${src}" style="width:100%; height:100%; border:none; display:block;">Your browser does not support embedded content. <a href="${fullFilePath}" target="_blank">Download</a></iframe>`;
+      }
+
+      if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExt)) {
+        // Image preview (full card)
+        previewContent.innerHTML = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:white;"><img src="${fullFilePath}" style="max-width:100%; max-height:100%; object-fit:contain;"></div>`;
+      } else if (['mp4', 'webm', 'avi', 'mov'].includes(fileExt)) {
+        // Video preview
+        previewContent.innerHTML = `<video controls style="width:100%; height:100%; background:black; display:block;"><source src="${fullFilePath}" type="video/${fileExt === 'mp4' ? 'mp4' : 'webm'}">Your browser does not support video playback.</video>`;
+      } else if (['mp3', 'wav', 'ogg'].includes(fileExt)) {
+        // Audio preview
+        previewContent.innerHTML = `<div style="padding: 24px; display:flex; align-items:center; justify-content:center;"><audio controls style="width:95%; max-width:600px;"><source src="${fullFilePath}" type="audio/${fileExt}">Your browser does not support audio playback.</audio></div>`;
+      } else if (fileExt === 'pdf') {
+        // PDF preview - embed PDF directly, allow fit to width
+        // Use the browser's PDF viewer; on mobile we style the modal to look like the screenshot
+        injectIframe(fullFilePath + '#view=FitH');
+      } else if (['doc','docx','ppt','pptx','xls','xlsx','txt'].includes(fileExt)) {
+        // Attempt to use Microsoft Office viewer if file URL is public (Office viewer cannot fetch localhost)
+        const isLocal = fullFilePath.includes('localhost') || fullFilePath.includes('127.0.0.1');
+        if (!isLocal) {
+          const officeSrc = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(fullFilePath);
+          injectIframe(officeSrc);
+        } else {
+          // Local files - show download fallback with filename
+          previewContent.innerHTML = `
+            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:24px;">
+              <i class="fa-solid fa-file-lines" style="font-size:48px; color:#d1d5db; margin-bottom:16px;"></i>
+              <div style="text-align:center; margin-bottom:18px;"><strong style="display:block; color:#111; margin-bottom:6px;">${fileName}</strong><span style="color:#6b7280;">Preview not available for local files</span></div>
+              <a href="${fullFilePath}" download="${fileName}" style="background:#2f49e0; color:#fff; padding:10px 18px; border-radius:10px; text-decoration:none; font-weight:600;">Download File</a>
+            </div>
+          `;
+        }
+      } else {
+        // Unknown file type - show fallback
+        previewContent.innerHTML = `
+          <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:24px;">
+            <i class="fa-solid fa-file" style="font-size:48px; color:#d1d5db; margin-bottom:16px;"></i>
+            <p style="color:#6b7280; text-align:center; margin:0 0 18px 0;">Preview not available for this file type.</p>
+            <a href="${fullFilePath}" download="${fileName}" style="background:#2f49e0; color:#fff; padding:10px 18px; border-radius:10px; text-decoration:none; font-weight:600;">Download File</a>
+          </div>
+        `;
+      }
+
+      document.getElementById('filePreviewModal').style.display = 'flex';
+    }
+
+    // Close file preview modal
+    function closeFilePreviewModal() {
+      document.getElementById('filePreviewModal').style.display = 'none';
+    }
+
+    // Close module view modal
+    function closeModuleViewModal() {
+      document.getElementById('moduleViewModal').style.display = 'none';
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('[StudentViewModules] DOMContentLoaded fired, subjectId:', subjectId);
+      
+      // Load real subject data from API
+      loadSubjectData();
+      
+      // Listen for page visibility to refresh when returning from quiz results
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          console.log('[StudentViewModules] Page became visible, refreshing quiz list...');
+          loadSubjectData(); // Reload data and re-render
+        }
+      });
+      
+      if (searchInput) {
+        searchInput.addEventListener('input', async () => {
+          const searchTerm = searchInput.value || '';
+          await renderQuizzes(searchTerm);
+          renderModules(searchTerm);
+        });
+      }
+      
+      if (backBtn) {
+        backBtn.addEventListener('click', goBackToModules);
+      }
+
+      // Close module modal when clicking outside
+      const moduleViewModal = document.getElementById('moduleViewModal');
+      if (moduleViewModal) {
+        moduleViewModal.addEventListener('click', (e) => {
+          if (e.target === moduleViewModal) {
+            closeModuleViewModal();
+          }
+        });
+      }
+
+      // Close file preview modal when clicking outside
+      const filePreviewModal = document.getElementById('filePreviewModal');
+      if (filePreviewModal) {
+        filePreviewModal.addEventListener('click', (e) => {
+          if (e.target === filePreviewModal) {
+            closeFilePreviewModal();
+          }
+        });
+      }
+      
+      // Highlight Modules in sidebar after it loads
+      setTimeout(() => {
+        const sidebar = document.querySelector('#sidebar-container .sidebar, #sidebar-container');
+        if (sidebar) {
+          const modulesLink = Array.from(sidebar.querySelectorAll('.menu-item')).find(item => 
+            item.textContent.toLowerCase().includes('modules')
+          );
+          if (modulesLink) {
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            modulesLink.classList.add('active');
+          }
+        }
+      }, 150);
+    });
+  </script>
+</body>
+</html>

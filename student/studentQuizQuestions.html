@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<title>Quiz Questions - LearnIQ</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="stylesheet" href="../assets/styles/studentStyles/studentQuizQuestions.css" />
+<!-- Reusable sidebar + topbar styles -->
+<link rel="stylesheet" href="../assets/styles/studentStyles/studentSidebar.css" />
+
+
+</head>
+<body class="page-loading">
+
+<!-- Hamburger -->
+<button class="hamburger-btn" id="hamburgerBtn" aria-label="Open sidebar">
+  <i class="fa-solid fa-bars"></i>
+</button>
+
+<!-- Overlay + sidebar container -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div id="sidebar-container"></div>
+
+<!-- Dashboard shell -->
+<div class="dashboard">
+  <div class="main-content">
+
+    <!-- Topbar -->
+    <div class="topbar-wrapper">
+      <div id="topbar-container"></div>
+    </div>
+
+    <!-- Page content -->
+    <div class="page-body">
+
+      <!-- Back button -->
+      <button class="back-link" onclick="goBack()" title="Go back to quiz selection">
+        <i class="fa-solid fa-chevron-left"></i>
+        Back
+      </button>
+
+      <!-- Category title (filled by JS from localStorage) -->
+      <div class="page-title" id="pageTitle">General Education</div>
+
+      <!-- Progress bar -->
+      <div class="progress-row">
+        <span id="progressLabel">Question 1 of 50</span>
+        <span class="pct" id="progressPct">2%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width: 2%;"></div>
+      </div>
+
+      <!-- Question card -->
+      <div class="question-card">
+        <div class="question-number" id="qNumber">Question 1</div>
+        <div class="question-text"  id="qText"></div>
+        <div class="options-list"   id="optionsList"></div>
+      </div>
+
+      <!-- Mark for review -->
+      <div class="mark-row">
+        <button class="mark-btn" id="markBtn" onclick="toggleMark()">
+          <i class="fa-regular fa-flag"></i>
+          Mark for review
+        </button>
+      </div>
+
+      <!-- Navigation -->
+      <div class="nav-row">
+        <button class="nav-btn btn-prev" id="prevBtn" onclick="prevQ()" disabled>
+          <i class="fa-solid fa-chevron-left"></i> Previous
+        </button>
+        <span class="q-counter" id="qCounter">1 / 50</span>
+        <button class="nav-btn btn-next" id="nextBtn" onclick="nextQ()">
+          Next <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+    </div><!-- /page-body -->
+  </div><!-- /main-content -->
+</div><!-- /dashboard -->
+
+<!-- Reusable layout (sidebar + topbar injection, active menu, collapse, mobile, logout) -->
+<script src="../assets/scripts/student-layout.js"></script>
+<script src="../assets/scripts/api-config.js"></script>
+<script src="../assets/scripts/ApiService.js?v=3"></script>
+<script src="../assets/scripts/QuizResultsManager.js?v=3"></script>
+
+<script>
+  // ===== GLOBAL STATE =====
+  let quizId = null;
+  let subjectId = null;
+  let quizMode = 'module'; // Default to module mode
+  let studentId = null;
+  let quizData = null;
+  let currentQuestionIndex = 0;
+  let answers = {};
+  let markedList = {};
+  let startTime = null;
+  let isSubmitting = false;
+
+  const LETTERS = ["A", "B", "C", "D"];
+  const apiService = new ApiService();
+
+  // ===== INITIALIZATION =====
+  document.addEventListener('DOMContentLoaded', async () => {
+    document.body.classList.remove("page-loading");
+    
+    // Get parameters from URL or storage (check both localStorage and sessionStorage)
+    const params = new URLSearchParams(window.location.search);
+    quizId = params.get('quizId') || sessionStorage.getItem('currentQuizId') || localStorage.getItem('currentQuizId');
+    subjectId = params.get('subjectId') || sessionStorage.getItem('currentSubjectId') || localStorage.getItem('currentSubjectId');
+    quizMode = params.get('mode') || localStorage.getItem('quizMode') || sessionStorage.getItem('quizMode') || 'module';
+    
+    // For random quiz, also load category info from localStorage
+    if (quizMode === 'random') {
+      const categoryId = localStorage.getItem('selectedCategoryId');
+      const categoryName = localStorage.getItem('selectedQuizCategory');
+      if (categoryId && categoryName) {
+        console.log(`🎲 Random quiz mode - Category: ${categoryName} (ID: ${categoryId})`);
+      }
+    }
+
+    // Store current page URL for back button
+    if (!sessionStorage.getItem('quizSource')) {
+      sessionStorage.setItem('quizSource', document.referrer || window.location.href);
+    }
+
+    // Get student ID from localStorage (matches how History page gets it)
+    const storedStudentId = localStorage.getItem('userId');
+    if (storedStudentId) {
+      studentId = parseInt(storedStudentId);
+    } else {
+      // Fallback to token decode if userId not in localStorage
+      try {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          const decoded = JSON.parse(atob(token.split('.')[1]));
+          studentId = decoded.id;
+        }
+      } catch (e) {
+        console.warn('Could not decode token');
+      }
+    }
+    
+    if (!studentId) {
+      console.error('❌ Student ID could not be determined');
+      studentId = parseInt(localStorage.getItem('userId')) || 0;
+    }
+
+    // Random mode doesn't require quizId (generates from category)
+    if (!quizId && quizMode !== 'random') {
+      alert('No quiz selected');
+      goBack();
+      return;
+    }
+
+    // ✅ MODULE MODE: Check if already attempted before loading quiz
+    if (quizMode === 'module' && quizId && quizResultsManager && studentId) {
+      try {
+        // Check if there's already a module attempt for this quiz
+        const existingResults = await quizResultsManager.getStudentResultsByMode(studentId, 'module');
+        const alreadyAttempted = existingResults.some(r => {
+          const rQuizId = parseInt(r.quizId) || r.quizId;
+          const qId = parseInt(quizId) || quizId;
+          return String(rQuizId) === String(qId);
+        });
+        
+        if (alreadyAttempted) {
+          console.log(`❌ Module quiz already attempted - quizId: ${quizId}`);
+          alert('❌ You have already completed this module quiz.\n\nModule quizzes can only be attempted once. Please view your results in History.');
+          goBack();
+          return;
+        }
+        console.log(`✅ Module quiz - no previous attempts found`);
+      } catch (error) {
+        console.warn('Could not check previous module attempts:', error);
+        // Continue anyway - let backend handle the check
+      }
+    }
+
+    // Load quiz data
+    if (quizMode === 'random') {
+      await loadRandomQuiz();
+    } else {
+      await loadQuiz();
+    }
+    startTime = Date.now();
+    highlightActiveSidebarItem();
+  });
+
+  // ===== LOAD QUIZ =====
+  async function loadQuiz() {
+    try {
+      const url = `${apiService.baseURL}/quizzes/${quizId}?mode=${quizMode}`;
+      const response = await fetch(url, {
+        headers: apiService.getHeaders(!!apiService.token)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      quizData = await response.json();
+      console.log('📚 Loaded quiz:', quizData);
+
+      if (!quizData.questions || quizData.questions.length === 0) {
+        alert('No questions found in this quiz');
+        goBack();
+        return;
+      }
+
+      // Initialize answers object
+      quizData.questions.forEach(q => {
+        answers[q.id] = null;
+        markedList[q.id] = false;
+      });
+
+      // Update page title
+      document.getElementById('pageTitle').textContent = quizData.title || 'Quiz';
+
+      renderQuestion();
+    } catch (error) {
+      console.error('Error loading quiz:', error);
+      alert('Failed to load quiz: ' + error.message);
+      goBack();
+    }
+  }
+
+  // ===== LOAD RANDOM QUIZ =====
+  async function loadRandomQuiz() {
+    try {
+      const categoryId = localStorage.getItem('selectedCategoryId');
+      const categoryName = localStorage.getItem('selectedQuizCategory');
+
+      if (!categoryId || !categoryName) {
+        alert('Category not selected');
+        goBack();
+        return;
+      }
+
+      console.log(`🎲 Loading random quiz from category: ${categoryName} (ID: ${categoryId})`);
+
+      // Get all subjects in this category
+      const subjectsResponse = await fetch(`${apiService.baseURL}/subjects?categoryId=${categoryId}`, {
+        headers: apiService.getHeaders(!!apiService.token)
+      });
+
+      if (!subjectsResponse.ok) {
+        throw new Error(`Failed to load subjects: HTTP ${subjectsResponse.status}`);
+      }
+
+      const subjectsData = await subjectsResponse.json();
+      let allQuestions = [];
+
+      console.log(`📖 Found ${subjectsData.length} subjects in category`);
+
+      // Fetch questions from all subjects in this category
+      for (const subject of subjectsData) {
+        try {
+          // Fetch question list (without options)
+          const questionsListResponse = await fetch(`${apiService.baseURL}/questions?subjectId=${subject.id}`, {
+            headers: apiService.getHeaders(!!apiService.token)
+          });
+
+          if (questionsListResponse.ok) {
+            const questionsList = await questionsListResponse.json();
+            console.log(`  📝 Subject "${subject.name}": ${questionsList.length} questions found`);
+            
+            // Fetch full details (with options) for each question in parallel
+            // Limit to 5 concurrent requests to avoid overwhelming the server
+            const batchSize = 5;
+            const questionsWithOptions = [];
+            
+            for (let i = 0; i < questionsList.length; i += batchSize) {
+              const batch = questionsList.slice(i, i + batchSize);
+              const batchResults = await Promise.all(
+                batch.map(async (q) => {
+                  try {
+                    if (!q.id) {
+                      console.warn('Question missing ID:', q);
+                      return q; // Return as-is if no ID
+                    }
+                    
+                    const detailResponse = await fetch(`${apiService.baseURL}/questions/${q.id}`, {
+                      headers: apiService.getHeaders(!!apiService.token)
+                    });
+                    
+                    if (detailResponse.ok) {
+                      return await detailResponse.json();
+                    } else {
+                      console.warn(`Could not fetch question ${q.id}: HTTP ${detailResponse.status}`);
+                      return q;
+                    }
+                  } catch (e) {
+                    console.error(`Error fetching question ${q.id}:`, e);
+                    return q;
+                  }
+                })
+              );
+              questionsWithOptions.push(...batchResults);
+            }
+            
+            allQuestions = allQuestions.concat(questionsWithOptions);
+            console.log(`  ✅ Added ${questionsWithOptions.length} questions with options`);
+          }
+        } catch (e) {
+          console.warn(`Could not load questions for subject ${subject.id}:`, e);
+        }
+      }
+
+      if (allQuestions.length === 0) {
+        alert(`❌ No questions found in ${categoryName}.\n\nPlease ask your instructor to add questions to this category.`);
+        goBack();
+        return;
+      }
+
+      // Deduplicate questions by ID to prevent duplicates
+      const uniqueQuestionsMap = new Map();
+      allQuestions.forEach(q => {
+        if (!uniqueQuestionsMap.has(q.id)) {
+          uniqueQuestionsMap.set(q.id, q);
+        }
+      });
+      const deduplicatedQuestions = Array.from(uniqueQuestionsMap.values());
+      
+      console.log(`🔄 Deduplicated: ${allQuestions.length} → ${deduplicatedQuestions.length} unique questions`);
+      
+      // Randomize and limit to 50 questions max
+      const shuffledQuestions = deduplicatedQuestions.sort(() => Math.random() - 0.5);
+      const selectedQuestions = shuffledQuestions.slice(0, 50);
+      
+      // Check if we have fewer questions than requested
+      if (selectedQuestions.length < 50 && deduplicatedQuestions.length < 50) {
+        console.warn(`⚠️ Only ${selectedQuestions.length} unique questions available in this category`);
+      }
+
+      console.log(`✅ Loaded ${selectedQuestions.length} questions (max 50) from ${deduplicatedQuestions.length} unique total`);
+
+      // Build quiz data structure
+      quizData = {
+        id: null, // No ID for random quizzes
+        title: `Random Quiz - ${categoryName}`,
+        category: categoryName,
+        categoryId: categoryId,
+        questions: selectedQuestions,
+        is_random: true
+      };
+
+      // Initialize answers object
+      quizData.questions.forEach(q => {
+        answers[q.id] = null;
+        markedList[q.id] = false;
+      });
+
+      // Update page title
+      document.getElementById('pageTitle').textContent = quizData.title;
+
+      renderQuestion();
+    } catch (error) {
+      console.error('Error loading random quiz:', error);
+      alert('Failed to load random quiz: ' + error.message);
+      goBack();
+    }
+  }
+
+  // ===== RENDER QUESTION =====
+  function renderQuestion() {
+    if (!quizData || !quizData.questions) return;
+
+    const question = quizData.questions[currentQuestionIndex];
+    const qNum = currentQuestionIndex + 1;
+    const total = quizData.questions.length;
+    const pct = Math.round((qNum / total) * 100);
+
+    // Progress
+    document.getElementById('progressLabel').textContent = `Question ${qNum} of ${total}`;
+    document.getElementById('progressPct').textContent = `${pct}%`;
+    document.getElementById('progressFill').style.width = `${pct}%`;
+    document.getElementById('qCounter').textContent = `${qNum} / ${total}`;
+
+    // Question
+    document.getElementById('qNumber').textContent = `Question ${qNum}`;
+    document.getElementById('qText').textContent = question.question_text || 'Question ' + qNum;
+
+    // Options
+    const list = document.getElementById('optionsList');
+    list.innerHTML = '';
+
+    // Debug: check question structure
+    if (!question) {
+      console.error('Question not found at index', currentQuestionIndex);
+      return;
+    }
+
+    console.log(`Rendering Q${currentQuestionIndex + 1}:`, {
+      text: question.question_text,
+      hasOptions: !!question.options,
+      optionsCount: question.options ? question.options.length : 0,
+      options: question.options
+    });
+
+    if (question.options && Array.isArray(question.options) && question.options.length > 0) {
+      // Filter out undefined/invalid options
+      const validOptions = question.options.filter(opt => {
+        if (!opt || !opt.option_text) return false;
+        if (opt.option_text.toLowerCase().startsWith('undefined')) return false;
+        return true;
+      });
+
+      validOptions.forEach((opt, i) => {
+        const div = document.createElement('div');
+        const isSelected = answers[question.id] === i;
+        div.className = 'option-item' + (isSelected ? ' selected' : '');
+        div.onclick = () => pickAnswer(question.id, i);
+        div.innerHTML = `
+          <div class="option-radio"><div class="radio-dot"></div></div>
+          <span class="option-letter">${LETTERS[i]}.</span>
+          <span class="option-text">${opt.option_text || opt}</span>
+        `;
+        list.appendChild(div);
+      });
+    } else {
+      // Options not available - show error
+      const errorDiv = document.createElement('div');
+      errorDiv.style.padding = '1rem';
+      errorDiv.style.backgroundColor = '#fee2e2';
+      errorDiv.style.borderRadius = '8px';
+      errorDiv.style.color = '#dc2626';
+      errorDiv.style.textAlign = 'center';
+      errorDiv.innerHTML = '⚠️ Options not available for this question. Please refresh the page.';
+      list.appendChild(errorDiv);
+      console.error('Question has no valid options:', question);
+    }
+
+    // Mark button
+    const btn = document.getElementById('markBtn');
+    if (markedList[question.id]) {
+      btn.classList.add('marked');
+      btn.innerHTML = `<i class="fa-solid fa-flag"></i> Marked for review`;
+    } else {
+      btn.classList.remove('marked');
+      btn.innerHTML = `<i class="fa-regular fa-flag"></i> Mark for review`;
+    }
+
+    // Navigation
+    document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+
+    const nextBtn = document.getElementById('nextBtn');
+    if (currentQuestionIndex === total - 1) {
+      nextBtn.innerHTML = `Submit <i class="fa-solid fa-check"></i>`;
+    } else {
+      nextBtn.innerHTML = `Next <i class="fa-solid fa-chevron-right"></i>`;
+    }
+  }
+
+  function pickAnswer(questionId, optionIndex) {
+    answers[questionId] = optionIndex;
+    renderQuestion();
+  }
+
+  function prevQ() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      renderQuestion();
+    }
+  }
+
+  function nextQ() {
+    if (currentQuestionIndex < quizData.questions.length - 1) {
+      currentQuestionIndex++;
+      renderQuestion();
+    } else {
+      submitQuiz();
+    }
+  }
+
+  function toggleMark() {
+    const question = quizData.questions[currentQuestionIndex];
+    markedList[question.id] = !markedList[question.id];
+    renderQuestion();
+  }
+
+  // ===== SUBMIT QUIZ =====
+  async function submitQuiz() {
+    if (isSubmitting) return;
+    isSubmitting = true;
+
+    try {
+      console.log(`🎯 Submitting quiz - Mode: ${quizMode}, StudentID: ${studentId}, QuizID: ${quizId}`);
+      const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+      
+      // For random quizzes, skip backend submission (no backend tracking needed)
+      let attemptData = { id: null };
+      
+      if (quizMode !== 'random' && quizId) {
+        // Submit to backend for non-random quizzes
+        const submissionData = {
+          quiz_id: quizId,
+          student_id: studentId,
+          mode: quizMode,
+          time_spent: timeTaken,
+          answers: []
+        };
+
+        // Build answers array
+        quizData.questions.forEach(question => {
+          const selectedOptionIndex = answers[question.id];
+          submissionData.answers.push({
+            question_id: question.id,
+            selected_option_index: selectedOptionIndex !== null ? selectedOptionIndex : null
+          });
+        });
+
+        // Submit to backend
+        const response = await fetch(`${apiService.baseURL}/quizzes/${quizId}/submit`, {
+          method: 'POST',
+          headers: apiService.getHeaders(!!apiService.token),
+          body: JSON.stringify(submissionData)
+        });
+
+        if (!response.ok) {
+          // Try to get detailed error message from backend
+          try {
+            const errorData = await response.json();
+            if (errorData.error) {
+              throw new Error(errorData.error);
+            }
+          } catch (e) {
+            // If response is not JSON, use generic error
+            if (!e.message.includes('You have already')) {
+              throw new Error(`Failed to submit quiz (HTTP ${response.status})`);
+            }
+            throw e;
+          }
+        }
+
+        attemptData = await response.json();
+        console.log('✅ Quiz submitted:', attemptData);
+      } else if (quizMode === 'random') {
+        console.log('🎲 Random quiz - saving locally only');
+        attemptData = { id: `random_${studentId}_${Date.now()}` };
+      }
+
+      // Build result for local storage
+      const questionsData = quizData.questions.map((question, idx) => {
+        const selectedOptionIndex = answers[question.id];
+        
+        // Filter out undefined/invalid options (same as in renderQuestion)
+        const validOptions = (question.options || []).filter(opt => {
+          if (!opt || !opt.option_text) return false;
+          if (opt.option_text.toLowerCase().startsWith('undefined')) return false;
+          return true;
+        });
+
+        const selectedOption = selectedOptionIndex !== null && validOptions[selectedOptionIndex] ? validOptions[selectedOptionIndex] : null;
+        const correctOption = validOptions.find(opt => opt.is_correct === 1 || opt.is_correct === true);
+        const correctOptionIndex = validOptions.findIndex(opt => opt.is_correct === 1 || opt.is_correct === true);
+        const isCorrect = selectedOptionIndex !== null && selectedOption && selectedOption.is_correct === 1;
+
+        return {
+          questionId: question.id,
+          questionText: question.question_text,
+          selectedOptionText: selectedOption ? selectedOption.option_text : 'No answer selected',
+          correctOptionText: correctOption ? correctOption.option_text : 'Unknown',
+          selectedOptionIndex: selectedOptionIndex,
+          correctOptionIndex: correctOptionIndex,
+          options: validOptions.map(opt => opt.option_text),
+          explanation: question.explanation || '',
+          isCorrect: isCorrect
+        };
+      });
+
+      const correctCount = Object.entries(answers).filter(([questionId, ansIdx]) => {
+        if (ansIdx === null) return false;
+        const question = quizData.questions.find(q => q.id == questionId);
+        if (!question) return false;
+        const validOptions = (question.options || []).filter(opt => {
+          if (!opt || !opt.option_text) return false;
+          if (opt.option_text.toLowerCase().startsWith('undefined')) return false;
+          return true;
+        });
+        return validOptions[ansIdx] && validOptions[ansIdx].is_correct === 1;
+      }).length;
+
+      const score = (correctCount / quizData.questions.length) * 100;
+
+      // Save result to IndexedDB
+      const resultData = {
+        studentId: studentId,
+        quizId: quizId || null, // Random quiz doesn't have quizId
+        quizTitle: quizData.title,
+        subjectId: subjectId || null,
+        subjectName: quizMode === 'random' ? quizData.category : 'Subject',
+        score: score,
+        timeTaken: timeTaken,
+        questions: questionsData,
+        attemptId: attemptData.id,
+        submittedAt: new Date().toISOString(),
+        categoryId: quizData.categoryId || null, // For random quizzes
+        category: quizData.category || null // For random quizzes
+      };
+
+      let resultId;
+      if (quizMode === 'module') {
+        // Wait for DB if needed
+        if (quizResultsManager.dbReady) {
+          try {
+            await quizResultsManager.dbReady;
+          } catch (e) {
+            console.warn('DB init error:', e);
+          }
+        }
+        resultId = await quizResultsManager.saveModuleResult(resultData);
+      } else if (quizMode === 'practice') {
+        // Wait for DB if needed
+        if (quizResultsManager.dbReady) {
+          try {
+            await quizResultsManager.dbReady;
+          } catch (e) {
+            console.warn('DB init error:', e);
+          }
+        }
+        console.log('🎯 Saving practice mode result:', {
+          studentId: resultData.studentId,
+          score: resultData.score,
+          correctCount: correctCount,
+          totalQuestions: quizData.questions.length,
+          quizTitle: resultData.quizTitle
+        });
+        resultId = await quizResultsManager.savePracticeResult(resultData);
+        console.log('✅ Practice mode result saved with ID:', resultId);
+      } else if (quizMode === 'random') {
+        // Wait for DB if needed
+        if (quizResultsManager.dbReady) {
+          try {
+            await quizResultsManager.dbReady;
+          } catch (e) {
+            console.warn('DB init error:', e);
+          }
+        }
+        console.log('🎲 Saving random quiz result:', {
+          studentId: resultData.studentId,
+          score: resultData.score,
+          correctCount: correctCount,
+          totalQuestions: quizData.questions.length,
+          category: resultData.category
+        });
+        resultId = await quizResultsManager.saveRandomResult(resultData);
+        console.log('✅ Random quiz result saved with ID:', resultId);
+      } else {
+        // Wait for DB if needed
+        if (quizResultsManager.dbReady) {
+          try {
+            await quizResultsManager.dbReady;
+          } catch (e) {
+            console.warn('DB init error:', e);
+          }
+        }
+        resultId = await quizResultsManager.saveQuizResult(resultData);
+      }
+
+      console.log('💾 Result saved with ID:', resultId);
+
+      // Store result data in sessionStorage for results page
+      sessionStorage.setItem('currentResultData', JSON.stringify(resultData));
+      sessionStorage.setItem('currentResultId', resultId);
+
+      // Redirect to results page
+      setTimeout(() => {
+        window.location.href = `studentQuizResults.html?resultId=${resultId}&mode=${quizMode}&subjectId=${subjectId}`;
+      }, 500);
+    } catch (error) {
+      console.error('Error submitting quiz:', error);
+      // Check for module quiz 1-attempt limit error
+      if (error.message.includes('already completed') || error.message.includes('already attempted')) {
+        alert('❌ You have already completed this module quiz.\n\nModule quizzes can only be attempted once. Please view your results in History.');
+        // Redirect back to prevent re-attempt
+        goBack();
+      } else if (error.message.includes('already submitted')) {
+        alert('⚠️ This quiz has already been submitted.\n\nEach student can only submit a quiz once.');
+        // Redirect back to prevent re-attempt
+        goBack();
+      } else {
+        alert('Failed to submit quiz: ' + error.message);
+      }
+      isSubmitting = false;
+    }
+  }
+
+  // ===== GO BACK =====
+  function goBack() {
+    // Check if referrer exists to go to the exact page user came from
+    if (sessionStorage.getItem('quizSource')) {
+      const source = sessionStorage.getItem('quizSource');
+      sessionStorage.removeItem('quizSource');
+      window.location.href = source;
+    } else if (quizMode === 'practice') {
+      window.location.href = 'studentPractice.html';
+    } else if (quizMode === 'module' && subjectId) {
+      window.location.href = `studentViewModules.html?subjectId=${subjectId}`;
+    } else if (quizMode === 'exam') {
+      window.location.href = 'studentExamSimulation.html';
+    } else if (quizMode === 'random') {
+      window.location.href = 'studentQuiz.html';
+    } else {
+      window.location.href = 'studentQuiz.html';
+    }
+  }
+
+  // ===== ACTIVE SIDEBAR HIGHLIGHTING =====
+  function highlightActiveSidebarItem() {
+    setTimeout(() => {
+      const sidebar = document.querySelector('#sidebar-container .sidebar, #sidebar-container');
+      if (sidebar) {
+        const allMenuItems = sidebar.querySelectorAll('.menu-item');
+        let quizMenuItem = null;
+
+        for (let item of allMenuItems) {
+          const text = item.textContent.toLowerCase();
+          if (text.includes('quiz')) {
+            quizMenuItem = item;
+            break;
+          }
+        }
+
+        if (quizMenuItem) {
+          allMenuItems.forEach(item => item.classList.remove('active'));
+          quizMenuItem.classList.add('active');
+        }
+      }
+    }, 200);
+  }
+
+  window.addEventListener('load', () => {
+    highlightActiveSidebarItem();
+  });
+</script>
+</body>
+</html>

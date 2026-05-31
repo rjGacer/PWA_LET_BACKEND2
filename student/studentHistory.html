@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <title>Performance History | LearnIQ</title>
+
+  <!-- Fonts & Icons (using Inter + Poppins blend) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link rel="stylesheet" href="../assets/styles/studentStyles/studentHistory.css" />
+  <!-- Sidebar CSS (unchanged, external reference) -->
+  <link rel="stylesheet" href="../assets/styles/studentStyles/studentSidebar.css" />
+  
+
+
+</head>
+<body>
+  <!-- HAMBURGER BUTTON (for sidebar toggle) -->
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open sidebar">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div id="sidebar-container"></div>
+
+  <div class="dashboard">
+    <div class="main-content">
+      <div id="topbar-container"></div>
+
+      <!-- HISTORY MAIN CONTENT (inspired by reference but fresh) -->
+      <div class="fade-transition">
+        <!-- Header Area -->
+        <div class="history-header">
+          <div class="header-title">
+            <h1>History</h1>
+            <p>Track your quiz journey, monitor accuracy trends, and identify knowledge gaps</p>
+          </div>
+          <!-- <button class="export-history-btn" id="exportHistoryBtn"><i class="fa-solid fa-download"></i> Export report</button> -->
+        </div>
+
+        <!-- Stats Summary Cards -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-puzzle-piece"></i></div>
+            <div class="stat-info">
+              <h4 id="totalQuizzesStat">0</h4>
+              <p>Total Quizzes</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-regular fa-star"></i></div>
+            <div class="stat-info">
+              <h4 id="avgAccuracyStat">0%</h4>
+              <p>Avg Accuracy</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div class="stat-info">
+              <h4 id="bestSubjectStat">—</h4>
+              <p>Strongest Subject</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-regular fa-clock"></i></div>
+            <div class="stat-info">
+              <h4 id="studyTimeStat">—</h4>
+              <p>Est. Total Time</p>
+            </div>
+          </div>
+        </div>
+
+        
+
+        <!-- FILTER SECTION (simple inline) -->
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin: 12px 0 8px;">
+          <div class="section-head">
+            <i class="fa-regular fa-rectangle-list"></i> Quiz Attempts
+          </div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <select id="filterCategorySelect" style="border-radius: 40px; padding: 6px 16px; border:1px solid #e2e8f0; background:white; font-size:0.75rem;">
+              <option value="">All Categories</option>
+            </select>
+            <select id="filterModeSelect" style="border-radius: 40px; padding: 6px 16px; border:1px solid #e2e8f0;">
+              <option value="">All Modes</option>
+              <option value="Module">Module</option>
+              <option value="Practice">Practice</option>
+              <option value="Exam">Exam</option>
+              <option value="Random">Random</option>
+            </select>
+            <!-- <button id="resetFiltersBtn" style="background:#f1f5f9; border:none; border-radius:40px; padding:6px 18px; font-weight:500;">Reset</button> -->
+          </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="history-table-wrapper">
+          <table class="history-table">
+            <thead>
+              <tr><th>Quiz / Subject</th><th>Mode</th><th>Score</th><th>Accuracy</th><th>Time Taken</th><th>Date</th><th></th></tr>
+            </thead>
+            <tbody id="historyTableBody"></tbody>
+          </table>
+        </div>
+        <div class="load-more-history">
+          <button class="load-more-btn" id="loadMoreHistoryBtn">Load more <i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar/topbar loader (preserved unchanged) -->
+  <script src="../assets/scripts/student-layout.js"></script>
+
+  <!-- Detail Modal -->
+  <div id="detailModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; overflow-y: auto;">
+    <div style="background: white; max-width: 900px; margin: 40px auto; border-radius: 16px; padding: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 id="detailTitle">Quiz Results</h2>
+        <button id="closeDetailModal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <script src="../assets/scripts/api-config.js"></script>
+  <script src="../assets/scripts/ApiService.js?v=3"></script>
+  <script src="../assets/scripts/QuizResultsManager.js?v=3"></script>
+  <script src="../assets/scripts/NotificationManager.js"></script>
+  <script>
+    // ============================================================
+    // WORKING HISTORY WITH REAL DATA
+    // ============================================================
+    
+    const studentId = parseInt(localStorage.getItem('userId')) || 0;
+    const api = new ApiService();
+    
+    let allResults = [];
+    let allQuizzes = {};
+    let categoryMap = {};
+    let currentFilters = { category: '', mode: '' };
+    let visibleRowsCount = 6;
+    let filteredData = [];
+
+    // Initialize page
+    async function initPage() {
+      try {
+        console.log('🚀 Initializing History page for student:', studentId);
+        
+        // Load all quiz results (module, quiz, exam, random modes)
+        await loadAllResults();
+        
+        // Load quiz metadata
+        await loadQuizMetadata();
+        
+        // Populate category dropdown
+        populateCategories();
+        
+        // Apply default filtering and render
+        applyFiltering();
+        updateStatsCards();
+        highlightSidebar();
+      } catch (error) {
+        console.error('❌ Error initializing page:', error);
+      }
+    }
+
+    // Load all results from QuizResultsManager
+    async function loadAllResults() {
+      console.log('📖 Loading all quiz results for student:', studentId);
+      
+      // First, try to load from backend
+      try {
+        console.log('  🔄 Fetching quiz history from backend...');
+        const backendHistory = await api.getStudentQuizHistory(1000);
+        if (backendHistory && backendHistory.data && backendHistory.data.length > 0) {
+          console.log(`✅ Loaded ${backendHistory.data.length} results from backend`);
+          console.log('   Sample backend result:', backendHistory.data[0]);
+          allResults = backendHistory.data.map(item => ({
+            id: item.id || item.attemptId,
+            quizId: item.quizId,
+            quizTitle: item.quizTitle || 'Quiz',
+            category: item.category || 'Unknown',
+            score: item.score !== undefined ? item.score : item.percentage,
+            percentage: item.percentage !== undefined ? item.percentage : item.score,
+            accuracy: item.percentage !== undefined ? item.percentage : item.score,
+            timestamp: item.timestamp || new Date(item.submitted_at).getTime(),
+            mode: item.mode || 'quiz',
+            timeSpent: item.timeSpent || 0,
+            questions: item.totalQuestions ? Array(item.totalQuestions).fill({}).map((_, i) => ({
+              isCorrect: i < (item.correctAnswers || 0)
+            })) : [],
+            subjectName: item.quizTitle || 'Quiz',
+            correctAnswers: item.correctAnswers || 0,
+            totalQuestions: item.totalQuestions || 0
+          }));
+        } else {
+          console.log('⚠️ No results from backend, falling back to local storage');
+          await loadResultsFromLocal();
+        }
+      } catch (error) {
+        console.warn('⚠️ Error loading from backend, falling back to local storage:', error);
+        await loadResultsFromLocal();
+      }
+      
+      // Sort by timestamp descending (newest first)
+      allResults.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      console.log(`📊 Total results loaded: ${allResults.length}`);
+      console.log('   All results:', allResults);
+    }
+
+    // Load all results from local IndexedDB
+    async function loadResultsFromLocal() {
+      console.log('📖 Loading quiz results from local storage');
+      
+      // Ensure IndexedDB is ready
+      if (quizResultsManager && quizResultsManager.ensureReady) {
+        try {
+          await quizResultsManager.ensureReady();
+          console.log('✅ IndexedDB ready');
+        } catch (e) {
+          console.warn('⚠️ IndexedDB initialization warning:', e);
+        }
+      }
+      
+      const modes = ['module', 'quiz', 'practice', 'exam', 'random'];
+      allResults = [];
+      
+      for (const mode of modes) {
+        try {
+          console.log(`  📚 Querying ${mode}_results for studentId: ${studentId}`);
+          const results = await quizResultsManager.getStudentResultsByMode(studentId, mode);
+          console.log(`✅ Loaded ${results.length} ${mode} results`);
+          if (results.length > 0) {
+            console.log(`   Sample ${mode} result:`, results[0]);
+          }
+          allResults = allResults.concat(results);
+        } catch (error) {
+          console.warn(`⚠️ Could not load ${mode} results:`, error);
+        }
+      }
+    }
+
+    // Load quiz metadata from API
+    async function loadQuizMetadata() {
+      console.log('📚 Loading quiz metadata...');
+      try {
+        // Load all categories
+        const categories = await api.getCategories();
+        console.log('✅ Loaded categories:', categories);
+        
+        if (categories && categories.data) {
+          categories.data.forEach(cat => {
+            categoryMap[cat.id] = {
+              id: cat.id,
+              name: cat.name,
+              subjects: {}
+            };
+          });
+        }
+        
+        // Load all subjects and map to categories
+        const subjects = await api.getSubjects();
+        console.log('✅ Loaded subjects:', subjects);
+        
+        if (subjects && subjects.data) {
+          subjects.data.forEach(subject => {
+            const catId = subject.category_id;
+            if (categoryMap[catId]) {
+              categoryMap[catId].subjects[subject.id] = {
+                id: subject.id,
+                name: subject.name
+              };
+            }
+          });
+        }
+        
+        // Load all quizzes
+        const quizzes = await api.getQuizzes();
+        console.log('✅ Loaded quizzes:', quizzes);
+        
+        if (quizzes && quizzes.data) {
+          quizzes.data.forEach(quiz => {
+            if (!quiz.deleted_at) {  // Exclude deleted quizzes
+              allQuizzes[quiz.id] = {
+                id: quiz.id,
+                title: quiz.title,
+                subject_id: quiz.subject_id,
+                mode: quiz.mode || 'quiz'
+              };
+            }
+          });
+        }
+      } catch (error) {
+        console.warn('⚠️ Error loading quiz metadata:', error);
+      }
+    }
+
+    // Populate category dropdown
+    function populateCategories() {
+      const select = document.getElementById('filterCategorySelect');
+      if (!select) return;
+      
+      const categories = Object.values(categoryMap).map(c => c.name).sort();
+      categories.forEach(catName => {
+        const option = document.createElement('option');
+        option.value = catName;
+        option.textContent = catName;
+        select.appendChild(option);
+      });
+    }
+
+    // Get category and subject for a result
+    function getResultMetadata(result) {
+      let category = 'Unknown';
+      let subject = result.quizTitle || 'Quiz';
+      
+      // For exam simulations, use result.category directly
+      if (result.category) {
+        category = result.category;
+      }
+      
+      if (result.subjectName) {
+        subject = result.subjectName;
+      } else if (result.quizId && allQuizzes[result.quizId]) {
+        subject = allQuizzes[result.quizId].title;
+        const subjectId = allQuizzes[result.quizId].subject_id;
+        
+        // Find category for this subject (if not already set from result.category)
+        if (category === 'Unknown') {
+          for (const [catId, catData] of Object.entries(categoryMap)) {
+            if (catData.subjects[subjectId]) {
+              category = catData.name;
+              break;
+            }
+          }
+        }
+      }
+      
+      return { category, subject };
+    }
+
+    // Apply filtering
+    function applyFiltering() {
+      filteredData = allResults.filter(result => {
+        // Don't show results for deleted quizzes
+        if (result.quizId && allQuizzes[result.quizId] === undefined) {
+          // If we have metadata for this quiz and it was excluded, skip it
+          // We assume if it's not in allQuizzes, it was deleted
+          // But only if we actually loaded quiz data
+          const hasLoadedQuizzes = Object.keys(allQuizzes).length > 0;
+          if (hasLoadedQuizzes && !allQuizzes[result.quizId]) {
+            return false;
+          }
+        }
+        
+        const { category } = getResultMetadata(result);
+        const resultMode = result.mode || 'quiz';
+        
+        // Map "Module" filter to "module" mode
+        let filterMode = currentFilters.mode;
+        if (filterMode === 'Module') filterMode = 'module';
+        if (filterMode === 'Practice') filterMode = 'practice';
+        if (filterMode === 'Exam') filterMode = 'exam';
+        if (filterMode === 'Random') filterMode = 'random';
+        
+        if (currentFilters.category && category !== currentFilters.category) return false;
+        if (filterMode && resultMode !== filterMode) return false;
+        
+        return true;
+      });
+      
+      visibleRowsCount = 6;
+      renderTableRows();
+    }
+
+    // Render table rows
+    function renderTableRows() {
+      const tbody = document.getElementById('historyTableBody');
+      if (!tbody) return;
+      
+      const slice = filteredData.slice(0, visibleRowsCount);
+      
+      tbody.innerHTML = slice.map((result, index) => {
+        const { category, subject } = getResultMetadata(result);
+        
+        // Calculate accuracy - use score if it's a percentage (0-100), otherwise calculate from questions
+        let accuracy = 0;
+        if (result.score !== undefined) {
+          // If score is the percentage (0-100)
+          if (result.score <= 100) {
+            accuracy = Math.round(result.score);
+          } else {
+            // If score is total points, calculate percentage
+            const totalQuestions = result.questions ? result.questions.length : 1;
+            accuracy = Math.round((result.score / totalQuestions) * 100);
+          }
+        } else if (result.accuracy !== undefined) {
+          accuracy = Math.round(result.accuracy);
+        }
+        
+        // Use correctAnswers and totalQuestions from result, or fallback to questions array
+        const totalQuestions = result.totalQuestions || (result.questions ? result.questions.length : 0);
+        const correctCount = result.correctAnswers || (result.questions ? result.questions.filter(q => q.isCorrect).length : 0);
+        
+        const date = new Date(result.timestamp).toLocaleDateString('en-US', { 
+          year: 'numeric', month: 'short', day: 'numeric' 
+        });
+        const modeDisplay = (result.mode || 'quiz').charAt(0).toUpperCase() + (result.mode || 'quiz').slice(1);
+        
+        // Calculate time taken - format properly
+        let timeTaken = 'N/A';
+        if (result.timeTaken) {
+          // If timeTaken is already formatted (e.g., "2m 30s"), use it directly
+          timeTaken = result.timeTaken;
+        } else if (result.timeSpent !== undefined && typeof result.timeSpent === 'number') {
+          // If timeSpent is in seconds, convert to minutes and seconds
+          const minutes = Math.floor(result.timeSpent / 60);
+          const seconds = result.timeSpent % 60;
+          timeTaken = `${minutes}m ${seconds}s`;
+        } else if (result.questions) {
+          // Fallback: estimate based on question count
+          timeTaken = Math.ceil(result.questions.length * 2) + ' min';
+        }
+        
+        return `
+          <tr>
+            <td>
+              <div class="subject-badge">
+                <div class="subject-icon-sm" style="background:#e0e7ff; color:#6366f1;">
+                  <i class="fa-solid fa-book"></i>
+                </div>
+                <div>
+                  <strong>${subject}</strong><br>
+                  <span style="font-size:0.7rem; color:#475569;">${category}</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge-mode">${modeDisplay}</span></td>
+            <td><strong>${correctCount}/${totalQuestions}</strong></td>
+            <td>
+              <div class="accuracy-cell">
+                <div class="progress-mini">
+                  <div class="progress-fill" style="width:${accuracy}%; background:${accuracy>=75?'#22c55e':accuracy>=60?'#f97316':'#ef4444'}"></div>
+                </div>
+                <span>${accuracy}%</span>
+              </div>
+            </td>
+            <td>${timeTaken}</td>
+            <td style="font-size:0.75rem;">${date}</td>
+            <td>
+              <button class="review-link" data-result-id="${result.id}">
+                Review <i class="fa-regular fa-arrow-right"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      
+      // Attach review events
+      document.querySelectorAll('.review-link').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const resultId = btn.getAttribute('data-result-id');
+          showDetailModal(resultId);
+        });
+      });
+      
+      // Show/hide load more button
+      const loadBtn = document.getElementById('loadMoreHistoryBtn');
+      if (loadBtn) {
+        loadBtn.style.display = visibleRowsCount >= filteredData.length ? 'none' : 'flex';
+      }
+    }
+
+    // Show detail modal
+    async function showDetailModal(resultId) {
+      // Convert string ID to integer to fix type mismatch
+      resultId = parseInt(resultId, 10);
+      
+      // Debug logging to verify ID types
+      console.log('Looking for result:', resultId, 'Type:', typeof resultId);
+      console.log('Available IDs:', allResults.map(r => r.id), 'Types:', allResults.map(r => typeof r.id));
+      
+      const result = allResults.find(r => Number(r.id) === resultId);
+      if (!result) {
+        alert('Result not found');
+        return;
+      }
+      
+      const modal = document.getElementById('detailModal');
+      const title = document.getElementById('detailTitle');
+      const content = document.getElementById('detailContent');
+      
+      // Show loading state
+      content.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading quiz details...</div>';
+      modal.style.display = 'block';
+      
+      try {
+        // Fetch detailed attempt data from backend
+        console.log('📥 Fetching detailed attempt data for:', resultId);
+        const detailedAttempt = await api.getAttemptDetails(resultId);
+        console.log('✅ Detailed attempt loaded:', detailedAttempt);
+        console.log('✅ Questions data:', detailedAttempt.questions);
+        if (detailedAttempt.questions && detailedAttempt.questions.length > 0) {
+          console.log('✅ First question options:', detailedAttempt.questions[0].options);
+          console.log('✅ First question student_answer:', detailedAttempt.questions[0].student_answer);
+        }
+        
+        // Use the detailed attempt data
+        const { category, subject } = getResultMetadata(result);
+        title.textContent = `${subject} - Results Review`;
+        
+        // Build result details HTML
+        let accuracy = 0;
+        if (detailedAttempt.percentage !== undefined) {
+          accuracy = Math.round(detailedAttempt.percentage);
+        } else if (result.score !== undefined) {
+          if (result.score <= 100) {
+            accuracy = Math.round(result.score);
+          } else {
+            const totalQuestions = detailedAttempt.questions ? detailedAttempt.questions.length : 1;
+            accuracy = Math.round((result.score / totalQuestions) * 100);
+          }
+        }
+        
+        const totalQuestions = detailedAttempt.questions ? detailedAttempt.questions.length : 0;
+        const correctCount = detailedAttempt.questions ? detailedAttempt.questions.filter(q => q.is_correct).length : 0;
+        const modeDisplay = (detailedAttempt.mode || 'quiz').charAt(0).toUpperCase() + (detailedAttempt.mode || 'quiz').slice(1);
+      
+      let html = `
+        <div style="background: #f9fafb; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center;">
+            <div>
+              <div style="font-size: 1.5rem; font-weight: 700; color: #1f2937;">${correctCount}/${totalQuestions}</div>
+              <div style="font-size: 0.85rem; color: #6b7280;">Score</div>
+            </div>
+            <div>
+              <div style="font-size: 1.5rem; font-weight: 700; color: ${accuracy>=75?'#10b981':accuracy>=60?'#f97316':'#ef4444'}">${accuracy}%</div>
+              <div style="font-size: 0.85rem; color: #6b7280;">Accuracy</div>
+            </div>
+            <div>
+              <div style="font-size: 1.5rem; font-weight: 700; color: #3b82f6;">${modeDisplay}</div>
+              <div style="font-size: 0.85rem; color: #6b7280;">Mode</div>
+            </div>
+            <div>
+              <div style="font-size: 1.5rem; font-weight: 700; color: #8b5cf6;">${category}</div>
+              <div style="font-size: 0.85rem; color: #6b7280;">Category</div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Show questions if available
+      if (detailedAttempt.questions && detailedAttempt.questions.length > 0) {
+        html += '<h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">Questions Review</h3>';
+        
+        detailedAttempt.questions.forEach((q, idx) => {
+          const isCorrect = q.is_correct;
+          const questionNum = idx + 1;
+          
+          console.log(`[Question ${idx + 1}] Question ID: ${q.id}, student_answer: ${q.student_answer}, is_correct: ${isCorrect}`);
+          
+          // Build options display
+          let optionsHTML = '';
+          
+          if (q.options && Array.isArray(q.options) && q.options.length > 0) {
+            // Display all options in card format
+            optionsHTML = '<div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);">';
+            
+            q.options.forEach((option, optIdx) => {
+              const optionLetter = String.fromCharCode(65 + optIdx);
+              // Fix: Ensure robust comparison for student answer selection (handle both null and empty cases)
+              const isSelected = q.student_answer !== null && q.student_answer !== undefined && 
+                                 (option.id == q.student_answer || Number(option.id) === Number(q.student_answer));
+              const isCorrectOpt = option.is_correct;
+              
+              console.log(`Q${q.id} Option ${optionLetter}: option.id=${option.id}, student_answer=${q.student_answer}, isSelected=${isSelected}, isCorrect=${isCorrectOpt}`);
+              
+              let backgroundColor = '#fafafa';
+              let borderColor = '#e5e7eb';
+              let textColor = '#1f2937';
+              let statusLabel = '';
+              let iconHTML = '';
+              
+              if (isCorrectOpt && isSelected && isCorrect) {
+                // Student selected the correct answer
+                backgroundColor = '#f0fdf4';
+                borderColor = '#10b981';
+                statusLabel = '<span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #10b981; display: block; margin-top: 0.25rem;">✓ YOUR CORRECT ANSWER</span>';
+                iconHTML = '<div style="font-size: 1.2rem; color: #10b981;">✓</div>';
+              } else if (isCorrectOpt && !isSelected) {
+                // Correct answer not selected by student
+                backgroundColor = '#f0fdf4';
+                borderColor = '#10b981';
+                statusLabel = '<span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #10b981; display: block; margin-top: 0.25rem;">✓ CORRECT ANSWER</span>';
+                iconHTML = '<div style="font-size: 1.2rem; color: #10b981;">✓</div>';
+              } else if (isSelected && !isCorrect) {
+                // Student selected wrong answer
+                backgroundColor = '#fef2f2';
+                borderColor = '#ef4444';
+                statusLabel = '<span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #ef4444; display: block; margin-top: 0.25rem;">✗ YOUR ANSWER</span>';
+                iconHTML = '<div style="font-size: 1.2rem; color: #ef4444;">✕</div>';
+              }
+              
+              optionsHTML += `
+                <div style="display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; border: 2px solid ${borderColor}; border-left: 5px solid ${borderColor}; border-radius: 12px; background: ${backgroundColor};">
+                  <div style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: ${borderColor === '#10b981' ? 'rgba(16, 185, 129, 0.1)' : borderColor === '#ef4444' ? 'rgba(239, 68, 68, 0.1)' : '#f3f4f6'}; border-radius: 8px; flex-shrink: 0; font-weight: 700; color: ${borderColor === '#10b981' ? '#10b981' : borderColor === '#ef4444' ? '#ef4444' : '#374151'};">
+                    ${optionLetter}
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: 0.95rem; color: ${textColor}; font-weight: 500; line-height: 1.5;">${option.text}</div>
+                    ${statusLabel}
+                  </div>
+                  <div style="flex-shrink: 0; margin-left: 1rem;">
+                    ${iconHTML}
+                  </div>
+                </div>
+              `;
+            });
+            
+            optionsHTML += '</div>';
+          }
+          
+          html += `
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; border-left: 5px solid ${isCorrect?'#10b981':'#ef4444'};">
+              <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: ${isCorrect?'#10b981':'#ef4444'}; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">
+                  ${isCorrect ? '✓' : '✗'}
+                </div>
+                <div>
+                  <div style="font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Q${questionNum}: ${q.question_text || 'Question'}</div>
+                  <div style="font-size: 0.85rem; color: #6b7280;">Question ${questionNum} of ${detailedAttempt.questions.length}</div>
+                </div>
+              </div>
+              ${optionsHTML}
+              ${q.explanation ? `
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);">
+                  <div style="font-size: 0.85rem; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-lightbulb"></i> Explanation
+                  </div>
+                  <div style="font-size: 0.95rem; color: #374151; padding: 0.75rem 1rem; background: #f0f9ff; border-left: 4px solid #3b82f6; border-radius: 6px;">
+                    ${q.explanation}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        });
+      }
+      
+      content.innerHTML = html;
+      modal.style.display = 'block';
+      } catch (error) {
+        console.error('❌ Error loading attempt details:', error);
+        content.innerHTML = `
+          <div style="padding: 2rem; text-align: center; color: #ef4444;">
+            <i class="fa-solid fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">Unable to load quiz details</p>
+            <p style="font-size: 0.9rem; color: #6b7280;">Please try again later or contact support if the problem persists.</p>
+          </div>
+        `;
+        modal.style.display = 'block';
+      }
+    }
+
+    // Close detail modal
+    document.getElementById('closeDetailModal').addEventListener('click', () => {
+      document.getElementById('detailModal').style.display = 'none';
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+      const modal = document.getElementById('detailModal');
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    // Stats cards
+    function updateStatsCards() {
+      const totalQuizzes = filteredData.length;
+      
+      console.log('📊 Calculating stats for', totalQuizzes, 'quizzes');
+      console.log('Sample filtered data:', filteredData.length > 0 ? filteredData[0] : 'None');
+      
+      // Calculate average accuracy properly
+      let totalAccuracy = 0;
+      let validScores = 0;
+      
+      filteredData.forEach(r => {
+        let accuracy = 0;
+        
+        // Try different fields that might contain the accuracy/score
+        if (r.percentage !== undefined && r.percentage !== null) {
+          accuracy = parseFloat(r.percentage);
+        } else if (r.score !== undefined && r.score !== null) {
+          if (r.score <= 100) {
+            accuracy = parseFloat(r.score);
+          } else {
+            const totalQuestions = r.totalQuestions || (r.questions ? r.questions.length : 1);
+            accuracy = totalQuestions > 0 ? (r.score / totalQuestions) * 100 : 0;
+          }
+        } else if (r.accuracy !== undefined && r.accuracy !== null) {
+          accuracy = parseFloat(r.accuracy);
+        }
+        
+        if (!isNaN(accuracy) && accuracy >= 0) {
+          totalAccuracy += accuracy;
+          validScores++;
+        }
+      });
+      
+      const avgAcc = validScores > 0 
+        ? Math.round(totalAccuracy / validScores)
+        : 0;
+      
+      console.log('  Total accuracy:', totalAccuracy, 'Valid scores:', validScores, 'Average:', avgAcc);
+      
+      document.getElementById('totalQuizzesStat').innerText = totalQuizzes;
+      document.getElementById('avgAccuracyStat').innerText = `${avgAcc}%`;
+      
+      // Find best subject
+      let bestSubject = '—';
+      let bestAvg = -1;
+      const subjectMap = new Map();
+      
+      filteredData.forEach(r => {
+        const { subject } = getResultMetadata(r);
+        if (!subjectMap.has(subject)) subjectMap.set(subject, { total: 0, count: 0 });
+        const data = subjectMap.get(subject);
+        
+        let accuracy = 0;
+        
+        // Try different fields that might contain the accuracy/score
+        if (r.percentage !== undefined && r.percentage !== null) {
+          accuracy = parseFloat(r.percentage);
+        } else if (r.score !== undefined && r.score !== null) {
+          if (r.score <= 100) {
+            accuracy = parseFloat(r.score);
+          } else {
+            const totalQuestions = r.totalQuestions || (r.questions ? r.questions.length : 1);
+            accuracy = totalQuestions > 0 ? (r.score / totalQuestions) * 100 : 0;
+          }
+        } else if (r.accuracy !== undefined && r.accuracy !== null) {
+          accuracy = parseFloat(r.accuracy);
+        }
+        
+        if (!isNaN(accuracy)) {
+          data.total += accuracy;
+          data.count++;
+        }
+      });
+      
+      for (const [subj, data] of subjectMap.entries()) {
+        if (data.count > 0) {
+          const avg = data.total / data.count;
+          if (avg > bestAvg) {
+            bestAvg = avg;
+            bestSubject = subj;
+          }
+        }
+      }
+      
+      console.log('  Best subject:', bestSubject, 'with average:', bestAvg);
+      document.getElementById('bestSubjectStat').innerText = bestSubject;
+      
+      // Calculate total time - from timeSpent (in seconds) or timeTaken (formatted string)
+      let totalSeconds = 0;
+      filteredData.forEach(r => {
+        // If timeSpent is available (seconds from API), use it
+        if (r.timeSpent !== undefined && typeof r.timeSpent === 'number') {
+          totalSeconds += r.timeSpent;
+        }
+        // Otherwise try to parse from timeTaken string
+        else if (r.timeTaken && typeof r.timeTaken === 'string') {
+          const minMatch = r.timeTaken.match(/(\d+)\s*m/);
+          const secMatch = r.timeTaken.match(/(\d+)\s*s/);
+          if (minMatch) totalSeconds += parseInt(minMatch[1]) * 60;
+          if (secMatch) totalSeconds += parseInt(secMatch[1]);
+        }
+      });
+      
+      const totalMins = Math.round(totalSeconds / 60);
+      console.log('  Total time: ', totalSeconds, 'seconds =', totalMins, 'minutes');
+      
+      document.getElementById('studyTimeStat').innerHTML = totalMins > 0 ? `${totalMins} min` : '—';
+    }
+
+    // Filter listeners
+    const categorySelect = document.getElementById('filterCategorySelect');
+    const modeSelect = document.getElementById('filterModeSelect');
+    
+    if (categorySelect) {
+      categorySelect.addEventListener('change', (e) => {
+        currentFilters.category = e.target.value;
+        applyFiltering();
+        updateStatsCards();
+      });
+    }
+    
+    if (modeSelect) {
+      modeSelect.addEventListener('change', (e) => {
+        currentFilters.mode = e.target.value;
+        applyFiltering();
+        updateStatsCards();
+      });
+    }
+    
+    // Load more
+    const loadMoreBtn = document.getElementById('loadMoreHistoryBtn');
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener('click', () => {
+        visibleRowsCount += 5;
+        renderTableRows();
+      });
+    }
+
+    // Highlight sidebar
+    function highlightSidebar() {
+      setTimeout(() => {
+        const sidebar = document.querySelector('#sidebar-container');
+        if (sidebar) {
+          const items = sidebar.querySelectorAll('.menu-item');
+          items.forEach(item => item.classList.remove('active'));
+          const historyItem = Array.from(items).find(i => 
+            i.textContent.toLowerCase().includes('history')
+          );
+          if (historyItem) historyItem.classList.add('active');
+        }
+      }, 200);
+    }
+
+    // Initialize on DOM ready
+    document.addEventListener('DOMContentLoaded', initPage);
+  </script>
+</body>
+</html>
