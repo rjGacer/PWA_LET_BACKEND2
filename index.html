@@ -250,13 +250,23 @@
     
     <!-- Backend URL Configuration -->
     <script>
-      // Detect current IP and port
+      // Detect current environment and set backend URL accordingly
       const hostname = window.location.hostname;
-      const port = window.location.port || (window.location.protocol === 'https:' ? 443 : 80);
+      const protocol = window.location.protocol;
+      const port = window.location.port || (protocol === 'https:' ? 443 : 80);
       
-      // Set backend URL dynamically
-      // Change 192.168.93.2 to your actual backend server IP
-      window.BACKEND_URL = `http://${hostname}:5001/api/v1`;
+      // Set backend URL based on environment
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        // Local development
+        window.BACKEND_URL = `http://${hostname}:5001/api/v1`;
+      } else if (hostname.includes('netlify.app') || hostname === 'letopwaa.netlify.app') {
+        // Netlify production - use Render backend
+        window.BACKEND_URL = 'https://pwa-let-reviewer.onrender.com/api/v1';
+      } else {
+        // Default: same domain with port if non-standard
+        const portString = port && (protocol === 'http:' ? port !== '80' : port !== '443') ? `:${port}` : '';
+        window.BACKEND_URL = `${protocol}//${hostname}${portString}/api/v1`;
+      }
       
       console.log('🔧 Backend URL configured:', window.BACKEND_URL);
     </script>
