@@ -116,8 +116,8 @@
     
     // Get parameters from URL or storage (check both localStorage and sessionStorage)
     const params = new URLSearchParams(window.location.search);
-    quizId = params.get('quizId') || sessionStorage.getItem('currentQuizId') || localStorage.getItem('currentQuizId');
-    subjectId = params.get('subjectId') || sessionStorage.getItem('currentSubjectId') || localStorage.getItem('currentSubjectId');
+    quizId = params.get('quizId') || sessionStorage.getItem('currentQuizId') || localStorage.getItem('selectedQuizId') || localStorage.getItem('currentQuizId');
+    subjectId = params.get('subjectId') || sessionStorage.getItem('currentSubjectId') || localStorage.getItem('selectedSubjectId') || localStorage.getItem('currentSubjectId');
     quizMode = params.get('mode') || localStorage.getItem('quizMode') || sessionStorage.getItem('quizMode') || 'module';
     
     // For random quiz, also load category info from localStorage
@@ -334,8 +334,14 @@
       
       console.log(`🔄 Deduplicated: ${allQuestions.length} → ${deduplicatedQuestions.length} unique questions`);
       
-      // Randomize and limit to 50 questions max
-      const shuffledQuestions = deduplicatedQuestions.sort(() => Math.random() - 0.5);
+      // Randomize using Fisher-Yates algorithm to ensure proper deduplication
+      let shuffledQuestions = [...deduplicatedQuestions];
+      for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+      }
+      
+      // Limit to 50 questions max
       const selectedQuestions = shuffledQuestions.slice(0, 50);
       
       // Check if we have fewer questions than requested
@@ -352,7 +358,8 @@
         category: categoryName,
         categoryId: categoryId,
         questions: selectedQuestions,
-        is_random: true
+        is_random: true,
+        totalQuestions: selectedQuestions.length
       };
 
       // Initialize answers object
@@ -361,8 +368,19 @@
         markedList[q.id] = false;
       });
 
-      // Update page title
-      document.getElementById('pageTitle').textContent = quizData.title;
+      // Update page title with category info
+      const pageTitle = document.getElementById('pageTitle');
+      pageTitle.textContent = quizData.title;
+      pageTitle.title = `Category: ${categoryName}`; // Add tooltip
+      
+      // Add category filter info
+      const categoryInfo = document.createElement('div');
+      categoryInfo.id = 'categoryFilterInfo';
+      categoryInfo.style.cssText = 'font-size: 0.85rem; color: #6b7280; margin-top: 0.25rem;';
+      categoryInfo.textContent = `📂 ${categoryName} • ${selectedQuestions.length} Questions`;
+      if (pageTitle.nextElementSibling?.id !== 'categoryFilterInfo') {
+        pageTitle.parentNode.insertBefore(categoryInfo, pageTitle.nextElementSibling);
+      }
 
       renderQuestion();
     } catch (error) {

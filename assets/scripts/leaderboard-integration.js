@@ -151,9 +151,11 @@ function showStudentProfile(studentId, name, picture, attempts, avgScore, passRa
       
       // Populate modal with real data
       const profilePic = document.getElementById('profileStudentPic');
-      profilePic.src = profile.profile_picture || picture || 'https://i.pravatar.cc/150?img=12';
+      // Use default profile picture if none set
+      const defaultProfileUrl = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(profile.name || name) + '&background=6366f1&color=fff';
+      profilePic.src = profile.profile_picture && profile.profile_picture.trim() ? profile.profile_picture : defaultProfileUrl;
       profilePic.onerror = function() {
-        this.src = 'https://i.pravatar.cc/150?img=12';
+        this.src = defaultProfileUrl;
         this.style.background = '#818cf8';
       };
       document.getElementById('profileStudentName').textContent = profile.name || name;
@@ -171,9 +173,11 @@ function showStudentProfile(studentId, name, picture, attempts, avgScore, passRa
       
       // Fallback to data passed in parameters
       const profilePic = document.getElementById('profileStudentPic');
-      profilePic.src = picture || 'https://i.pravatar.cc/150?img=12';
+      // Use default profile picture if none set
+      const defaultProfileUrl = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=6366f1&color=fff';
+      profilePic.src = picture && picture.trim() && picture !== 'https://i.pravatar.cc/150?img=12' ? picture : defaultProfileUrl;
       profilePic.onerror = function() {
-        this.src = 'https://i.pravatar.cc/150?img=12';
+        this.src = defaultProfileUrl;
         this.style.background = '#818cf8';
       };
       document.getElementById('profileStudentName').textContent = name;
