@@ -377,8 +377,11 @@
           const newSubjectId = response.id || response.subject_id;
           alert('Subject created successfully!');
           closeModal();
-          // Redirect to the newly created subject
-          window.location.href = `view-subject.html?subjectId=${newSubjectId}&subjectName=${encodeURIComponent(name)}&categoryId=${categoryId}`;
+          // Store in sessionStorage and redirect to newly created subject
+          sessionStorage.setItem('selectedSubjectId', newSubjectId);
+          sessionStorage.setItem('selectedSubjectName', name);
+          sessionStorage.setItem('selectedCategoryId', categoryId);
+          window.location.href = `view-subject.html?id=${newSubjectId}&subjectName=${encodeURIComponent(name)}&categoryId=${categoryId}`;
         }
       } catch (error) {
         console.error('Error saving subject:', error);
@@ -399,9 +402,23 @@
         subjectsGrid.innerHTML = '';
 
         subjects.forEach(subject => {
+          // Handle both id (SQL) and _id (MongoDB) field names
+          const subjectId = subject.id || subject._id;
+          console.log('Creating card for subject:', { name: subject.name, id: subjectId, fullSubject: subject });
+          
           const newCard = document.createElement('div');
           newCard.className = 'subject-card';
-          newCard.setAttribute('onclick', `window.location.href='view-subject.html?subjectId=${subject.id}&subjectName=${encodeURIComponent(subject.name)}&categoryId=${categoryId}'`);
+          // Add click event listener instead of onclick attribute to avoid escaping issues
+          newCard.addEventListener('click', function(e) {
+            if (!e.target.closest('.card-actions')) {
+              console.log('[SubjectCard] Navigating to subject:', subjectId, 'Name:', subject.name);
+              // Store in sessionStorage as backup in case URL params are stripped by routing
+              sessionStorage.setItem('selectedSubjectId', subjectId);
+              sessionStorage.setItem('selectedSubjectName', subject.name);
+              sessionStorage.setItem('selectedCategoryId', categoryId);
+              window.location.href = `view-subject.html?id=${subjectId}&subjectName=${encodeURIComponent(subject.name)}&categoryId=${categoryId}`;
+            }
+          });
           
           newCard.innerHTML = `
             <div class="subject-icon english">
@@ -420,14 +437,14 @@
             </div>
             <div class="card-bottom">
               <div class="card-actions" onclick="event.stopPropagation();">
-                <button class="edit-btn" title="Edit ${subject.name}" onclick="openEditModal(${subject.id}, '${subject.name.replace(/'/g, "\\'")}', '${(subject.description || '').replace(/'/g, "\\'")}')" style="cursor: pointer;">
+                <button class="edit-btn" title="Edit ${subject.name}" onclick="openEditModal(${subjectId}, '${subject.name.replace(/'/g, "\\'")}', '${(subject.description || '').replace(/'/g, "\\'")}')" style="cursor: pointer;">
                   <i class="ri-edit-line"></i>
                 </button>
-                <button class="delete-btn" title="Delete ${subject.name}" onclick="deleteSubject(${subject.id}, '${subject.name.replace(/'/g, "\\'")}')" style="cursor: pointer;">
+                <button class="delete-btn" title="Delete ${subject.name}" onclick="deleteSubject(${subjectId}, '${subject.name.replace(/'/g, "\\'")}')" style="cursor: pointer;">
                   <i class="ri-delete-bin-line"></i>
                 </button>
               </div>
-              <a href="view-subject.html?subjectId=${subject.id}&subjectName=${encodeURIComponent(subject.name)}&categoryId=${categoryId}" class="arrow-icon">
+              <a href="view-subject.html?id=${subjectId}&subjectName=${encodeURIComponent(subject.name)}&categoryId=${categoryId}" class="arrow-icon" onclick="sessionStorage.setItem('selectedSubjectId', '${subjectId}'); sessionStorage.setItem('selectedSubjectName', '${subject.name.replace(/'/g, "\\'")}'); sessionStorage.setItem('selectedCategoryId', '${categoryId}');">
                 <i class="ri-arrow-right-line"></i>
               </a>
             </div>

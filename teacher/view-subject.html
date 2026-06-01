@@ -290,9 +290,28 @@
   <script src="../assets/scripts/ApiService.js"></script>
   <script src="../assets/scripts/teacher-view-subject.js"></script>
   <script>
-    // Get category from URL for back link
+    // Get category and subject ID from URL for back link and data operations
     const urlParams = new URLSearchParams(window.location.search);
     const categoryId = urlParams.get('categoryId') || '4';
+    let subjectId = urlParams.get('id') || urlParams.get('subjectId') || sessionStorage.getItem('selectedSubjectId');
+    
+    // Fallback if still no subjectId
+    if (!subjectId) {
+      console.warn('[view-subject.html] No subjectId found in URL or sessionStorage');
+    } else {
+      console.log('[view-subject.html] SubjectId set to:', subjectId);
+    }
+    
+    // Ensure apiService is properly initialized
+    // teacher-view-subject.js creates window.apiService, we make an alias for backward compatibility
+    let apiService = window.apiService;
+    if (!apiService) {
+      console.warn('[view-subject.html] apiService not yet available, will retry in 100ms');
+      setTimeout(() => {
+        apiService = window.apiService;
+        if (!apiService) console.error('[view-subject.html] apiService still not available!');
+      }, 100);
+    }
     
     // Update back link with categoryId
     const backLink = document.getElementById('backLink');
@@ -721,8 +740,6 @@
         alert('Error saving quiz: ' + error.message);
       }
     }
-
-    function saveQuizDraft(){ alert('Draft saved!'); closeQuizModal(); }
 
     async function deleteQuiz(quizId){ 
       if(confirm('Delete this quiz?')){
@@ -1172,79 +1189,6 @@
         alert(`Added ${questions.length} questions successfully!`);
         document.getElementById('bulkFileInput').value = '';
         document.getElementById('bulkFileName').textContent = 'No file chosen';
-      }
-    }
-
-
-    function saveQuizDraft(){ 
-      alert('Draft saved!'); 
-      closeQuizModal(); 
-    }
-
-    async function deleteQuiz(quizId){ 
-      if(confirm('Delete this quiz?')){
-        try {
-          await apiService.deleteQuiz(quizId);
-          alert('Quiz deleted successfully!');
-          await loadQuizzesFromAPI();
-        } catch (error) {
-          console.error('Error deleting quiz:', error);
-          alert('Error deleting quiz: ' + error.message);
-        }
-      }
-    }
-
-    async function loadQuizzesFromAPI() {
-      try {
-        if (!subjectId) return;
-        const quizzes = await apiService.getQuizzes(subjectId);
-        const quizTableBody = document.getElementById('quizTableBody');
-        const quizzesTabBody = document.getElementById('quizzesTabBody');
-        
-        const quizHTML = quizzes.map((q) => `
-          <tr>
-            <td><i class="fa-solid fa-pencil quiz-icon"></i> ${q.title}</td>
-            <td>${q.question_count || 0}</td>
-            <td>${q.time_limit} Minutes</td>
-            <td>${q.total_points}</td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn btn-open"><i class="fa-solid fa-folder-open"></i> Open</button>
-                <button class="btn btn-edit quiz-edit-btn" data-quiz-id="${q.id}" title="Edit quiz"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                <button class="btn btn-delete quiz-delete-btn" data-quiz-id="${q.id}" title="Delete quiz"><i class="fa-solid fa-trash"></i> Delete</button>
-              </div>
-            </td>
-          </tr>`).join('');
-        
-        quizTableBody.innerHTML = quizHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">No quizzes yet</td></tr>';
-        quizzesTabBody.innerHTML = quizHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">No quizzes yet</td></tr>';
-        
-        // Attach event listeners to edit and delete buttons
-        document.querySelectorAll('.quiz-edit-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const quizId = parseInt(btn.getAttribute('data-quiz-id'));
-            console.log('🖱️ Edit button clicked for quiz ID:', quizId);
-            openQuizModal(quizId);
-          });
-        });
-        
-        document.querySelectorAll('.quiz-delete-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const quizId = parseInt(btn.getAttribute('data-quiz-id'));
-            console.log('🖱️ Delete button clicked for quiz ID:', quizId);
-            deleteQuiz(quizId);
-          });
-        });
-        
-        document.getElementById('quizCount').textContent = quizzes.length;
-        document.getElementById('overviewQuizCount').textContent = quizzes.length;
-        document.getElementById('quizzesTabCount').textContent = quizzes.length;
-      } catch (error) {
-        console.error('Error loading quizzes:', error);
       }
     }
 
