@@ -395,7 +395,7 @@
     // Load subjects from API
     async function loadSubjectsFromAPI() {
       try {
-        const subjects = await apiService.getSubjects(categoryId);
+        const subjects = await apiService.getSubjectsByCategory(categoryId);
         console.log('✓ API returned subjects:', subjects);
         console.log('Total subjects count:', subjects ? subjects.length : 0);
         const subjectsGrid = document.querySelector('.subjects-grid');

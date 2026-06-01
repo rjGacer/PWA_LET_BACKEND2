@@ -42,8 +42,17 @@ async function initSubjectPage() {
         // Extract subject ID from the browser URL (e.g., ?id=1 or ?subjectId=1)
         const urlParams = new URLSearchParams(window.location.search);
         let subjectId = urlParams.get('id') || urlParams.get('subjectId');
+        let categoryId = urlParams.get('categoryId') || '4'; // Default to General Education (ID 4)
 
         console.log("[initSubjectPage] Extracted subjectId from URL:", subjectId);
+        console.log("[initSubjectPage] Extracted categoryId from URL:", categoryId);
+
+        // Update back link with correct categoryId
+        const backLink = document.getElementById('backLink');
+        if (backLink) {
+            backLink.href = `subject.html?categoryId=${categoryId}`;
+            console.log("[initSubjectPage] Updated back link to:", backLink.href);
+        }
 
         // Fallback to sessionStorage in case URL parameters were lost during navigation
         if (!subjectId) {
@@ -204,7 +213,14 @@ function renderModulesList(modules) {
                             <p style="margin: 0.25rem 0 0; font-size: 0.8rem; color: #94a3b8;">${mod.description || mod.content || 'No description added yet'}</p>
                         </div>
                     </div>
-
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <button style="padding: 0.5rem; color: #94a3b8; background: none; border: none; cursor: pointer; border-radius: 6px; transition: all 0.15s;" title="View Module">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                        <button style="padding: 0.5rem; color: #94a3b8; background: none; border: none; cursor: pointer; border-radius: 6px; transition: all 0.15s;" title="Delete Module">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
                 </div>
             `;
         });
