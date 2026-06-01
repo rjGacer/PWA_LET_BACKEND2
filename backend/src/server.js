@@ -21,9 +21,35 @@ const sessionRoutes = require('./routes/sessions');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Parse CORS origins from environment variable (comma-separated list)
+const getCorsOrigin = () => {
+  const corsOriginEnv = process.env.CORS_ORIGIN || '*';
+  
+  // If it's '*', return it as is
+  if (corsOriginEnv === '*') {
+    return '*';
+  }
+  
+  // Split comma-separated origins into array
+  const origins = corsOriginEnv.split(',').map(origin => origin.trim());
+  
+  // Return a function that checks if the origin is allowed
+  return (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in the allowed list
+    if (origins.includes(origin) || origins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  };
+};
+
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: getCorsOrigin(),
   credentials: true
 }));
 

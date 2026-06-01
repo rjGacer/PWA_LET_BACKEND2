@@ -22,7 +22,8 @@ class ApiService {
         baseURL = window.API_CONFIG.backendUrl;
         console.log('📍 Using API_CONFIG.backendUrl:', baseURL);
       }
-      // Priority 4: Manual fallback detection (if api-config.js hasn't loaded)\n      else {
+      // Priority 4: Manual fallback detection (if api-config.js hasn't loaded)
+      else {
         baseURL = this.detectBackendUrl();
         console.log('📍 Using manual fallback detection:', baseURL);
       }
@@ -45,19 +46,19 @@ class ApiService {
     
     // Detect if on local network IP
     if (this.isLocalNetworkIP(hostname) && port && ['8080', '3000', '5173', '5000', '5001', '8000', '8081'].includes(port.toString())) {
-      return `${protocol}//${hostname}:5000/api/v1`;
+      return `${protocol}//${hostname}:5001/api/v1`;
     }
     // Development server detection on localhost
     else if (port && ['8080', '3000', '5173', '5000', '5001', '8000', '8081'].includes(port.toString()) && (hostname === 'localhost' || hostname === '127.0.0.1')) {
-      return `${protocol}//localhost:5000/api/v1`;
+      return `${protocol}//localhost:5001/api/v1`;
     }
     // Local network IP detection
     else if (this.isLocalNetworkIP(hostname)) {
-      return `${protocol}//${hostname}:5000/api/v1`;
+      return `${protocol}//${hostname}:5001/api/v1`;
     }
     // Localhost development
     else if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return `${protocol}//localhost:5000/api/v1`;
+      return `${protocol}//localhost:5001/api/v1`;
     }
     // Production: use same-domain backend
     else {
