@@ -19,6 +19,8 @@
     href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
     rel="stylesheet"
   />
+  <!-- Papa Parse for CSV parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <!-- Reuse sidebar & dashboard styles -->
   <link rel="stylesheet" href="../assets/styles/teacherStyles/sidebar.css" />
   <link rel="stylesheet" href="../assets/styles/teacherStyles/dashboard.css" />
@@ -575,19 +577,49 @@
       }
     }
 
-    function openQuizModal(){
-      quizQuestions = [];
-      editingQuestionIndex = null;
-      document.getElementById('quizTitleInput').value = '';
-      document.getElementById('quizTimeInput').value = '30';
-      document.getElementById('questionsList').innerHTML = '<p style="color:#94a3b8;font-size:0.85rem;text-align:center;padding:1rem;">No questions added yet. Click "Add Question" to start.</p>';
-      document.getElementById('questionCountSpan').textContent = '0';
-      document.getElementById('questionFormContainer').style.display = 'none';
-      document.getElementById('bulkFileName').textContent = 'No file chosen';
-      document.getElementById('quizModal').classList.add('active');
-    }
+    // Removed duplicate openQuizModal - using proper implementation at line 828
 
-    function closeQuizModal(){ document.getElementById('quizModal').classList.remove('active'); }
+    // Save quiz as draft (without validating all questions)
+    async function saveQuizDraft() {
+      const title = document.getElementById('quizTitleInput').value.trim();
+      if (!title) {
+        alert('Enter a quiz title.');
+        return;
+      }
+      
+      if (!subjectId) {
+        alert('Subject ID not found. Please refresh the page.');
+        return;
+      }
+      
+      try {
+        console.log('💾 Saving quiz as DRAFT. Questions count:', quizQuestions.length);
+        const timeInput = document.getElementById('quizTimeInput').value.trim();
+        const timeLimit = parseInt(timeInput) || 30;
+        const totalPoints = quizQuestions.length * 1;
+        
+        const draftPayload = {
+          title: title,
+          subject_id: parseInt(subjectId),
+          time_limit: timeLimit,
+          total_points: totalPoints,
+          is_randomized: true,
+          show_answers: true,
+          passing_score: 70,
+          is_draft: true
+        };
+        
+        console.log('Draft payload:', draftPayload);
+        const response = await apiService.createQuiz(draftPayload);
+        
+        alert('✅ Quiz saved as draft! You can add more questions later.');
+        closeQuizModal();
+        await loadQuizzesFromAPI();
+      } catch (error) {
+        console.error('Error saving draft:', error);
+        alert('Error saving draft: ' + error.message);
+      }
+    }
 
     async function saveQuiz(){
       const title = document.getElementById('quizTitleInput').value.trim();
@@ -1079,40 +1111,69 @@
     }
 
     function parseCSV(file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const csv = e.target.result;
-          const lines = csv.split('\n');
-          const questions = [];
-          
-          // Skip header row
-          for (let i = 1; i < lines.length; i++) {
-            if (!lines[i].trim()) continue;
+      Papa.parse(file, {
+        header: false,
+        skipEmptyLines: true,
+        complete: (results) => {
+          try {
+            console.log('📊 Papa Parse results:', results.data);
+            const questions = [];
             
-            const parts = lines[i].split(',').map(p => p.trim().replace(/^"|"$/g, ''));
-            if (parts.length < 6) continue;
+            // Skip header row (index 0)
+            for (let i = 1; i < results.data.length; i++) {
+              const row = results.data[i];
+              
+              // Validate row has at least 6 columns
+              if (!row || row.length < 6) {
+                console.warn('Skipping row', i, '- not enough columns');
+                continue;
+              }
+              
+              const [questionText, choiceA, choiceB, choiceC, choiceD, correctAnswer, explanation] = row;
+              
+              // Validate required fields
+              if (!questionText || !choiceA || !choiceB || !choiceC || !choiceD || !correctAnswer) {
+                console.warn('Skipping row', i, '- missing required fields');
+                continue;
+              }
+              
+              // Validate correct answer is A, B, C, or D
+              const correct = correctAnswer.trim().toUpperCase();
+              if (!['A', 'B', 'C', 'D'].includes(correct)) {
+                console.warn('Skipping row', i, '- invalid correct answer:', correct);
+                continue;
+              }
+              
+              questions.push({
+                text: questionText.trim(),
+                choices: {
+                  A: choiceA.trim(),
+                  B: choiceB.trim(),
+                  C: choiceC.trim(),
+                  D: choiceD.trim()
+                },
+                correct: correct,
+                explanation: explanation ? explanation.trim() : ''
+              });
+            }
             
-            questions.push({
-              text: parts[0],
-              choices: {
-                A: parts[1],
-                B: parts[2],
-                C: parts[3],
-                D: parts[4]
-              },
-              correct: parts[5].toUpperCase(),
-              explanation: parts[6] || ''
-            });
+            if (questions.length === 0) {
+              alert('No valid questions found in the CSV file.');
+              return;
+            }
+            
+            console.log('✅ Parsed', questions.length, 'questions from CSV');
+            addQuestionsFromBulk(questions);
+          } catch (error) {
+            console.error('CSV processing error:', error);
+            alert('Error processing CSV file: ' + error.message);
           }
-          
-          addQuestionsFromBulk(questions);
-        } catch (error) {
-          console.error('CSV parsing error:', error);
+        },
+        error: (error) => {
+          console.error('Papa Parse error:', error);
           alert('Error parsing CSV file: ' + error.message);
         }
-      };
-      reader.readAsText(file);
+      });
     }
 
     async function parseExcel(file) {

@@ -241,7 +241,7 @@ function renderQuizzesTable(quizzes) {
     if (quizzes.length === 0) {
         htmlContent = `
             <tr>
-                <td colspan="5" style="padding: 3rem 1rem; text-align: center; color: #94a3b8;">
+                <td colspan="6" style="padding: 3rem 1rem; text-align: center; color: #94a3b8;">
                     <i class="fa-regular fa-clipboard" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 0.5rem; display: block;"></i>
                     No quizzes created yet. Click "Create Quiz" to add one.
                 </td>
@@ -249,17 +249,28 @@ function renderQuizzesTable(quizzes) {
         `;
     } else {
         quizzes.forEach(quiz => {
+            // Determine quiz status
+            const status = quiz.is_draft ? 'Draft' : (quiz.is_synced ? 'Synced' : 'Unsynced');
+            const statusColor = quiz.is_draft ? '#f59e0b' : (quiz.is_synced ? '#10b981' : '#ef4444');
+            const statusBgColor = quiz.is_draft ? '#fef3c7' : (quiz.is_synced ? '#d1fae5' : '#fee2e2');
+            
             htmlContent += `
-                <tr style="transition: background-color 0.15s;">
+                <tr style="transition: background-color 0.15s;" data-quiz-id="${quiz.id}">
                     <td style="padding: 1rem 0.75rem; font-weight: 600; color: #1e293b;">${quiz.title || quiz.name || 'Untitled Quiz'}</td>
                     <td style="padding: 1rem 0.75rem;">${quiz.questionsCount || quiz.question_count || 0} Questions</td>
                     <td style="padding: 1rem 0.75rem;">${quiz.timeLimit ? `${quiz.timeLimit} mins` : 'No limit'}</td>
-                    <td style="padding: 1rem 0.75rem;">${quiz.totalPoints || 0} pts</td>
+                    <td style="padding: 1rem 0.75rem;">${(quiz.questionsCount || quiz.question_count || 0) * 1} pts</td>
+                    <td style="padding: 1rem 0.75rem; text-align: center;">
+                        <span style="background-color: ${statusBgColor}; color: ${statusColor}; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">${status}</span>
+                    </td>
                     <td style="padding: 1rem 0.75rem; text-align: right;">
-                        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem;">
-                            <button style="color: #6366f1; background: none; border: none; cursor: pointer; font-weight: 500; font-size: 0.85rem; transition: color 0.15s;">Edit</button>
-                            <span style="color: #cbd5e1;">|</span>
-                            <button style="color: #ef4444; background: none; border: none; cursor: pointer; font-weight: 500; font-size: 0.85rem; transition: color 0.15s;">Delete</button>
+                        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem;">
+                            <button title="Edit quiz" onclick="openQuizModal(${quiz.id})" style="color: #6366f1; background: none; border: none; cursor: pointer; transition: color 0.15s; font-size: 1rem;">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button title="Delete quiz" onclick="deleteQuiz(${quiz.id})" style="color: #ef4444; background: none; border: none; cursor: pointer; transition: color 0.15s; font-size: 1rem;">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
