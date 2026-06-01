@@ -41,12 +41,22 @@
     if (!token) return;
 
     try {
-      // Dynamically construct the API URL based on current location
-      const protocol = window.location.protocol;
-      const hostname = window.location.hostname;
-      const port = window.location.port;
-      const portString = port && (protocol === 'http:' ? port !== '80' : port !== '443') ? `:${port}` : '';
-      const apiUrl = `${protocol}//${hostname}${portString}/api/v1/auth/verify`;
+      // Use unified API config for endpoint URL
+      let apiUrl;
+      if (window.API_CONFIG && typeof window.API_CONFIG.getBackendUrl === 'function') {
+        apiUrl = window.API_CONFIG.getBackendUrl() + '/auth/verify';
+      } else {
+        // Fallback if api-config.js hasn't loaded yet
+        const protocol = window.location.protocol;
+        const hostname = window.location.hostname;
+        const port = window.location.port;
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          apiUrl = `${protocol}//localhost:5000/api/v1/auth/verify`;
+        } else {
+          const portString = port && (protocol === 'http:' ? port !== '80' : port !== '443') ? `:${port}` : '';
+          apiUrl = `${protocol}//${hostname}${portString}/api/v1/auth/verify`;
+        }
+      }
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -62,9 +72,12 @@
         localStorage.removeItem('userRole');
         localStorage.removeItem('userName');
         window.location.href = '../index.html';
+      } else {
+        console.log('✓ Teacher token verified successfully');
       }
     } catch (error) {
       console.error('Token verification error:', error);
+      console.warn('⚠️ Proceeding without verification (might be offline)');
     }
   }
 

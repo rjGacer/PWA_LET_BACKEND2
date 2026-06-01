@@ -245,6 +245,19 @@
             margin-right: 4px;
         }
     </style>
+    
+    <!-- Backend URL Configuration -->
+    <script>
+      // Detect current IP and port
+      const hostname = window.location.hostname;
+      const port = window.location.port || (window.location.protocol === 'https:' ? 443 : 80);
+      
+      // Set backend URL dynamically
+      // Change 192.168.93.2 to your actual backend server IP
+      window.BACKEND_URL = `http://${hostname}:5000/api/v1`;
+      
+      console.log('🔧 Backend URL configured:', window.BACKEND_URL);
+    </script>
   </head>
   <body>
     <!-- Navigation -->
@@ -762,8 +775,6 @@
     <!-- API Configuration - Must load first for environment variables -->
     <script src="assets/scripts/api-config.js"></script>
     
-    <script src="js/main.js"></script>
-    
     <!-- Modal JavaScript -->
     <script>
         (function() {
@@ -856,9 +867,27 @@
             
             // Get dynamic API URL based on current location
             const getApiUrl = () => {
+              // Priority 1: Use environment-injected backend URL if available
+              if (window.BACKEND_URL) {
+                return window.BACKEND_URL;
+              }
+              
               const protocol = window.location.protocol;
               const hostname = window.location.hostname;
               const port = window.location.port;
+              
+              // Priority 2: If on local network IP (192.168.x.x, 10.x.x.x), use port 5000
+              const localNetworkPattern = /^(192\.168|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))\./;
+              if (localNetworkPattern.test(hostname)) {
+                return `${protocol}//${hostname}:5000/api/v1`;
+              }
+              
+              // Priority 3: If on localhost, use port 5000
+              if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return `${protocol}//localhost:5000/api/v1`;
+              }
+              
+              // Priority 4: Use same domain with port
               const portString = port && (protocol === 'http:' ? port !== '80' : port !== '443') ? `:${port}` : '';
               return `${protocol}//${hostname}${portString}/api/v1`;
             };
@@ -962,11 +991,21 @@
                         if (getStartedBtn) {
                             getStartedBtn.innerHTML = `<i class="fas fa-user-check"></i> ${currentRole === 'student' ? 'Student' : 'Teacher'} Dashboard`;
                         }
-                        // Redirect based on role
+                        
+                        // Determine dashboard URL based on role using absolute path
+                        let dashboardUrl;
+                        const baseUrl = window.location.origin || (window.location.protocol + '//' + window.location.host);
+                        
                         if (currentRole === 'teacher') {
-                            window.location.href = './teacher/dashboard.html';
+                            dashboardUrl = baseUrl + '/teacher/dashboard.html';
                         } else if (currentRole === 'student') {
-                            window.location.href = './student/studentDashboard.html';
+                            dashboardUrl = baseUrl + '/student/studentDashboard.html';
+                        }
+                        
+                        // Redirect to dashboard
+                        if (dashboardUrl) {
+                            console.log('✅ Redirecting to:', dashboardUrl);
+                            window.location.href = dashboardUrl;
                         }
                     }, 1000);
                 } else {

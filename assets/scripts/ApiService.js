@@ -7,31 +7,24 @@ class ApiService {
   constructor(baseURL = null) {
     // If baseURL not provided, dynamically determine it based on configuration
     if (!baseURL) {
-      // Priority 1: Check for environment-injected backend URL (from Netlify or hosting platform)
-      if (window.BACKEND_URL) {
+      // Priority 1: Use unified API_CONFIG helper if available (recommended)
+      if (window.API_CONFIG && typeof window.API_CONFIG.getBackendUrl === 'function') {
+        baseURL = window.API_CONFIG.getBackendUrl();
+        console.log('📍 Using unified API_CONFIG.getBackendUrl():', baseURL);
+      }
+      // Priority 2: Check for environment-injected backend URL (from Netlify or hosting platform)
+      else if (window.BACKEND_URL) {
         baseURL = window.BACKEND_URL;
         console.log('📍 Using environment-injected backend URL:', baseURL);
       } 
-      // Priority 2: Check for API config object (for custom deployments)
+      // Priority 3: Check for API config backendUrl property
       else if (window.API_CONFIG && window.API_CONFIG.backendUrl) {
         baseURL = window.API_CONFIG.backendUrl;
-        console.log('📍 Using API_CONFIG backend URL:', baseURL);
+        console.log('📍 Using API_CONFIG.backendUrl:', baseURL);
       }
-      // Priority 3: Use localhost for local development (default)
-      else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        const protocol = window.location.protocol;
-        const port = 5000; // Default backend port for local development
-        baseURL = `${protocol}//localhost:${port}/api/v1`;
-        console.log('📍 Using localhost for development:', baseURL);
-      }
-      // Priority 4: Use same domain without port (for production deployments)
-      else {
-        const protocol = window.location.protocol;
-        const hostname = window.location.hostname;
-        const port = window.location.port;
-        const portString = port && (protocol === 'http:' ? port !== '80' : port !== '443') ? `:${port}` : '';
-        baseURL = `${protocol}//${hostname}${portString}/api/v1`;
-        console.log('📍 Using same-domain backend:', baseURL);
+      // Priority 4: Manual fallback detection (if api-config.js hasn't loaded)\n      else {
+        baseURL = this.detectBackendUrl();
+        console.log('📍 Using manual fallback detection:', baseURL);
       }
     }
     
@@ -42,6 +35,42 @@ class ApiService {
       tokenExists: !!this.token,
       tokenValue: this.token ? this.token.substring(0, 20) + '...' : 'NO TOKEN'
     });
+  }
+
+  // Manual fallback for API URL detection (if api-config.js hasn't loaded)
+  detectBackendUrl() {
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    const port = window.location.port;
+    
+    // Detect if on local network IP
+    if (this.isLocalNetworkIP(hostname) && port && ['8080', '3000', '5173', '5000', '5001', '8000', '8081'].includes(port.toString())) {
+      return `${protocol}//${hostname}:5000/api/v1`;
+    }
+    // Development server detection on localhost
+    else if (port && ['8080', '3000', '5173', '5000', '5001', '8000', '8081'].includes(port.toString()) && (hostname === 'localhost' || hostname === '127.0.0.1')) {
+      return `${protocol}//localhost:5000/api/v1`;
+    }
+    // Local network IP detection
+    else if (this.isLocalNetworkIP(hostname)) {
+      return `${protocol}//${hostname}:5000/api/v1`;
+    }
+    // Localhost development
+    else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `${protocol}//localhost:5000/api/v1`;
+    }
+    // Production: use same-domain backend
+    else {
+      const portString = port && (protocol === 'http:' ? port !== '80' : port !== '443') ? `:${port}` : '';
+      return `${protocol}//${hostname}${portString}/api/v1`;
+    }
+  }
+
+  // Helper method to detect if IP is on local network
+  isLocalNetworkIP(hostname) {
+    // Check if it's a local network IP (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+    const localIPPattern = /^(192\.168|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))\./;
+    return localIPPattern.test(hostname);
   }
 
   setToken(token) {

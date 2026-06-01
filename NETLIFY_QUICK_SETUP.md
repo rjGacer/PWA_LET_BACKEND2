@@ -41,10 +41,10 @@ Choose the easiest option for you:
 ```bash
 cd backend
 heroku create your-app-name
-heroku config:set CORS_ORIGIN=https://your-netlify-url.netlify.app
+heroku config:set CORS_ORIGIN=https://letopwa.netlify.app/
 heroku config:set DB_HOST=your-db-host
-heroku config:set DB_USER=your-user
-heroku config:set DB_PASSWORD=your-password
+heroku config:set DB_USER=root
+heroku config:set DB_PASSWORD=koitouso
 git push heroku main
 ```
 Backend URL: `https://your-app-name.herokuapp.com`

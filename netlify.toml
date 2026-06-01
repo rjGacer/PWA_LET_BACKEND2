@@ -1,53 +1,90 @@
 # Netlify Configuration for PWA LET Frontend
-# This file configures how Netlify deploys and serves the frontend
+# Supports both standalone Netlify frontend + external backend and same-domain deployment
 
 [build]
-# Command to build the application (if needed)
-# For a static PWA, we don't need a build step
-# Uncomment if you have a build process
-# command = "npm run build"
-
 # Directory to deploy (root contains all frontend files)
 publish = "."
+# Optional: Uncomment if you have a build step (npm, webpack, etc.)
+# command = "npm run build"
 
 # Environment settings
 [build.environment]
-# Set to production for optimizations
 NODE_ENV = "production"
 
-# Context-specific settings
+# Production context
 [context.production]
-# Environment variables for production environment
 [context.production.environment]
-# Set your backend API URL here for production Netlify deployment
+# Configure your backend API URL for production
+# Options:
+# 1. External backend: BACKEND_URL = "https://api.example.com/api/v1"
+# 2. Same-domain (proxied): Leave empty or use relative /api/v1
 BACKEND_URL = "https://your-backend-api.com/api/v1"
 
+# Branch deployments (staging)
 [context.branch-deploy]
-# Environment variables for branch deployments
 [context.branch-deploy.environment]
-BACKEND_URL = "https://staging-backend-api.com/api/v1"
+BACKEND_URL = "https://staging-api.example.com/api/v1"
 
+# Deploy previews
 [context.deploy-preview]
-# Environment variables for deploy previews
 [context.deploy-preview.environment]
-BACKEND_URL = "https://dev-backend-api.com/api/v1"
+BACKEND_URL = "https://dev-api.example.com/api/v1"
 
-# Redirects for SPA routing
+# SPA routing - all routes go to index.html
 [[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200
+condition = "!{path.startsWith('/api')} && !{path.startsWith('/assets')} && !{path.startsWith('/student/')} && !{path.startsWith('/teacher/')} && {path.endsWith('.html')}"
 
-# Redirect API calls to backend (if using same-domain setup)
-# Uncomment if backend and frontend are on same Netlify account
+# IMPORTANT: If your backend is on a different domain, configure CORS in your backend
+# If backend is on same domain, configure API proxying in Netlify Functions or use Netlify CLI
+
+# API Proxy for same-domain setup (Uncomment if backend is served from same domain)
 # [[redirects]]
-# from = "/api/*"
-# to = "https://your-backend-service.netlify.app/api/:splat"
+# from = "/api/v1/*"
+# to = "http://localhost:5000/api/v1/:splat"  # For local development
 # status = 200
 # force = false
 
-# Headers
+# Alternative: Use Netlify Functions for API proxy
+# See: https://docs.netlify.com/functions/overview/
+
+# Headers for PWA and security
 [[headers]]
+path = "/*"
+[headers.values]
+  # PWA support
+  "Cache-Control" = "no-cache"
+  "X-Content-Type-Options" = "nosniff"
+  "X-Frame-Options" = "SAMEORIGIN"
+  "X-XSS-Protection" = "1; mode=block"
+
+# Service Worker - no cache
+[[headers]]
+path = "/sw.js"
+[headers.values]
+  "Cache-Control" = "no-cache, no-store, must-revalidate"
+  "Content-Type" = "application/javascript"
+
+# Static assets - cache long-term
+[[headers]]
+path = "/assets/*"
+[headers.values]
+  "Cache-Control" = "public, max-age=31536000, immutable"
+
+# Manifest and index - no cache
+[[headers]]
+path = "/manifest.json"
+[headers.values]
+  "Cache-Control" = "no-cache, no-store, must-revalidate"
+  "Content-Type" = "application/manifest+json"
+
+[[headers]]
+path = "/index.html"
+[headers.values]
+  "Cache-Control" = "no-cache, no-store, must-revalidate"
+  "Content-Type" = "text/html; charset=utf-8"
 for = "/*"
 [headers.values]
 # Cache control for HTML files (don't cache, check for updates)
