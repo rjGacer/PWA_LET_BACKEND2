@@ -17,16 +17,26 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    // Filter by sync status if user is a student
+    // Debug logging
+    console.log('[SUBJECT-GETBYID] User:', req.user?.id, 'Role:', req.user?.role, 'SubjectId:', req.params.id);
+    
+    // Teachers can see their own subjects regardless of sync status
+    // Students can only see synced subjects
     const onlySync = req.user?.role === 'student' || !req.user;
+    console.log('[SUBJECT-GETBYID] onlySync:', onlySync, 'user.role:', req.user?.role);
+    
     const subject = await Subject.getById(req.params.id, onlySync);
+    console.log('[SUBJECT-GETBYID] Found subject:', subject);
+    
     if (!subject) {
+      console.log('[SUBJECT-GETBYID] Subject not found for id:', req.params.id, 'onlySync:', onlySync);
       return res.status(404).json({ error: 'Subject not found' });
     }
     
     const stats = await Subject.getStats(req.params.id, onlySync);
     res.json({ ...subject, ...stats });
   } catch (error) {
+    console.error('[SUBJECT-GETBYID] Error:', error);
     res.status(500).json({ error: error.message });
   }
 };

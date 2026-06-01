@@ -36,14 +36,19 @@ async function loadDashboardStatistics() {
     
     const url = getApiUrl('/performance/stats');
     console.log('📡 Fetching dashboard stats from:', url);
+    console.log('🔐 Token:', token.substring(0, 20) + '...');
     
     const response = await fetch(url, {
       method: 'GET',
       headers: getAuthHeaders()
     });
     
+    console.log('📊 Response status:', response.status);
+    
     if (!response.ok) {
+      const errorText = await response.text();
       console.warn('❌ Stats endpoint returned status:', response.status);
+      console.warn('Response:', errorText);
       if (response.status === 401) {
         console.warn('⚠️ Unauthorized - token may be invalid');
       }
@@ -64,23 +69,35 @@ async function loadDashboardStatistics() {
     if (statCards[0]) {
       const statValue = statCards[0].querySelector('.stat-value');
       const statChange = statCards[0].querySelector('.stat-change');
-      if (statValue) statValue.textContent = formatNumber(stats.total_students || 1248);
+      if (statValue) {
+        statValue.textContent = formatNumber(stats.total_students || 1248);
+        console.log('✓ Updated total students to:', formatNumber(stats.total_students || 1248));
+      }
       if (statChange) statChange.innerHTML = '↑ 12.5% <span>from last month</span>';
     }
     
     if (statCards[1]) {
       const statValue = statCards[1].querySelector('.stat-value');
-      if (statValue) statValue.textContent = (Math.round((stats.average_score || 72.4) * 10) / 10) + '%';
+      if (statValue) {
+        statValue.textContent = (Math.round((stats.average_score || 72.4) * 10) / 10) + '%';
+        console.log('✓ Updated average score to:', (Math.round((stats.average_score || 72.4) * 10) / 10) + '%');
+      }
     }
     
     if (statCards[2]) {
       const statValue = statCards[2].querySelector('.stat-value');
-      if (statValue) statValue.textContent = formatNumber(stats.total_attempts || 5892);
+      if (statValue) {
+        statValue.textContent = formatNumber(stats.total_attempts || 5892);
+        console.log('✓ Updated quiz attempts to:', formatNumber(stats.total_attempts || 5892));
+      }
     }
     
     if (statCards[3]) {
       const statValue = statCards[3].querySelector('.stat-value');
-      if (statValue) statValue.textContent = formatNumber(stats.active_users || 892);
+      if (statValue) {
+        statValue.textContent = formatNumber(stats.active_users || 892);
+        console.log('✓ Updated active users to:', formatNumber(stats.active_users || 892));
+      }
     }
   } catch (error) {
     console.error('❌ Failed to load dashboard statistics:', error);
@@ -166,19 +183,26 @@ async function loadRecentActivity() {
       headers: getAuthHeaders()
     });
     
+    console.log('📊 Recent activity response status:', response.status);
+    
     if (!response.ok) {
+      const errorText = await response.text();
       console.warn('❌ Recent activity endpoint returned status:', response.status);
+      console.warn('Response:', errorText);
       return;
     }
     
     const activities = await response.json();
     console.log('✓ Recent activity loaded:', activities);
+    console.log('Activity count:', Array.isArray(activities) ? activities.length : 'Not an array');
     
     const quizList = document.querySelector('.quiz-list');
     if (quizList && Array.isArray(activities) && activities.length > 0) {
       quizList.innerHTML = '';
       
-      activities.forEach(activity => {
+      activities.forEach((activity, idx) => {
+        console.log(`Activity ${idx}:`, activity);
+        
         const categoryMap = {
           'General Education': 'gened',
           'Professional Education': 'profed',
@@ -207,6 +231,10 @@ async function loadRecentActivity() {
         `;
         quizList.appendChild(quizItem);
       });
+      
+      console.log('✓ Recent activity displayed');
+    } else {
+      console.warn('⚠️ Quiz list container not found or no activities');
     }
   } catch (error) {
     console.error('❌ Failed to load recent activity:', error);

@@ -288,14 +288,10 @@
   <script src="../assets/scripts/auth-guard.js"></script>
   <script src="../assets/scripts/api-config.js"></script>
   <script src="../assets/scripts/ApiService.js"></script>
+  <script src="../assets/scripts/teacher-view-subject.js"></script>
   <script>
-    // Initialize API Service
-    const apiService = new ApiService();
-
-    // Get subject and category from URL
+    // Get category from URL for back link
     const urlParams = new URLSearchParams(window.location.search);
-    const subjectId = urlParams.get('subjectId') || null;
-    const subjectName = urlParams.get('subjectName') || 'Subject';
     const categoryId = urlParams.get('categoryId') || '4';
     
     // Update back link with categoryId
@@ -1252,19 +1248,6 @@
       }
     }
 
-    // Initialize subject title from URL
-    if (subjectName) {
-      document.getElementById('subjectTitle').textContent = subjectName;
-    }
-
-    // Load modules and quizzes from API on page load
-    if (subjectId) {
-      loadModulesFromAPI();
-      loadQuizzesFromAPI();
-    }
-    
-    // Initialize bulk file handler
-    setupBulkFileHandler();
   </script>
 </body>
 </html>

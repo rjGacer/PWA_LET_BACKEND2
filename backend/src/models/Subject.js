@@ -16,19 +16,23 @@ class Subject {
     }
     
     query += ' ORDER BY name';
+    console.log('[SUBJECT-MODEL] getAll query:', query, 'params:', params);
     const [rows] = await pool.query(query, params);
+    console.log('[SUBJECT-MODEL] getAll found', rows.length, 'subjects:', rows.map(r => ({id: r.id, name: r.name, category_id: r.category_id})));
     return rows;
   }
 
   static async getById(id, onlySync = false) {
-    let query = 'SELECT * FROM subjects WHERE id = ?';
+    let query = 'SELECT * FROM subjects WHERE id = ? AND is_active = TRUE';
     const params = [id];
     
     if (onlySync) {
       query += ' AND is_synced = TRUE';
     }
     
+    console.log('[SUBJECT-MODEL] Executing query:', query, 'with params:', params);
     const [rows] = await pool.query(query, params);
+    console.log('[SUBJECT-MODEL] Query result:', rows);
     return rows[0];
   }
 
@@ -59,7 +63,7 @@ class Subject {
     }
     
     const [result] = await pool.query(
-      'INSERT INTO subjects (category_id, name, description, icon, color, created_by, is_synced) VALUES (?, ?, ?, ?, ?, ?, FALSE)',
+      'INSERT INTO subjects (category_id, name, description, icon, color, created_by, is_active, is_synced) VALUES (?, ?, ?, ?, ?, ?, TRUE, FALSE)',
       [category_id, name, description, icon, color, created_by]
     );
     return result.insertId;
