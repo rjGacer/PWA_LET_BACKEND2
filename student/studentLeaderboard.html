@@ -308,7 +308,7 @@
       <button onclick="closeStudentProfile()" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">✕</button>
       
       <div style="text-align: center; margin-bottom: 24px;">
-        <img id="profileStudentPic" src="https://i.pravatar.cc/150?img=12" alt="Student" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 16px; border: 3px solid #eef2ff;">
+        <img id="profileStudentPic" src="https://i.pravatar.cc/150?img=12" alt="Student" onerror="this.src='https://i.pravatar.cc/150?img=12'; this.style.background='#818cf8';" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 16px; border: 3px solid #eef2ff; object-fit: cover;">
         <h2 id="profileStudentName" style="font-size: 1.5rem; font-weight: 700; color: #1f2937; margin: 0 0 4px 0;">Student Name</h2>
         <p id="profileStudentCourse" style="color: #6b7280; margin: 0; font-size: 0.9rem;">Student</p>
       </div>

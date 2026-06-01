@@ -262,6 +262,9 @@
       } else if (hostname.includes('netlify.app') || hostname === 'letopwaa.netlify.app') {
         // Netlify production - use Render backend
         window.BACKEND_URL = 'https://pwa-let-reviewer.onrender.com/api/v1';
+      } else if (/^(192\.168|10\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[01]\.)/.test(hostname)) {
+        // Local network IP - use port 5001 for backend
+        window.BACKEND_URL = `${protocol}//${hostname}:5001/api/v1`;
       } else {
         // Default: same domain with port if non-standard
         const portString = port && (protocol === 'http:' ? port !== '80' : port !== '443') ? `:${port}` : '';

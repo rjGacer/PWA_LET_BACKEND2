@@ -871,10 +871,10 @@
 
   <!-- Page Data and Interactions -->
   <script>
-    // Get subject ID from URL query parameters
+    // Get subject ID from URL query parameters or sessionStorage (fallback)
     const urlParams = new URLSearchParams(window.location.search);
-    const subjectId = urlParams.get('subjectId');
-    const subjectName = urlParams.get('name') || 'Subject';
+    let subjectId = urlParams.get('subjectId') || sessionStorage.getItem('currentSubjectId');
+    let subjectName = urlParams.get('name') || sessionStorage.getItem('currentSubjectName') || 'Subject';
 
     // Initialize API service
     // ApiService automatically detects the correct base URL from window.location

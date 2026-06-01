@@ -377,6 +377,10 @@
           const subjectId = card.getAttribute('data-subject-id');
           const subjectName = card.getAttribute('data-subject-name');
           
+          // Store in sessionStorage as backup to ensure data is not lost
+          sessionStorage.setItem('currentSubjectId', subjectId);
+          sessionStorage.setItem('currentSubjectName', subjectName);
+          
           // Redirect to studentViewModules.html with subject ID
           window.location.href = `studentViewModules.html?subjectId=${subjectId}&name=${encodeURIComponent(subjectName)}`;
         });

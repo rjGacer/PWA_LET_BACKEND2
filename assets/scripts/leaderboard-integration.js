@@ -73,7 +73,7 @@ function renderLeaderboard() {
     }
 
     return `
-      <div class="leaderboard-row ${rankClass}" onclick="showStudentProfile('${entry.student_id}', '${entry.full_name}', '${entry.profile_picture}', ${attempts}, ${avgScore}, ${passRate})" style="cursor: pointer; transition: all 0.3s;">
+      <div class="leaderboard-row ${rankClass}" onclick="showStudentProfile('${entry.student_id}', '${entry.full_name}', '${entry.profile_picture || 'https://i.pravatar.cc/150?img=12'}', ${attempts}, ${avgScore}, ${passRate})" style="cursor: pointer; transition: all 0.3s;">
         <div class="rank-badge${rankClass ? ' ' + rankClass.split(' ')[1] : ' other'}" title="${medal}">${rank}</div>
         <div class="student-info">
           <img src="${entry.profile_picture || 'https://i.pravatar.cc/50?img=' + (idx % 20)}" alt="${entry.full_name}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 12px;">
@@ -150,7 +150,12 @@ function showStudentProfile(studentId, name, picture, attempts, avgScore, passRa
       console.log('✓ Student profile loaded:', profile);
       
       // Populate modal with real data
-      document.getElementById('profileStudentPic').src = profile.profile_picture || picture || 'https://i.pravatar.cc/150?img=12';
+      const profilePic = document.getElementById('profileStudentPic');
+      profilePic.src = profile.profile_picture || picture || 'https://i.pravatar.cc/150?img=12';
+      profilePic.onerror = function() {
+        this.src = 'https://i.pravatar.cc/150?img=12';
+        this.style.background = '#818cf8';
+      };
       document.getElementById('profileStudentName').textContent = profile.name || name;
       document.getElementById('profileStudentEmail').textContent = profile.email || 'student@learniq.edu';
       document.getElementById('profileStudentCourse').textContent = profile.course || 'Student';
@@ -165,7 +170,12 @@ function showStudentProfile(studentId, name, picture, attempts, avgScore, passRa
       console.warn('Could not fetch student profile:', error);
       
       // Fallback to data passed in parameters
-      document.getElementById('profileStudentPic').src = picture || 'https://i.pravatar.cc/150?img=12';
+      const profilePic = document.getElementById('profileStudentPic');
+      profilePic.src = picture || 'https://i.pravatar.cc/150?img=12';
+      profilePic.onerror = function() {
+        this.src = 'https://i.pravatar.cc/150?img=12';
+        this.style.background = '#818cf8';
+      };
       document.getElementById('profileStudentName').textContent = name;
       document.getElementById('profileStudentEmail').textContent = 'student@learniq.edu';
       document.getElementById('profileStudentCourse').textContent = 'Student';
