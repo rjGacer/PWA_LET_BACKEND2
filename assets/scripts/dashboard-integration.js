@@ -482,25 +482,38 @@ async function loadRecentActivityData() {
       console.warn('⚠️  Could not load local results from QuizResultsManager:', err);
     }
 
-    // Deduplicate results: if same quiz appears in both backend and local, keep only the backend one
-    const deduplicatedAttempts = [];
-    const seenResults = new Set();
+    // Deduplicate results: Prioritize backend results over local ones
+    // Create maps for quick lookup and deduplication
+    const backendAttempts = allAttempts.filter(a => a._source === 'backend');
+    const localAttempts = allAttempts.filter(a => a._source === 'local');
     
-    allAttempts.forEach(attempt => {
-      // Create a unique key based on mode, quiz_title, and timestamp (within 1 minute tolerance for backend sync delay)
+    // Create a set of backend result signatures for matching
+    const backendSignatures = new Set();
+    backendAttempts.forEach(attempt => {
+      // Create signature: score + question count + time window (5 min tolerance)
       const timestamp = attempt.attempt_timestamp || new Date(attempt.submitted_at).getTime();
-      const timeWindow = Math.floor(timestamp / 60000); // Round to nearest minute
-      const key = `${attempt.mode || 'quiz'}|${attempt.quiz_title || attempt.subject_name}|${timeWindow}`;
-      
-      if (!seenResults.has(key)) {
-        seenResults.add(key);
-        deduplicatedAttempts.push(attempt);
-      } else {
-        console.log(`🔄 Deduplicating duplicate result: ${attempt.quiz_title} (${attempt._source})`);
-      }
+      const timeWindow = Math.floor(timestamp / 300000); // 5 minute window
+      const signature = `${attempt.correct_answers}/${attempt.total_questions}|${timeWindow}`;
+      backendSignatures.add(signature);
     });
 
-    console.log(`✓ Total attempts loaded (backend + local): ${allAttempts.length} → ${deduplicatedAttempts.length} after dedup`);
+    // Filter local attempts to exclude those that match backend results
+    const deduplicatedLocal = localAttempts.filter(attempt => {
+      const timestamp = attempt.attempt_timestamp || new Date(attempt.submitted_at).getTime();
+      const timeWindow = Math.floor(timestamp / 300000); // 5 minute window
+      const signature = `${attempt.correct_answers}/${attempt.total_questions}|${timeWindow}`;
+      
+      const isDuplicate = backendSignatures.has(signature);
+      if (isDuplicate) {
+        console.log(`🔄 Deduplicating local result: ${attempt.quiz_title} (score: ${attempt.correct_answers}/${attempt.total_questions})`);
+      }
+      return !isDuplicate; // Only keep if NOT a duplicate
+    });
+
+    // Combine backend results + non-duplicate local results
+    const deduplicatedAttempts = [...backendAttempts, ...deduplicatedLocal];
+    
+    console.log(`✓ Total attempts loaded (backend + local): ${allAttempts.length} → ${deduplicatedAttempts.length} after dedup (backend: ${backendAttempts.length}, local: ${deduplicatedLocal.length})`);
 
     // 3. Sort by timestamp (most recent first)
     deduplicatedAttempts.sort((a, b) => {
