@@ -12,13 +12,15 @@ services:
       - key: NODE_ENV
         value: production
       - key: DB_HOST
-        value: your_database_host
+        value: ballast.proxy.rIwy.net
       - key: DB_USER
-        value: your_database_user
+        value: root
       - key: DB_PASSWORD
-        value: your_database_password
+        value: xoFhuNQUDkQtdVQbFueAArOVpaAAYVNb
       - key: DB_NAME
         value: pwa_let_db
+      - key: DB_PORT
+        value: 3306
       - key: CORS_ORIGIN
         value: https://letopwa.netlify.app
       - key: JWT_SECRET
