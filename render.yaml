@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: pwa-let-backend
+    env: node
+    plan: free
+    root: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5001
+      - key: NODE_ENV
+        value: production
+      - key: DB_HOST
+        value: your_database_host
+      - key: DB_USER
+        value: your_database_user
+      - key: DB_PASSWORD
+        value: your_database_password
+      - key: DB_NAME
+        value: pwa_let_db
+      - key: CORS_ORIGIN
+        value: https://letopwa.netlify.app
+      - key: JWT_SECRET
+        value: your_jwt_secret_key_here_change_in_production
+      - key: UPLOAD_DIR
+        value: ./uploads
+      - key: MAX_FILE_SIZE
+        value: 10485760
