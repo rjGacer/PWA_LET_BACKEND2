@@ -204,14 +204,7 @@ function renderModulesList(modules) {
                             <p style="margin: 0.25rem 0 0; font-size: 0.8rem; color: #94a3b8;">${mod.description || mod.content || 'No description added yet'}</p>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <button style="padding: 0.5rem; color: #94a3b8; background: none; border: none; cursor: pointer; border-radius: 6px; transition: all 0.15s;" title="View Module">
-                            <i class="fa-regular fa-eye"></i>
-                        </button>
-                        <button style="padding: 0.5rem; color: #94a3b8; background: none; border: none; cursor: pointer; border-radius: 6px; transition: all 0.15s;" title="Delete Module">
-                            <i class="fa-regular fa-trash-can"></i>
-                        </button>
-                    </div>
+
                 </div>
             `;
         });

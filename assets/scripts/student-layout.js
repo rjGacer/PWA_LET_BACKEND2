@@ -87,7 +87,7 @@
   <div class="top-right">
     <div class="bell" id="notificationBell" style="position: relative; cursor: pointer;">
       <i class="fa-regular fa-bell"></i>
-      <span class="notification-badge" style="display: none; position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center;">0</span>
+      <span class="notification-badge" style="display: none; position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; font-weight: bold; align-items: center; justify-content: center;">0</span>
       <div id="notificationDropdown" style="display: none; position: absolute; top: 40px; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 350px; max-height: 400px; overflow-y: auto; z-index: 1000;">
         <div style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
           <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: #1f2937;">Notifications</h3>

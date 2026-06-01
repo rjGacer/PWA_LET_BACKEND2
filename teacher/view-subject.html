@@ -809,21 +809,37 @@
           <tr>
             <td><i class="fa-solid fa-pencil quiz-icon"></i> ${q.title}</td>
             <td>${q.question_count || 0}</td>
-            <td>${q.time_limit} Minutes</td>
-            <td>${q.total_points}</td>
+            <td>${q.time_limit || 'No limit'} ${q.time_limit ? 'Minutes' : ''}</td>
+            <td>${q.total_points || 0}</td>
             <td>
-              <div class="action-buttons">
-                <button class="btn btn-open"><i class="fa-solid fa-folder-open"></i> Open</button>
-                <button class="btn btn-edit quiz-edit-btn" data-quiz-id="${q.id}" title="Edit quiz"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                <button class="btn btn-delete quiz-delete-btn" data-quiz-id="${q.id}" title="Delete quiz"><i class="fa-solid fa-trash"></i> Delete</button>
+              <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
+                <button class="btn btn-open quiz-open-btn" data-quiz-id="${q.id}" style="background: #7c6ff7; color: white; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.75rem;" title="Open quiz">
+                  <i class="fa-solid fa-folder-open"></i> Open
+                </button>
+                <button class="btn btn-edit quiz-edit-btn" data-quiz-id="${q.id}" style="background: #e2e8f0; color: #7c6ff7; padding: 0.5rem 0.8rem; border-radius: 6px; font-size: 1rem;" title="Edit quiz">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-delete quiz-delete-btn" data-quiz-id="${q.id}" style="background: #fee2e2; color: #ef4444; padding: 0.5rem 0.8rem; border-radius: 6px; font-size: 1rem;" title="Delete quiz">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
               </div>
             </td>
           </tr>`).join('');
         
-        quizTableBody.innerHTML = quizHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">No quizzes yet</td></tr>';
-        quizzesTabBody.innerHTML = quizHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">No quizzes yet</td></tr>';
+        quizTableBody.innerHTML = quizHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:2rem;">No quizzes yet. Click "Create Quiz" to add one.</td></tr>';
+        quizzesTabBody.innerHTML = quizHTML || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:2rem;">No quizzes yet. Click "Create Quiz" to add one.</td></tr>';
         
-        // Attach event listeners to edit and delete buttons
+        // Attach event listeners to open, edit and delete buttons
+        document.querySelectorAll('.quiz-open-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const quizId = parseInt(btn.getAttribute('data-quiz-id'));
+            console.log('📂 Open button clicked for quiz ID:', quizId);
+            alert('Opening quiz ' + quizId + ' - Feature coming soon');
+          });
+        });
+
         document.querySelectorAll('.quiz-edit-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.preventDefault();
