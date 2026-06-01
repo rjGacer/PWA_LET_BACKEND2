@@ -4,8 +4,8 @@
   "description": "LearnIQ - Offline-capable PWA for Licensure Examination for Teachers",
   "type": "module",
   "scripts": {
-    "dev": "npx serve . -l 3000 -c ../spa.json",
-    "start": "npx serve . -l 3000 -c ../spa.json",
+    "dev": "npx serve . -l 3000 -c ./spa.json",
+    "start": "npx serve . -l 3000 -c ./spa.json",
     "build": "echo 'Static PWA - no build needed'",
     "preview": "npx serve ."
   },
