@@ -1,0 +1,25 @@
+{
+  "name": "learniq-frontend",
+  "version": "1.0.0",
+  "description": "LearnIQ - Offline-capable PWA for Licensure Examination for Teachers",
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve . -l 3000 -c ../spa.json",
+    "start": "npx serve . -l 3000 -c ../spa.json",
+    "build": "echo 'Static PWA - no build needed'",
+    "preview": "npx serve ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.0"
+  },
+  "keywords": [
+    "pwa",
+    "let",
+    "licensure-exam",
+    "education",
+    "offline"
+  ],
+  "author": "LearnIQ Team",
+  "license": "MIT"
+}
