@@ -192,8 +192,8 @@
       </div>
 
       <div class="form-group">
-        <label>Time Limit</label>
-        <input type="text" id="quizTimeInput" placeholder="e.g., 30 Minutes" />
+        <label>Time Limit (Minutes)</label>
+        <input type="number" id="quizTimeInput" placeholder="e.g., 30" min="1" max="300" value="30" />
       </div>
 
       <hr class="separator">
@@ -596,6 +596,12 @@
         console.log('💾 Saving quiz as DRAFT. Questions count:', quizQuestions.length);
         const timeInput = document.getElementById('quizTimeInput').value.trim();
         const timeLimit = parseInt(timeInput) || 30;
+        
+        if (isNaN(timeLimit) || timeLimit < 1) {
+          alert('Please enter a valid time limit (1-300 minutes)');
+          return;
+        }
+        
         const totalPoints = quizQuestions.length * 1;
         
         const draftPayload = {
@@ -635,6 +641,12 @@
         console.log('💾 Saving quiz. editingQuizId:', editingQuizId, 'Type:', typeof editingQuizId);
         const timeInput = document.getElementById('quizTimeInput').value.trim();
         const timeLimit = parseInt(timeInput) || 30;
+        
+        if (isNaN(timeLimit) || timeLimit < 1) {
+          alert('Please enter a valid time limit (1-300 minutes)');
+          return;
+        }
+        
         const totalPoints = quizQuestions.length * 1;
         
         let quizId;
@@ -851,10 +863,22 @@
         console.log('Files selected:', e.target.files.length, 'Total files:', selectedModuleFiles.length);
       }
     });
-    document.getElementById('bulkFileInput').addEventListener('change', function(e){ document.getElementById('bulkFileName').textContent = e.target.files[0]?.name || 'No file chosen'; });
+    document.getElementById('bulkFileInput').addEventListener('change', function(e){ 
+      const fileName = e.target.files[0]?.name || 'No file chosen';
+      const bulkFileNameEl = document.getElementById('bulkFileName');
+      bulkFileNameEl.textContent = fileName !== 'No file chosen' ? `✓ ${fileName}` : fileName;
+      bulkFileNameEl.style.color = fileName !== 'No file chosen' ? '#10b981' : '#94a3b8';
+    });
 
     document.querySelectorAll('.modal-overlay').forEach(o=>{ o.addEventListener('click',function(e){ if(e.target===o){ o.classList.remove('active'); } }); });
     document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ document.querySelectorAll('.modal-overlay.active').forEach(o=>o.classList.remove('active')); } });
+
+    // Initialize bulk file handler when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      setupBulkFileHandler();
+      loadModulesFromAPI();
+      loadQuizzesFromAPI();
+    });
 
     // Quiz and Question functions
     async function openQuizModal(quizId = null){
@@ -1061,6 +1085,25 @@
       }
     }
 
+    function addQuestionsFromBulk(questions) {
+      if (!Array.isArray(questions) || questions.length === 0) {
+        alert('No questions to add');
+        return;
+      }
+      
+      const added = questions.length;
+      quizQuestions = [...quizQuestions, ...questions];
+      
+      renderQuestions();
+      
+      // Clear file input
+      document.getElementById('bulkFileInput').value = '';
+      document.getElementById('bulkFileName').textContent = 'No file chosen';
+      
+      alert(`✅ Successfully added ${added} question${added > 1 ? 's' : ''} from bulk upload!`);
+      console.log(`Added ${added} questions. Total: ${quizQuestions.length}`);
+    }
+
     // Bulk file upload handlers
     function setupBulkFileHandler() {
       const fileInput = document.getElementById('bulkFileInput');
@@ -1197,6 +1240,71 @@
         console.error('Excel parsing error:', error);
         alert('Error parsing Excel file: ' + error.message);
       }
+    }
+
+    function parseExcelWithLibrary(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          
+          console.log('📊 Excel parsed rows:', rows);
+          const questions = [];
+          
+          // Skip header row (index 0)
+          for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            
+            // Validate row has at least 6 columns
+            if (!row || row.length < 6) {
+              console.warn('Skipping row', i, '- not enough columns');
+              continue;
+            }
+            
+            const [questionText, choiceA, choiceB, choiceC, choiceD, correctAnswer, explanation] = row;
+            
+            // Validate required fields
+            if (!questionText || !choiceA || !choiceB || !choiceC || !choiceD || !correctAnswer) {
+              console.warn('Skipping row', i, '- missing required fields');
+              continue;
+            }
+            
+            // Validate correct answer is A, B, C, or D
+            const correct = String(correctAnswer).trim().toUpperCase();
+            if (!['A', 'B', 'C', 'D'].includes(correct)) {
+              console.warn('Skipping row', i, '- invalid correct answer:', correct);
+              continue;
+            }
+            
+            questions.push({
+              text: String(questionText).trim(),
+              choices: {
+                A: String(choiceA).trim(),
+                B: String(choiceB).trim(),
+                C: String(choiceC).trim(),
+                D: String(choiceD).trim()
+              },
+              correct: correct,
+              explanation: explanation ? String(explanation).trim() : ''
+            });
+          }
+          
+          if (questions.length === 0) {
+            alert('No valid questions found in the Excel file.');
+            return;
+          }
+          
+          console.log('✅ Parsed', questions.length, 'questions from Excel');
+          addQuestionsFromBulk(questions);
+        } catch (error) {
+          console.error('Excel processing error:', error);
+          alert('Error processing Excel file: ' + error.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
     }
 
     async function parseExcelWithLibrary(file) {
