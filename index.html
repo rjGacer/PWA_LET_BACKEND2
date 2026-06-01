@@ -256,7 +256,7 @@
       
       // Set backend URL dynamically
       // Change 192.168.93.2 to your actual backend server IP
-      window.BACKEND_URL = `http://${hostname}:5000/api/v1`;
+      window.BACKEND_URL = `http://${hostname}:5001/api/v1`;
       
       console.log('🔧 Backend URL configured:', window.BACKEND_URL);
     </script>
@@ -878,15 +878,15 @@
               const hostname = window.location.hostname;
               const port = window.location.port;
               
-              // Priority 2: If on local network IP (192.168.x.x, 10.x.x.x), use port 5000
+              // Priority 2: If on local network IP (192.168.x.x, 10.x.x.x), use port 5001
               const localNetworkPattern = /^(192\.168|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))\./;
               if (localNetworkPattern.test(hostname)) {
-                return `${protocol}//${hostname}:5000/api/v1`;
+                return `${protocol}//${hostname}:5001/api/v1`;
               }
               
-              // Priority 3: If on localhost, use port 5000
+              // Priority 3: If on localhost, use port 5001
               if (hostname === 'localhost' || hostname === '127.0.0.1') {
-                return `${protocol}//localhost:5000/api/v1`;
+                return `${protocol}//localhost:5001/api/v1`;
               }
               
               // Priority 4: Use same domain with port
