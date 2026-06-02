@@ -718,6 +718,9 @@
           const isSelected = optIdx === question.selectedOptionIndex;
           const isCorrect = optIdx === question.correctOptionIndex;
           
+          // Handle both string and object options
+          const optionText = typeof option === 'string' ? option : (option.text || option.option_text || JSON.stringify(option));
+          
           let optionClass = 'option-item';
           let optionIcon = '';
           let optionLabel = '';
@@ -750,7 +753,7 @@
             <div class="${optionClass}">
               <div class="option-letter">${optionLetter}</div>
               <div class="option-content">
-                <div class="option-text">${option}</div>
+                <div class="option-text">${optionText}</div>
                 ${optionLabel}
               </div>
               <div class="option-icon">${optionIcon}</div>
@@ -761,9 +764,12 @@
         // Old format with options array but no indices - reconstruct format
         question.options.forEach((option, optIdx) => {
           const optionLetter = String.fromCharCode(65 + optIdx);
+          
+          // Handle both string and object options
+          const optionText = typeof option === 'string' ? option : (option.text || option.option_text || JSON.stringify(option));
           const selectedText = question.selectedOptionText || '';
-          const isSelected = option === selectedText;
-          const isCorrect = option === question.correctOptionText;
+          const isSelected = optionText === selectedText;
+          const isCorrect = optionText === question.correctOptionText;
           
           let optionClass = 'option-item';
           let optionIcon = '';
@@ -892,11 +898,16 @@
       
       optionsHTML += '</div>';
 
+      // Ensure question text is not undefined or "undefined"
+      const questionText = question.questionText && question.questionText !== 'undefined' 
+        ? question.questionText 
+        : (question.question_text || `Question ${index + 1}`);
+
       questionDiv.innerHTML = `
         <div class="question-header">
           <div class="question-icon">${iconChar}</div>
           <div class="question-info">
-            <div class="question-text">${question.questionText}</div>
+            <div class="question-text">${questionText}</div>
             <div class="question-number">Question ${index + 1} of ${resultData.questions.length}</div>
           </div>
         </div>

@@ -1146,6 +1146,100 @@
       attachQuizButtonHandlers();
     }
     
+    // ⭐ Transform API attempt response to match studentQuizResults.html format
+    function transformApiAttemptToResultFormat(apiAttempt) {
+      console.log('🔄 [transformApiAttemptToResultFormat] Starting transformation...');
+      
+      if (!apiAttempt.questions || !Array.isArray(apiAttempt.questions)) {
+        console.warn('⚠️ No questions in API attempt:', apiAttempt);
+        return apiAttempt;
+      }
+
+      // Transform each question to match expected format
+      const transformedQuestions = apiAttempt.questions.map((q, idx) => {
+        console.log(`   Q${idx + 1}: Transforming question`, q);
+        
+        // API structure: 
+        // - question_text (snake case)
+        // - options: [{ id, text, is_correct }]
+        // - student_answer: selected_option_id or null
+        // - is_correct: boolean
+        
+        // Expected format for studentQuizResults:
+        // - questionText (camelCase)
+        // - options: array of just text strings
+        // - selectedOptionText, correctOptionText
+        // - selectedOptionIndex, correctOptionIndex
+        // - isCorrect
+        // - explanation
+        
+        // Extract options
+        const optionsArray = q.options && Array.isArray(q.options) ? q.options : [];
+        
+        // Find student's selected option
+        let selectedOptionText = 'No answer selected';
+        let selectedOptionIndex = null;
+        if (q.student_answer) {
+          const selectedOpt = optionsArray.find(opt => opt.id === q.student_answer);
+          if (selectedOpt) {
+            selectedOptionText = selectedOpt.text || selectedOpt.option_text || 'Unknown';
+            selectedOptionIndex = optionsArray.indexOf(selectedOpt);
+          }
+        }
+        
+        // Find correct option
+        let correctOptionText = 'Unknown';
+        let correctOptionIndex = -1;
+        const correctOpt = optionsArray.find(opt => opt.is_correct === 1 || opt.is_correct === true);
+        if (correctOpt) {
+          correctOptionText = correctOpt.text || correctOpt.option_text || 'Unknown';
+          correctOptionIndex = optionsArray.indexOf(correctOpt);
+        }
+        
+        // Build options array (just text strings)
+        const optionsTextArray = optionsArray.map(opt => opt.text || opt.option_text || 'Unknown');
+        
+        const transformed = {
+          questionId: q.id,
+          questionText: q.question_text || q.questionText || 'Question ' + (idx + 1),
+          selectedOptionText: selectedOptionText,
+          correctOptionText: correctOptionText,
+          selectedOptionIndex: selectedOptionIndex,
+          correctOptionIndex: correctOptionIndex,
+          options: optionsTextArray,
+          allOptions: optionsTextArray,
+          explanation: q.explanation || '',
+          isCorrect: q.is_correct === 1 || q.is_correct === true
+        };
+        
+        console.log(`   ✅ Q${idx + 1} transformed:`, {
+          questionText: transformed.questionText.substring(0, 50) + '...',
+          selectedText: transformed.selectedOptionText,
+          correctText: transformed.correctOptionText,
+          isCorrect: transformed.isCorrect
+        });
+        
+        return transformed;
+      });
+      
+      // Build final result format
+      const result = {
+        ...apiAttempt,
+        quizTitle: apiAttempt.quiz_title || apiAttempt.quizTitle || 'Quiz',
+        score: apiAttempt.score !== undefined ? apiAttempt.score : apiAttempt.percentage || 0,
+        attemptId: apiAttempt.id || apiAttempt.attemptId,
+        questions: transformedQuestions
+      };
+      
+      console.log('✅ [transformApiAttemptToResultFormat] Complete:', {
+        quizTitle: result.quizTitle,
+        score: result.score,
+        questionCount: result.questions.length
+      });
+      
+      return result;
+    }
+    
     // Attach button handlers - separated for clarity
     function attachQuizButtonHandlers() {
       // Handle "Take Quiz" buttons
@@ -1225,8 +1319,12 @@
                 const detailedAttempt = await detailedResponse.json();
                 console.log('📊 Got detailed attempt from API:', detailedAttempt);
                 
+                // ⭐ TRANSFORM API response to match studentQuizResults.html format
+                const transformedResult = transformApiAttemptToResultFormat(detailedAttempt);
+                console.log('✅ Transformed result format:', transformedResult);
+                
                 // Store in sessionStorage so studentQuizResults.html can use it
-                sessionStorage.setItem('currentResultData', JSON.stringify(detailedAttempt));
+                sessionStorage.setItem('currentResultData', JSON.stringify(transformedResult));
                 sessionStorage.setItem('currentResultId', resultId);
                 
                 // Navigate with the API result ID
