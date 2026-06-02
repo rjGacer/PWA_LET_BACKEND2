@@ -24,9 +24,10 @@ async function loadCategoriesData() {
 // Navigate to subject page for a category
 function viewCategorySubjects(categoryId) {
   console.log('Navigating to category', categoryId);
-  // Store category ID for next page
+  // Store category ID for next page as backup
   sessionStorage.setItem('selectedCategoryId', categoryId);
-  window.location.href = 'subject.html';
+  // Navigate with query parameter
+  window.location.href = 'subject.html?categoryId=' + categoryId;
 }
 
 // Initialize on page load

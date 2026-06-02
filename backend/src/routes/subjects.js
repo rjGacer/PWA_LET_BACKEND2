@@ -4,8 +4,8 @@ const subjectController = require('../controllers/subjectController');
 const { authenticateToken, optionalAuth } = require('../middleware/auth');
 
 router.get('/', optionalAuth, subjectController.getAll);
-router.get('/:id', optionalAuth, subjectController.getById);
 router.get('/category/:categoryId', optionalAuth, subjectController.getByCategoryId);
+router.get('/:id', optionalAuth, subjectController.getById);
 router.post('/', authenticateToken, subjectController.create);
 router.put('/:id', authenticateToken, subjectController.update);
 router.delete('/:id', authenticateToken, subjectController.delete);

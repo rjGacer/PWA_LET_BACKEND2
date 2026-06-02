@@ -1002,8 +1002,43 @@
       const studentId = localStorage.getItem('userId');
       console.log(`\n🔍 [renderQuizzes] STARTING - StudentId: ${studentId}, Filtering ${filtered.length} quizzes`);
       
-      // Load ALL module results once at the beginning
+      // ⭐ PRIMARY SOURCE: Fetch quiz attempts from BACKEND API (persistent storage)
+      let apiAttempts = {};  // Map of quizId -> attempt data
       let allModuleResults = [];
+      
+      if (studentId) {
+        try {
+          console.log(`🌐 [renderQuizzes] Fetching quiz attempts from backend API...`);
+          const apiBaseUrl = viewModulesApi.baseURL || window.location.origin + '/api/v1';
+          const response = await fetch(`${apiBaseUrl}/quizzes/student/${studentId}/attempts`, {
+            headers: viewModulesApi.getHeaders(!!viewModulesApi.token)
+          });
+          
+          if (response.ok) {
+            const attempts = await response.json();
+            console.log(`✅ [renderQuizzes] Got ${attempts.length} attempts from backend API`);
+            
+            // Build map of quizId -> attempt for MODULE mode only
+            attempts.forEach(att => {
+              // CRITICAL: Only include module mode attempts
+              const isModuleMode = att.mode === 'module' || (!att.mode && att.quiz_id);
+              console.log(`   Attempt: quiz_id=${att.quiz_id}, mode=${att.mode}, attempt_id=${att.id}, isModule=${isModuleMode}`);
+              if (isModuleMode && att.quiz_id) {
+                const quizKey = String(att.quiz_id);
+                apiAttempts[quizKey] = att;
+              }
+            });
+            
+            console.log(`✅ [renderQuizzes] Built API attempts map with ${Object.keys(apiAttempts).length} MODULE mode quizzes`);
+          } else {
+            console.warn(`⚠️  [renderQuizzes] Failed to fetch attempts from API (HTTP ${response.status})`);
+          }
+        } catch (e) {
+          console.warn(`❌ [renderQuizzes] Error fetching attempts from API:`, e.message);
+        }
+      }
+      
+      // SECONDARY SOURCE: Load local results (fallback for offline mode or API failure)
       if (window.quizResultsManager && studentId) {
         try {
           // Ensure QuizResultsManager is ready before using it
@@ -1011,36 +1046,15 @@
           
           // Try getting from QuizResultsManager
           allModuleResults = await window.quizResultsManager.getStudentResultsByMode(studentId, 'module');
-          console.log(`✅ [renderQuizzes] QuizResultsManager returned ${allModuleResults.length} module results`);
-          
-          if (allModuleResults.length === 0) {
-            // Fallback: check localStorage directly
-            console.log(`⚠️  [renderQuizzes] No results from manager, checking localStorage directly...`);
-            const raw = localStorage.getItem('module_results');
-            console.log(`📦 [renderQuizzes] localStorage module_results content:`, raw);
-            if (raw) {
-              try {
-                const parsed = JSON.parse(raw);
-                console.log(`📦 [renderQuizzes] Parsed ${parsed.length} results from localStorage:`, parsed);
-                allModuleResults = parsed.filter(r => {
-                  const match = r.studentId === studentId || r.studentId === parseInt(studentId);
-                  console.log(`   - Checking result ID: ${r.id}, studentId: ${r.studentId}, match: ${match}`);
-                  return match;
-                });
-                console.log(`✅ [renderQuizzes] Filtered to ${allModuleResults.length} results for this student`);
-              } catch (e) {
-                console.error(`❌ [renderQuizzes] Failed to parse localStorage:`, e);
-              }
-            }
-          }
+          console.log(`✅ [renderQuizzes] QuizResultsManager returned ${allModuleResults.length} local module results`);
           
           // Display all loaded results
           allModuleResults.forEach((r, idx) => {
-            console.log(`   [${idx}] Result: quizId=${r.quizId}, quizTitle=${r.quizTitle}, score=${r.score}, timestamp=${new Date(r.timestamp).toLocaleString()}`);
+            console.log(`   [${idx}] Local result: quizId=${r.quizId}, quizTitle=${r.quizTitle}, score=${r.score}, timestamp=${new Date(r.timestamp).toLocaleString()}`);
           });
           
         } catch (e) {
-          console.error(`❌ [renderQuizzes] Failed to load module results:`, e);
+          console.error(`❌ [renderQuizzes] Failed to load local results:`, e);
           allModuleResults = [];
         }
       } else {
@@ -1053,38 +1067,50 @@
       for (const q of filtered) {
         console.log(`\n📝 [renderQuizzes] Processing quiz: "${q.title}" (ID: ${q.id})`);
         
-        // ⭐ CRITICAL FIX: Ignore q.student_has_attempted from API (it includes ALL modes)
-        // Only trust locally loaded module results
-        let hasAttempted = false;  // Start as false, don't use API flag
+        let hasAttempted = false;  // Start as false
         let localResult = null;
+        let apiAttemptId = null;
         
-        // Find result for THIS quiz from the loaded MODUL results ONLY
-        if (allModuleResults.length > 0) {
-          console.log(`   Searching in ${allModuleResults.length} MODULE results...`);
-          localResult = allModuleResults.find(r => {
-            const rQuizId = parseInt(r.quizId) || r.quizId;
-            const qId = parseInt(q.id) || q.id;
-            const match = String(rQuizId) === String(qId);
-            console.log(`   - Comparing: result.quizId=${rQuizId} (${typeof rQuizId}) vs quiz.id=${qId} (${typeof qId}) → ${match}`);
-            return match;
-          });
-          
-          if (localResult) {
-            hasAttempted = true;
-            console.log(`✅ FOUND - Quiz has MODULE attempt! Score: ${localResult.score}%`);
-          } else {
-            console.log(`❌ NO MODULE RESULT FOUND for this quiz (random/other results are ignored)`);
-          }
+        // ⭐ PRIMARY: Check BACKEND API first (persistent source of truth)
+        const quizKeyFromApi = String(q.id);
+        if (apiAttempts[quizKeyFromApi]) {
+          const apiAttempt = apiAttempts[quizKeyFromApi];
+          hasAttempted = true;
+          apiAttemptId = apiAttempt.id;
+          console.log(`✅ FOUND in BACKEND API - Quiz has attempt! attemptId: ${apiAttemptId}`);
         } else {
-          console.log(`⚠️  No module results available to check`);
+          // SECONDARY: Check local results (fallback if API has no record or offline)
+          console.log(`   Checking local storage for result...`);
+          if (allModuleResults.length > 0) {
+            console.log(`   Searching in ${allModuleResults.length} local MODULE results...`);
+            localResult = allModuleResults.find(r => {
+              const rQuizId = parseInt(r.quizId) || r.quizId;
+              const qId = parseInt(q.id) || q.id;
+              const match = String(rQuizId) === String(qId);
+              console.log(`   - Comparing: result.quizId=${rQuizId} vs quiz.id=${qId} → ${match}`);
+              return match;
+            });
+            
+            if (localResult) {
+              hasAttempted = true;
+              console.log(`✅ FOUND in LOCAL STORAGE - Quiz has MODULE attempt! Score: ${localResult.score}%`);
+            } else {
+              console.log(`❌ NO LOCAL RESULT FOUND for this quiz`);
+            }
+          } else {
+            console.log(`⚠️  No local results available to check`);
+          }
         }
         
-        // Determine button text and style
+        // Determine score text from available sources
         const scoreText = (localResult && localResult.score) 
           ? `${localResult.score}%` 
           : (q.last_attempt && q.last_attempt.percentage) 
             ? `${q.last_attempt.percentage}%` 
             : 'Taken';
+        
+        // Use API attempt ID if available, otherwise use local result ID
+        const resultId = apiAttemptId || (localResult ? localResult.id : '');
         
         const buttonText = hasAttempted ? `📊 View Score` : '<i class="fa-regular fa-play"></i> Take Quiz';
         const buttonClass = hasAttempted ? 'view-score-btn' : 'open-quiz-btn';
@@ -1095,7 +1121,7 @@
           : '';
         
         htmlContent += `
-        <div class="quiz-card" data-quiz-id="${q.id}" data-has-attempted="${hasAttempted}" data-result-id="${localResult ? localResult.id : ''}">
+        <div class="quiz-card" data-quiz-id="${q.id}" data-has-attempted="${hasAttempted}" data-result-id="${resultId}">
           <div class="quiz-info">
             <div class="quiz-title">${escapeHtml(q.title)}</div>
             <div class="quiz-meta">
@@ -1105,7 +1131,7 @@
             </div>
             ${scoreDisplay}
           </div>
-          <button class="${buttonClass}" data-quiz-title="${escapeHtml(q.title)}" data-quiz-id="${q.id}" data-result-id="${localResult ? localResult.id : ''}">
+          <button class="${buttonClass}" data-quiz-title="${escapeHtml(q.title)}" data-quiz-id="${q.id}" data-result-id="${resultId}">
             ${buttonText}
           </button>
         </div>
@@ -1170,10 +1196,12 @@
           
           console.log('📊 View Score clicked:', { quizId, resultId, title });
           
-          // ===== NEW: Use the result ID directly from IndexedDB =====
-          if (resultId) {
+          // Check if resultId is from API (numeric) or local (starts with "module_")
+          const isApiResultId = resultId && !isNaN(resultId) && !resultId.startsWith('module_') && !resultId.startsWith('practice_');
+          
+          if (resultId && !isApiResultId) {
+            // ===== LOCAL RESULT: Use the result ID directly from IndexedDB =====
             console.log('✅ Using local result ID:', resultId);
-            // Navigate directly to results page with the result ID and mode=module
             const resultUrl = `../student/studentQuizResults.html?resultId=${encodeURIComponent(resultId)}&mode=module&subjectId=${encodeURIComponent(subjectId)}`;
             
             if (typeof window.navigateWithTransition === 'function') {
@@ -1184,13 +1212,45 @@
             return;
           }
           
-          // ===== FALLBACK: If no local result ID, use API (backward compatibility) =====
-          console.log('⚠️  No local result ID, falling back to API...');
+          if (isApiResultId) {
+            // ===== API RESULT: Fetch detailed attempt from backend =====
+            console.log('✅ Using API result ID:', resultId);
+            try {
+              const apiBaseUrl = viewModulesApi.baseURL || window.location.origin + '/api/v1';
+              const detailedResponse = await fetch(`${apiBaseUrl}/quizzes/attempts/${resultId}`, {
+                headers: viewModulesApi.getHeaders(!!viewModulesApi.token)
+              });
+              
+              if (detailedResponse.ok) {
+                const detailedAttempt = await detailedResponse.json();
+                console.log('📊 Got detailed attempt from API:', detailedAttempt);
+                
+                // Store in sessionStorage so studentQuizResults.html can use it
+                sessionStorage.setItem('currentResultData', JSON.stringify(detailedAttempt));
+                sessionStorage.setItem('currentResultId', resultId);
+                
+                // Navigate with the API result ID
+                const resultUrl = `../student/studentQuizResults.html?resultId=${encodeURIComponent(resultId)}&mode=module&subjectId=${encodeURIComponent(subjectId)}&source=api`;
+                
+                if (typeof window.navigateWithTransition === 'function') {
+                  window.navigateWithTransition(resultUrl);
+                } else {
+                  window.location.href = resultUrl;
+                }
+                return;
+              } else {
+                console.warn('⚠️  Failed to fetch API result, attempting fallback...');
+              }
+            } catch (e) {
+              console.warn('❌ Error fetching API result:', e.message);
+            }
+          }
+          
+          // ===== FALLBACK: If no result ID or API fetch failed, use quiz attempt lookup =====
+          console.log('⚠️  Falling back to quiz attempt lookup...');
           
           // Clear any previous result data to prevent caching issues
           sessionStorage.removeItem('currentResultData');
-          
-          console.log('📊 View Score clicked for quiz:', { quizId, title });
           
           const studentId = localStorage.getItem('userId');
           if (!studentId) {

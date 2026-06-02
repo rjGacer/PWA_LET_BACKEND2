@@ -99,6 +99,35 @@
   <!-- Reuse the same layout JS from dashboard (loads sidebar & header) -->
   <script src="../assets/scripts/layout.js"></script>
   <script src="../assets/scripts/auth-guard.js"></script>
+  
+  <!-- Handle category navigation -->
+  <script>
+    // Wait for DOM to load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Find all "View Subjects" buttons and attach click handlers
+      const viewSubjectsButtons = document.querySelectorAll('.view-subjects-btn');
+      console.log('[CATEGORIES.HTML] Found', viewSubjectsButtons.length, 'View Subjects buttons');
+      
+      viewSubjectsButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          const href = this.getAttribute('href');
+          console.log('[CATEGORIES.HTML] View Subjects clicked, href:', href);
+          
+          // Extract categoryId from href
+          const match = href.match(/categoryId=(\d+)/);
+          if (match) {
+            const categoryId = match[1];
+            console.log('[CATEGORIES.HTML] Setting sessionStorage categoryId:', categoryId);
+            sessionStorage.setItem('selectedCategoryId', categoryId);
+          }
+          
+          // Let the link navigate naturally
+          // window.location.href = href; // Don't need to set this - the href will handle it
+        });
+      });
+    });
+  </script>
+  
   <script>
     // Handle Manage Category button click
     function handleManageCategory() {

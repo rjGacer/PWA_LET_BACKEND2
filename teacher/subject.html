@@ -147,9 +147,23 @@
     // Initialize API Service
     const apiService = new ApiService();
 
-    // Get category from URL
+    // Get category from URL or sessionStorage
     const urlParams = new URLSearchParams(window.location.search);
-    const categoryId = urlParams.get('categoryId') || '4'; // Default to General Education (ID 4)
+    const categoryIdFromUrl = urlParams.get('categoryId');
+    
+    // Only use sessionStorage if URL doesn't have categoryId
+    const categoryId = categoryIdFromUrl ? String(categoryIdFromUrl) : (sessionStorage.getItem('selectedCategoryId') || '4');
+    
+    // Clear sessionStorage after using it so it doesn't interfere with future navigations
+    if (!categoryIdFromUrl) {
+      console.log('[SUBJECT.HTML] Using categoryId from sessionStorage:', categoryId);
+    }
+    
+    // Debug logging
+    console.log('[SUBJECT.HTML] Full URL:', window.location.href);
+    console.log('[SUBJECT.HTML] Search params:', window.location.search);
+    console.log('[SUBJECT.HTML] categoryId from URL:', categoryIdFromUrl);
+    console.log('[SUBJECT.HTML] Final categoryId used:', categoryId);
     
     // Map category IDs to names and icons
     const categoryMap = {
