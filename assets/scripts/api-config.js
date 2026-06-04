@@ -2,7 +2,7 @@
  * API Configuration
  * 
  * This file configures the backend API URL for different deployment scenarios:
- * 1. Local development (localhost:5001 backend, localhost:3000+ frontend)
+ * 1. Local development (localhost:5000 backend, localhost:3000+ frontend)
  * 2. Netlify deployment - uses environment variables or URL parameters
  * 3. Same-domain deployment - auto-detects from current domain
  * 4. Docker/Network deployment - auto-detects from local network IPs
@@ -61,22 +61,22 @@
       const hostname = window.location.hostname;
       const port = window.location.port;
       
-      // If on localhost/127.0.0.1, try port 5001 for backend
+      // If on localhost/127.0.0.1, try port 5000 for backend
       if (hostname === 'localhost' || hostname === '127.0.0.1') {
         // Check if we're on port 3000 or similar frontend dev server
         if (port && port !== '80' && port !== '443' && parseInt(port) >= 3000) {
-          // Frontend dev server, backend is on port 5001
-          this.backendUrl = `${protocol}//${hostname}:5001/api/v1`;
+          // Frontend dev server, backend is on port 5000
+          this.backendUrl = `${protocol}//${hostname}:5000/api/v1`;
         } else {
-          // Default localhost backend on port 5001
-          this.backendUrl = `${protocol}//localhost:5001/api/v1`;
+          // Default localhost backend on port 5000
+          this.backendUrl = `${protocol}//localhost:5000/api/v1`;
         }
         return this.backendUrl;
       }
       
-      // If on local network IP (192.168.x.x, 10.x.x.x, 172.x.x.x), use port 5001
+      // If on local network IP (192.168.x.x, 10.x.x.x, 172.x.x.x), use port 5000
       if (/^(192\.168|10\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[01]\.)/.test(hostname)) {
-        this.backendUrl = `${protocol}//${hostname}:5001/api/v1`;
+        this.backendUrl = `${protocol}//${hostname}:5000/api/v1`;
         return this.backendUrl;
       }
       

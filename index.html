@@ -258,13 +258,13 @@
       // Set backend URL based on environment
       if (hostname === 'localhost' || hostname === '127.0.0.1') {
         // Local development
-        window.BACKEND_URL = `http://${hostname}:5001/api/v1`;
+        window.BACKEND_URL = `http://${hostname}:5000/api/v1`;
       } else if (hostname.includes('netlify.app') || hostname === 'letopwaa.netlify.app') {
         // Netlify production - use Render backend
         window.BACKEND_URL = 'https://pwa-let-reviewer.onrender.com/api/v1';
       } else if (/^(192\.168|10\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[01]\.)/.test(hostname)) {
-        // Local network IP - use port 5001 for backend
-        window.BACKEND_URL = `${protocol}//${hostname}:5001/api/v1`;
+        // Local network IP - use port 5000 for backend
+        window.BACKEND_URL = `${protocol}//${hostname}:5000/api/v1`;
       } else {
         // Default: same domain with port if non-standard
         const portString = port && (protocol === 'http:' ? port !== '80' : port !== '443') ? `:${port}` : '';
@@ -891,15 +891,15 @@
               const hostname = window.location.hostname;
               const port = window.location.port;
               
-              // Priority 2: If on local network IP (192.168.x.x, 10.x.x.x), use port 5001
+              // Priority 2: If on local network IP (192.168.x.x, 10.x.x.x), use port 5000
               const localNetworkPattern = /^(192\.168|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))\./;
               if (localNetworkPattern.test(hostname)) {
-                return `${protocol}//${hostname}:5001/api/v1`;
+                return `${protocol}//${hostname}:5000/api/v1`;
               }
               
-              // Priority 3: If on localhost, use port 5001
+              // Priority 3: If on localhost, use port 5000
               if (hostname === 'localhost' || hostname === '127.0.0.1') {
-                return `${protocol}//localhost:5001/api/v1`;
+                return `${protocol}//localhost:5000/api/v1`;
               }
               
               // Priority 4: Use same domain with port
