@@ -1,4 +1,14 @@
 services:
+  # Frontend Service - Static Site
+  - type: static_site
+    name: pwa-let-frontend
+    buildCommand: node build.js
+    staticPublishPath: .
+    envVars:
+      - key: BACKEND_URL
+        value: https://pwa-let-backend.onrender.com/api/v1
+
+  # Backend Service - Node.js API
   - type: web
     name: pwa-let-backend
     env: node
@@ -8,23 +18,23 @@ services:
     startCommand: npm start
     envVars:
       - key: PORT
-        value: 5001
+        fromBuild: true
       - key: NODE_ENV
         value: production
       - key: DB_HOST
-        value: ballast.proxy.rIwy.net
+        value: ballast.proxy.rlwy.net
       - key: DB_USER
         value: root
       - key: DB_PASSWORD
-        value: xoFhuNQUDkQtdVQbFueAArOVpaAAYVNb
+        sync: false
       - key: DB_NAME
         value: pwa_let_db
       - key: DB_PORT
-        value: 3306
+        value: 34315
       - key: CORS_ORIGIN
-        value: https://letopwa.netlify.app
+        value: https://pwa-let-frontend.onrender.com,http://localhost:3000,http://127.0.0.1:3000
       - key: JWT_SECRET
-        value: your_jwt_secret_key_here_change_in_production
+        sync: false
       - key: UPLOAD_DIR
         value: ./uploads
       - key: MAX_FILE_SIZE
