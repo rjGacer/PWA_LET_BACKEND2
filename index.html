@@ -262,6 +262,9 @@
       } else if (hostname.includes('netlify.app') || hostname === 'letopwaa.netlify.app') {
         // Netlify production - use Render backend
         window.BACKEND_URL = 'https://pwa-let-reviewer.onrender.com/api/v1';
+      } else if (hostname === 'pwa-let-frontend.onrender.com') {
+        // Render production - use Render backend
+        window.BACKEND_URL = 'https://pwa-let-backend.onrender.com/api/v1';
       } else if (/^(192\.168|10\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[01]\.)/.test(hostname)) {
         // Local network IP - use port 5000 for backend
         window.BACKEND_URL = `${protocol}//${hostname}:5000/api/v1`;
