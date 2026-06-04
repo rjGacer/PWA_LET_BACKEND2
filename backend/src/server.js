@@ -24,6 +24,7 @@ const PORT = process.env.PORT || 5000;
 // Parse CORS origins from environment variable (comma-separated list)
 const getCorsOrigin = () => {
   const corsOriginEnv = process.env.CORS_ORIGIN || '*';
+  console.log('📋 CORS_ORIGIN from env:', corsOriginEnv);
   
   // If it's '*', return it as is
   if (corsOriginEnv === '*') {
@@ -50,7 +51,9 @@ const getCorsOrigin = () => {
 // Middleware
 app.use(cors({
   origin: getCorsOrigin(),
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(bodyParser.json());
